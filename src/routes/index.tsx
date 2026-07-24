@@ -56,26 +56,26 @@ const NAV = [
 ];
 
 const CATEGORIES = [
-  { label: "Corrida", img: shoeCyan },
-  { label: "Basquete", img: shoeBball },
-  { label: "Casual", img: shoeWhite },
-  { label: "Training", img: shoeLime },
-  { label: "Feminino", img: catFem },
-  { label: "Masculino", img: catMasc },
+  { label: "Corrida", img: shoeSupernova.url },
+  { label: "Basquete", img: shoeAf1Cpfm.url },
+  { label: "Casual", img: shoeGazelleRed.url },
+  { label: "Training", img: shoeUltraboost5.url },
+  { label: "Trail", img: shoeTerrexDaroga.url },
+  { label: "Lifestyle", img: shoeAf1Grey.url },
 ];
 
 const PRODUCTS = [
-  { name: "MX Runner Pro Cyan", price: 499.9, old: 649.9, tag: "Novo", img: shoeCyan, colors: ["#00d4c6", "#0a1420", "#f5f7f8"] },
-  { name: "MX Volt Lime", price: 549.9, old: 699.9, tag: "-21%", img: shoeLime, colors: ["#c7f500", "#0a1420"] },
-  { name: "MX Cloud White Mint", price: 429.9, old: 519.9, tag: "Top", img: shoeWhite, colors: ["#ffffff", "#6ef0b8"] },
-  { name: "MX Court High Cyan", price: 599.9, old: 749.9, tag: "-20%", img: shoeBball, colors: ["#0a1420", "#00d4c6"] },
+  { name: "Adizero Boston 13", price: 899.9, old: 1199.9, tag: "Novo", img: shoeBostonPink.url, colors: ["#f5e6d8", "#ff4d8a", "#c0c0c0"] },
+  { name: "Terrex Agravic Speed 2", price: 949.9, old: 1249.9, tag: "-24%", img: shoeTerrexSpeed.url, colors: ["#f7f2e6", "#111111", "#ff5a2b"] },
+  { name: "Ultraboost 5 GTX", price: 1099.9, old: 1399.9, tag: "Top", img: shoeUltraboost5.url, colors: ["#0a0a0a", "#3a4bff"] },
+  { name: "Air Force 1 x CPFM", price: 1299.9, old: 1599.9, tag: "Drop", img: shoeAf1Cpfm.url, colors: ["#0a0a0a", "#ffffff"] },
 ];
 
 const OFFERS = [
-  { name: "MX Runner Pro Cyan", price: 349.9, old: 499.9, tag: "-30%", img: shoeCyan },
-  { name: "MX Volt Lime Trainer", price: 379.9, old: 549.9, tag: "-31%", img: shoeLime },
-  { name: "MX Cloud White", price: 299.9, old: 429.9, tag: "-30%", img: shoeWhite },
-  { name: "MX Court High", price: 419.9, old: 599.9, tag: "-30%", img: shoeBball },
+  { name: "Ultraboost 22 Grey", price: 699.9, old: 999.9, tag: "-30%", img: shoeUltraboost22.url },
+  { name: "Ultraboost 20 Osaka", price: 649.9, old: 949.9, tag: "-31%", img: shoeUb20Osaka.url },
+  { name: "Supernova Rise 3M", price: 579.9, old: 819.9, tag: "-29%", img: shoeSupernova.url },
+  { name: "Gazelle Indoor Red", price: 549.9, old: 799.9, tag: "-31%", img: shoeGazelleRed.url },
 ];
 
 function Home() {
