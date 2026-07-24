@@ -276,7 +276,7 @@ function CategoryCircles() {
         {CATEGORIES.map((c) => (
           <a key={c.label} href="#" className="group flex flex-col items-center gap-3">
             <div className="relative aspect-square w-full overflow-hidden rounded-full border border-border bg-secondary transition group-hover:border-[color:var(--cyan-brand)]">
-              <img src={c.img} alt={c.label} loading="lazy" className="h-full w-full scale-[1.55] object-cover object-top transition duration-500 group-hover:scale-[1.7]" />
+              <img src={c.img} alt={c.label} loading="lazy" className="h-full w-full scale-[1.15] object-contain object-center transition duration-500 group-hover:scale-[1.25]" />
             </div>
             <span className="font-display text-sm font-semibold uppercase tracking-wider">{c.label}</span>
           </a>
@@ -346,7 +346,7 @@ function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
             -{discount}%
           </span>
         )}
-        <img src={product.img} alt={product.name} loading="lazy" className="h-full w-full scale-[1.55] object-cover object-top transition duration-500 group-hover:scale-[1.75]" />
+        <img src={product.img} alt={product.name} loading="lazy" className="h-full w-full scale-[1.05] object-contain object-center transition duration-500 group-hover:scale-[1.15]" />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="font-display text-sm font-bold uppercase tracking-wide">{product.name}</div>
