@@ -19,10 +19,16 @@ import {
 import monogram from "@/assets/maxor-monogram.png.asset.json";
 import identity from "@/assets/maxor-identity.png.asset.json";
 import heroRunner from "@/assets/hero-runner.jpg";
-import shoeCyan from "@/assets/shoe-cyan.jpg";
-import shoeLime from "@/assets/shoe-lime.jpg";
-import shoeWhite from "@/assets/shoe-white.jpg";
-import shoeBball from "@/assets/shoe-bball.jpg";
+import shoeBostonPink from "@/assets/shoe-boston-pink.jpg.asset.json";
+import shoeTerrexSpeed from "@/assets/shoe-terrex-speed.jpg.asset.json";
+import shoeUltraboost5 from "@/assets/shoe-ultraboost5.jpg.asset.json";
+import shoeUltraboost22 from "@/assets/shoe-ultraboost22.jpg.asset.json";
+import shoeUb20Osaka from "@/assets/shoe-ub20-osaka.jpg.asset.json";
+import shoeGazelleRed from "@/assets/shoe-gazelle-red.jpg.asset.json";
+import shoeSupernova from "@/assets/shoe-supernova.jpg.asset.json";
+import shoeTerrexDaroga from "@/assets/shoe-terrex-daroga.jpg.asset.json";
+import shoeAf1Grey from "@/assets/shoe-af1-grey.jpg.asset.json";
+import shoeAf1Cpfm from "@/assets/shoe-af1-cpfm.jpg.asset.json";
 import catFem from "@/assets/cat-feminino.jpg";
 import catMasc from "@/assets/cat-masculino.jpg";
 
@@ -50,26 +56,26 @@ const NAV = [
 ];
 
 const CATEGORIES = [
-  { label: "Corrida", img: shoeCyan },
-  { label: "Basquete", img: shoeBball },
-  { label: "Casual", img: shoeWhite },
-  { label: "Training", img: shoeLime },
-  { label: "Feminino", img: catFem },
-  { label: "Masculino", img: catMasc },
+  { label: "Corrida", img: shoeSupernova.url },
+  { label: "Basquete", img: shoeAf1Cpfm.url },
+  { label: "Casual", img: shoeGazelleRed.url },
+  { label: "Training", img: shoeUltraboost5.url },
+  { label: "Trail", img: shoeTerrexDaroga.url },
+  { label: "Lifestyle", img: shoeAf1Grey.url },
 ];
 
 const PRODUCTS = [
-  { name: "MX Runner Pro Cyan", price: 499.9, old: 649.9, tag: "Novo", img: shoeCyan, colors: ["#00d4c6", "#0a1420", "#f5f7f8"] },
-  { name: "MX Volt Lime", price: 549.9, old: 699.9, tag: "-21%", img: shoeLime, colors: ["#c7f500", "#0a1420"] },
-  { name: "MX Cloud White Mint", price: 429.9, old: 519.9, tag: "Top", img: shoeWhite, colors: ["#ffffff", "#6ef0b8"] },
-  { name: "MX Court High Cyan", price: 599.9, old: 749.9, tag: "-20%", img: shoeBball, colors: ["#0a1420", "#00d4c6"] },
+  { name: "Adizero Boston 13", price: 899.9, old: 1199.9, tag: "Novo", img: shoeBostonPink.url, colors: ["#f5e6d8", "#ff4d8a", "#c0c0c0"] },
+  { name: "Terrex Agravic Speed 2", price: 949.9, old: 1249.9, tag: "-24%", img: shoeTerrexSpeed.url, colors: ["#f7f2e6", "#111111", "#ff5a2b"] },
+  { name: "Ultraboost 5 GTX", price: 1099.9, old: 1399.9, tag: "Top", img: shoeUltraboost5.url, colors: ["#0a0a0a", "#3a4bff"] },
+  { name: "Air Force 1 x CPFM", price: 1299.9, old: 1599.9, tag: "Drop", img: shoeAf1Cpfm.url, colors: ["#0a0a0a", "#ffffff"] },
 ];
 
 const OFFERS = [
-  { name: "MX Runner Pro Cyan", price: 349.9, old: 499.9, tag: "-30%", img: shoeCyan },
-  { name: "MX Volt Lime Trainer", price: 379.9, old: 549.9, tag: "-31%", img: shoeLime },
-  { name: "MX Cloud White", price: 299.9, old: 429.9, tag: "-30%", img: shoeWhite },
-  { name: "MX Court High", price: 419.9, old: 599.9, tag: "-30%", img: shoeBball },
+  { name: "Ultraboost 22 Grey", price: 699.9, old: 999.9, tag: "-30%", img: shoeUltraboost22.url },
+  { name: "Ultraboost 20 Osaka", price: 649.9, old: 949.9, tag: "-31%", img: shoeUb20Osaka.url },
+  { name: "Supernova Rise 3M", price: 579.9, old: 819.9, tag: "-29%", img: shoeSupernova.url },
+  { name: "Gazelle Indoor Red", price: 549.9, old: 799.9, tag: "-31%", img: shoeGazelleRed.url },
 ];
 
 function Home() {
@@ -270,7 +276,7 @@ function CategoryCircles() {
         {CATEGORIES.map((c) => (
           <a key={c.label} href="#" className="group flex flex-col items-center gap-3">
             <div className="relative aspect-square w-full overflow-hidden rounded-full border border-border bg-secondary transition group-hover:border-[color:var(--cyan-brand)]">
-              <img src={c.img} alt={c.label} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+              <img src={c.img} alt={c.label} loading="lazy" className="h-full w-full scale-[1.55] object-cover object-top transition duration-500 group-hover:scale-[1.7]" />
             </div>
             <span className="font-display text-sm font-semibold uppercase tracking-wider">{c.label}</span>
           </a>
@@ -340,7 +346,7 @@ function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
             -{discount}%
           </span>
         )}
-        <img src={product.img} alt={product.name} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+        <img src={product.img} alt={product.name} loading="lazy" className="h-full w-full scale-[1.55] object-cover object-top transition duration-500 group-hover:scale-[1.75]" />
       </div>
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="font-display text-sm font-bold uppercase tracking-wide">{product.name}</div>
