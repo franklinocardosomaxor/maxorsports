@@ -19,10 +19,16 @@ import {
 import monogram from "@/assets/maxor-monogram.png.asset.json";
 import identity from "@/assets/maxor-identity.png.asset.json";
 import heroRunner from "@/assets/hero-runner.jpg";
-import shoeCyan from "@/assets/shoe-cyan.jpg";
-import shoeLime from "@/assets/shoe-lime.jpg";
-import shoeWhite from "@/assets/shoe-white.jpg";
-import shoeBball from "@/assets/shoe-bball.jpg";
+import shoeBostonPink from "@/assets/shoe-boston-pink.jpg.asset.json";
+import shoeTerrexSpeed from "@/assets/shoe-terrex-speed.jpg.asset.json";
+import shoeUltraboost5 from "@/assets/shoe-ultraboost5.jpg.asset.json";
+import shoeUltraboost22 from "@/assets/shoe-ultraboost22.jpg.asset.json";
+import shoeUb20Osaka from "@/assets/shoe-ub20-osaka.jpg.asset.json";
+import shoeGazelleRed from "@/assets/shoe-gazelle-red.jpg.asset.json";
+import shoeSupernova from "@/assets/shoe-supernova.jpg.asset.json";
+import shoeTerrexDaroga from "@/assets/shoe-terrex-daroga.jpg.asset.json";
+import shoeAf1Grey from "@/assets/shoe-af1-grey.jpg.asset.json";
+import shoeAf1Cpfm from "@/assets/shoe-af1-cpfm.jpg.asset.json";
 import catFem from "@/assets/cat-feminino.jpg";
 import catMasc from "@/assets/cat-masculino.jpg";
 
