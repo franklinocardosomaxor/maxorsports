@@ -63,18 +63,18 @@ const CATEGORIES = [
   { label: "Lifestyle", img: shoeAf1Grey.url },
 ];
 
-const PRODUCTS = [
-  { name: "Adizero Boston 13", price: 899.9, old: 1199.9, tag: "Novo", img: shoeBostonPink.url, colors: ["#f5e6d8", "#ff4d8a", "#c0c0c0"] },
-  { name: "Terrex Agravic Speed 2", price: 949.9, old: 1249.9, tag: "-24%", img: shoeTerrexSpeed.url, colors: ["#f7f2e6", "#111111", "#ff5a2b"] },
-  { name: "Ultraboost 5 GTX", price: 1099.9, old: 1399.9, tag: "Top", img: shoeUltraboost5.url, colors: ["#0a0a0a", "#3a4bff"] },
-  { name: "Air Force 1 x CPFM", price: 1299.9, old: 1599.9, tag: "Drop", img: shoeAf1Cpfm.url, colors: ["#0a0a0a", "#ffffff"] },
+const PRODUCTS: Product[] = [
+  { id: "m-boston-13", name: "Adizero Boston 13", price: 899.9, old: 1199.9, tag: "Novo", img: shoeBostonPink.url, colors: ["#f5e6d8", "#ff4d8a", "#c0c0c0"] },
+  { id: "m-terrex-speed", name: "Terrex Agravic Speed 2", price: 949.9, old: 1249.9, tag: "-24%", img: shoeTerrexSpeed.url, colors: ["#f7f2e6", "#111111", "#ff5a2b"] },
+  { id: "m-ub5-gtx", name: "Ultraboost 5 GTX", price: 1099.9, old: 1399.9, tag: "Top", img: shoeUltraboost5.url, colors: ["#0a0a0a", "#3a4bff"] },
+  { id: "m-af1-cpfm", name: "Air Force 1 x CPFM", price: 1299.9, old: 1599.9, tag: "Drop", img: shoeAf1Cpfm.url, colors: ["#0a0a0a", "#ffffff"] },
 ];
 
-const OFFERS = [
-  { name: "Ultraboost 22 Grey", price: 699.9, old: 999.9, tag: "-30%", img: shoeUltraboost22.url },
-  { name: "Ultraboost 20 Osaka", price: 649.9, old: 949.9, tag: "-31%", img: shoeUb20Osaka.url },
-  { name: "Supernova Rise 3M", price: 579.9, old: 819.9, tag: "-29%", img: shoeSupernova.url },
-  { name: "Gazelle Indoor Red", price: 549.9, old: 799.9, tag: "-31%", img: shoeGazelleRed.url },
+const OFFERS: Product[] = [
+  { id: "o-ub22", name: "Ultraboost 22 Grey", price: 699.9, old: 999.9, tag: "-30%", img: shoeUltraboost22.url },
+  { id: "o-ub20-osaka", name: "Ultraboost 20 Osaka", price: 649.9, old: 949.9, tag: "-31%", img: shoeUb20Osaka.url },
+  { id: "o-supernova", name: "Supernova Rise 3M", price: 579.9, old: 819.9, tag: "-29%", img: shoeSupernova.url },
+  { id: "o-gazelle", name: "Gazelle Indoor Red", price: 549.9, old: 799.9, tag: "-31%", img: shoeGazelleRed.url },
 ];
 
 function Home() {
