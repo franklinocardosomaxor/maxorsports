@@ -387,7 +387,7 @@ function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
 
