@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OfertasRouteImport } from './routes/ofertas'
+import { Route as MinhaContaRouteImport } from './routes/minha-conta'
 import { Route as MasculinoRouteImport } from './routes/masculino'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -28,9 +30,19 @@ const OfertasRoute = OfertasRouteImport.update({
   path: '/ofertas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MinhaContaRoute = MinhaContaRouteImport.update({
+  id: '/minha-conta',
+  path: '/minha-conta',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasculinoRoute = MasculinoRouteImport.update({
   id: '/masculino',
   path: '/masculino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InfantilRoute = InfantilRouteImport.update({
@@ -95,7 +107,9 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
+  '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
@@ -110,7 +124,9 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
+  '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
@@ -126,7 +142,9 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
+  '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
@@ -143,7 +161,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/login'
     | '/masculino'
+    | '/minha-conta'
     | '/ofertas'
     | '/marcas/$brand'
     | '/produto/$id'
@@ -158,7 +178,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/login'
     | '/masculino'
+    | '/minha-conta'
     | '/ofertas'
     | '/marcas/$brand'
     | '/produto/$id'
@@ -173,7 +195,9 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/login'
     | '/masculino'
+    | '/minha-conta'
     | '/ofertas'
     | '/marcas/$brand'
     | '/produto/$id'
@@ -189,7 +213,9 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
+  LoginRoute: typeof LoginRoute
   MasculinoRoute: typeof MasculinoRoute
+  MinhaContaRoute: typeof MinhaContaRoute
   OfertasRoute: typeof OfertasRoute
   MarcasBrandRoute: typeof MarcasBrandRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
@@ -209,11 +235,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OfertasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/minha-conta': {
+      id: '/minha-conta'
+      path: '/minha-conta'
+      fullPath: '/minha-conta'
+      preLoaderRoute: typeof MinhaContaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/masculino': {
       id: '/masculino'
       path: '/masculino'
       fullPath: '/masculino'
       preLoaderRoute: typeof MasculinoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/infantil': {
@@ -301,7 +341,9 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
+  LoginRoute: LoginRoute,
   MasculinoRoute: MasculinoRoute,
+  MinhaContaRoute: MinhaContaRoute,
   OfertasRoute: OfertasRoute,
   MarcasBrandRoute: MarcasBrandRoute,
   ProdutoIdRoute: ProdutoIdRoute,
