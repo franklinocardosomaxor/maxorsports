@@ -169,19 +169,20 @@ export function CatalogPage({
   return (
     <Shell active={activeNav}>
       {/* Breadcrumb */}
-      <div className="border-b border-border bg-secondary/40">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-navy">
+      <div className="border-b border-white/10 bg-navy">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[color:var(--lime-brand)]">
+          <Link to="/" className="hover:brightness-110">
             Home
           </Link>
           {breadcrumb.map((b, i) => (
             <span key={b} className="flex items-center gap-2">
-              <ChevronRight className="h-3 w-3" />
-              <span className={i === breadcrumb.length - 1 ? "text-foreground" : ""}>{b}</span>
+              <ChevronRight className="h-3 w-3 text-[color:var(--lime-brand)]/60" />
+              <span className={i === breadcrumb.length - 1 ? "text-offwhite" : "text-[color:var(--lime-brand)]"}>{b}</span>
             </span>
           ))}
         </div>
       </div>
+
 
       {/* Page header */}
       <section
