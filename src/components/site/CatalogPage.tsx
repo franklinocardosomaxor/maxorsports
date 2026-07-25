@@ -375,15 +375,15 @@ function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
       >
         <Heart className="h-4 w-4" />
       </button>
-      <div className="relative aspect-square overflow-hidden bg-secondary/50">
+      <Link to="/produto/$id" params={{ id: p.id }} className="relative aspect-square overflow-hidden bg-secondary/50">
         <img
           src={p.img}
           alt={p.name}
           className="h-full w-full scale-[1.05] object-contain object-center transition duration-500 group-hover:scale-[1.12]"
           loading="lazy"
         />
-      </div>
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      </Link>
+      <Link to="/produto/$id" params={{ id: p.id }} className="flex flex-1 flex-col gap-2 p-4">
         <p
           className="text-[10px] font-bold uppercase tracking-widest"
           style={{ color: accent }}
@@ -419,7 +419,7 @@ function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
             <span className="text-[10px] text-muted-foreground">+{p.colors.length - 4}</span>
           )}
         </div>
-      </div>
+      </Link>
     </article>
   );
 }
