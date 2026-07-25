@@ -78,8 +78,30 @@ function CheckoutPage() {
     ].join("\n");
   };
 
-  // api.whatsapp.com/send abre o chat direto (evita a confusão com "ligação" que alguns dispositivos fazem com wa.me)
-  const waHref = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(summaryText())}&type=phone_number&app_absent=0`;
+  // Detecta mobile para escolher o esquema correto (whatsapp:// no mobile, web.whatsapp.com no desktop).
+  const buildWaLinks = () => {
+    const text = encodeURIComponent(summaryText());
+    return {
+      appLink: `whatsapp://send?phone=${WHATSAPP_NUMBER}&text=${text}`,
+      webLink: `https://web.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${text}`,
+      universal: `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`,
+    };
+  };
+
+  const openWhatsApp = () => {
+    if (!requiredOk) {
+      alert("Preencha todos os dados obrigatórios para enviar o pedido pelo WhatsApp.");
+      return;
+    }
+    const { appLink, webLink, universal } = buildWaLinks();
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const target = isMobile ? appLink : webLink;
+    const win = window.open(target, "_blank", "noopener,noreferrer");
+    // Fallback universal caso o esquema seja bloqueado
+    setTimeout(() => {
+      if (!win || win.closed) window.location.href = universal;
+    }, 800);
+  };
 
   const copyPix = async () => {
     try {
@@ -237,23 +259,16 @@ function CheckoutPage() {
                   <dd className="font-display text-2xl font-black text-navy">{brl(total)}</dd>
                 </div>
               </dl>
-              <a
-                href={requiredOk ? waHref : undefined}
-                onClick={(e) => {
-                  if (!requiredOk) {
-                    e.preventDefault();
-                    alert("Preencha todos os dados obrigatórios para enviar o pedido pelo WhatsApp.");
-                  }
-                }}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={openWhatsApp}
                 aria-disabled={!requiredOk}
                 className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-black uppercase tracking-widest text-white ${
                   requiredOk ? "bg-[#25D366] hover:brightness-110" : "cursor-not-allowed bg-neutral-400"
                 }`}
               >
                 Enviar pedido no WhatsApp
-              </a>
+              </button>
 
               <button
                 onClick={() => cart.clear()}
