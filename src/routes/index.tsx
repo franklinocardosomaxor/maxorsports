@@ -169,17 +169,20 @@ function MegaNav() {
   return (
     <nav className="border-b border-border bg-background">
       <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4">
-        {NAV.map((item, i) => (
-          <a
-            key={item}
-            href="#"
-            className={`whitespace-nowrap px-4 py-3 text-sm font-display font-semibold uppercase tracking-wider transition hover:text-[color:var(--cyan-brand)] ${
-              i >= NAV.length - 1 ? "text-[color:var(--lime-brand)] font-bold" : ""
-            }`}
-          >
-            {item}
-          </a>
-        ))}
+        {NAV.map((item, i) => {
+          const href = item === "Masculino" ? "/masculino" : "#";
+          return (
+            <a
+              key={item}
+              href={href}
+              className={`whitespace-nowrap px-4 py-3 text-sm font-display font-semibold uppercase tracking-wider transition hover:text-[color:var(--cyan-brand)] ${
+                i >= NAV.length - 1 ? "text-[color:var(--lime-brand)] font-bold" : ""
+              }`}
+            >
+              {item}
+            </a>
+          );
+        })}
       </div>
     </nav>
   );
