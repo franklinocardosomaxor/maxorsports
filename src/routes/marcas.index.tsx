@@ -56,9 +56,18 @@ function MarcasIndex() {
                   className="flex aspect-square flex-col items-center justify-center gap-3 p-4 text-center"
                   style={{ backgroundImage: b.bg }}
                 >
-                  <span className="font-display text-3xl font-black uppercase tracking-widest text-offwhite drop-shadow sm:text-4xl">
-                    {b.mark}
-                  </span>
+                  {b.logo ? (
+                    <img
+                      src={b.logo}
+                      alt={b.name}
+                      className="h-16 w-auto max-w-[70%] object-contain brightness-0 invert drop-shadow sm:h-20"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <span className="font-display text-3xl font-black uppercase tracking-widest text-offwhite drop-shadow sm:text-4xl">
+                      {b.mark}
+                    </span>
+                  )}
                   <span className="font-display text-sm font-bold uppercase tracking-[0.25em] text-offwhite/90">
                     {b.name}
                   </span>
