@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useRef, useState } from "react";
 import {
-  Search, User, Heart, ShoppingBag, MapPin, Menu, Zap,
+  Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X,
   Instagram, Facebook, Youtube,
 } from "lucide-react";
 import monogram from "@/assets/maxor-monogram.png.asset.json";
@@ -11,7 +11,7 @@ const NAV = [
   { label: "Infantil", href: "/infantil" },
   { label: "Marcas", href: "/marcas" },
   { label: "Roupas", href: "/roupas" },
-  { label: "Ofertas", href: "#" },
+  { label: "Ofertas", href: "/ofertas" },
 ];
 
 export function Shell({ children, active }: { children: ReactNode; active?: string }) {
@@ -48,7 +48,7 @@ function TopBar() {
 function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-navy text-offwhite backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
         <button className="md:hidden" aria-label="menu"><Menu className="h-6 w-6" /></button>
         <a href="/" className="flex items-center gap-2">
           <img src={monogram.url} alt="Maxor Sports" className="h-10 w-auto" />
@@ -57,6 +57,7 @@ function Header() {
             <span className="text-[10px] font-medium tracking-[0.3em] text-offwhite/60">SPORTS</span>
           </div>
         </a>
+        <ImageSearch />
         <div className="hidden flex-1 md:block">
           <label className="relative block">
             <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-offwhite/60" />
@@ -87,6 +88,78 @@ function Header() {
         </div>
       </div>
     </header>
+  );
+}
+
+/**
+ * ImageSearch — barra de pesquisa por imagem no topo do site.
+ * O usuário envia uma foto de um tênis e a API deve retornar produtos
+ * visualmente similares do catálogo.
+ * TODO(CRM/AI): trocar o console.log por server function que envia a
+ * imagem pra um modelo multimodal (ex.: google/gemini-3.1-flash) via
+ * AI Gateway e retorna candidatos do catálogo.
+ *   import { searchByImage } from "@/lib/crm.image-search.functions";
+ *   const results = await searchByImage({ data: { imageBase64 } });
+ */
+export function ImageSearch() {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [status, setStatus] = useState<"idle" | "sending">("idle");
+
+  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    setPreview(url);
+    setStatus("sending");
+    // Placeholder: futuramente vai chamar server fn com base64 da imagem.
+    console.log("[image-search] arquivo recebido:", f.name, f.size, f.type);
+    setTimeout(() => setStatus("idle"), 800);
+  };
+
+  const clear = () => {
+    setPreview(null);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  return (
+    <div className="hidden md:flex">
+      <button
+        type="button"
+        onClick={() => fileRef.current?.click()}
+        className="group flex items-center gap-2 rounded-full border border-[color:var(--lime-brand)]/40 bg-white/5 py-2.5 pl-3 pr-4 text-xs font-semibold uppercase tracking-wider text-[color:var(--lime-brand)] transition hover:border-[color:var(--lime-brand)] hover:bg-white/10"
+        title="Pesquisar por imagem"
+      >
+        {preview ? (
+          <img src={preview} alt="preview" className="h-6 w-6 rounded-full object-cover" />
+        ) : (
+          <span className="grid h-6 w-6 place-items-center rounded-full bg-[color:var(--lime-brand)] text-navy">
+            <Camera className="h-3.5 w-3.5" />
+          </span>
+        )}
+        <span className="hidden lg:inline">
+          {status === "sending" ? "Analisando…" : preview ? "Nova foto" : "Buscar por imagem"}
+        </span>
+      </button>
+      {preview && (
+        <button
+          type="button"
+          onClick={clear}
+          className="ml-1 grid h-8 w-8 place-items-center rounded-full text-offwhite/60 hover:bg-white/10 hover:text-[color:var(--lime-brand)]"
+          aria-label="Limpar imagem"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={onPick}
+      />
+    </div>
   );
 }
 
