@@ -341,8 +341,9 @@ function ProductCarousel({ title, subtitle, items, accent }: { title: string; su
 function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
   const discount = product.old ? Math.round((1 - product.price / product.old) * 100) : 0;
   return (
-    <a
-      href="#"
+    <Link
+      to="/produto/$id"
+      params={{ id: product.id }}
       className={`group flex flex-col overflow-hidden rounded-2xl border transition hover:-translate-y-1 hover:shadow-xl ${
         dark ? "border-white/10 bg-[#0f1c2c]" : "border-border bg-card"
       }`}
