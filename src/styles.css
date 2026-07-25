@@ -41,32 +41,33 @@
 :root {
   --radius: 0.5rem;
 
-  /* Maxor Sports palette */
-  --navy: #0a1420;
-  --cyan-brand: #00d4c6;
-  --mint: #6ef0b8;
-  --lime-brand: #c7f500;
-  --offwhite: #f5f7f8;
+  /* Maxor Sports palette (oficial) */
+  --navy: #0F1720;
+  --cyan-brand: #00BFC6;
+  --mint: #7EEBC1;
+  --lime-brand: #C7F500;
+  --cream: #F7F8F5;
+  --offwhite: #F7F8F5;
 
-  --background: #ffffff;
-  --foreground: #0a1420;
+  --background: #F7F8F5;
+  --foreground: #0F1720;
   --card: #ffffff;
-  --card-foreground: #0a1420;
+  --card-foreground: #0F1720;
   --popover: #ffffff;
-  --popover-foreground: #0a1420;
-  --primary: #0a1420;
-  --primary-foreground: #f5f7f8;
-  --secondary: #f2f5f7;
-  --secondary-foreground: #0a1420;
-  --muted: #eef1f4;
-  --muted-foreground: #56636f;
-  --accent: #00d4c6;
-  --accent-foreground: #0a1420;
+  --popover-foreground: #0F1720;
+  --primary: #0F1720;
+  --primary-foreground: #F7F8F5;
+  --secondary: #eef2ef;
+  --secondary-foreground: #0F1720;
+  --muted: #eaefea;
+  --muted-foreground: #4d5761;
+  --accent: #00BFC6;
+  --accent-foreground: #0F1720;
   --destructive: #e5484d;
   --destructive-foreground: #ffffff;
-  --border: #e4e8ec;
-  --input: #e4e8ec;
-  --ring: #00d4c6;
+  --border: #dfe4de;
+  --input: #dfe4de;
+  --ring: #00BFC6;
 }
 
 .dark {
