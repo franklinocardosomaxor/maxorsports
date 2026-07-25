@@ -25,36 +25,61 @@ export const Route = createFileRoute("/checkout")({
 function CheckoutPage() {
   const cart = useCart();
   const [copied, setCopied] = useState(false);
-  const [customer, setCustomer] = useState({ name: "", phone: "", city: "" });
+  const [customer, setCustomer] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    country: "Brasil",
+    state: "",
+    city: "",
+    address: "",
+    zip: "",
+  });
 
   const shipping = 0; // combinado no atendimento
   const total = cart.subtotal + shipping;
+
+  const requiredOk = Boolean(
+    customer.name.trim() &&
+      customer.phone.trim() &&
+      customer.email.trim() &&
+      customer.country.trim() &&
+      customer.state.trim() &&
+      customer.city.trim() &&
+      customer.address.trim() &&
+      customer.zip.trim(),
+  );
 
   const summaryText = () => {
     const lines = cart.items.map(
       (i, n) =>
         `${n + 1}. ${i.name} (${i.brand}) — tam ${i.size} — ${i.qty}x ${brl(i.price)}`,
     );
-    const header = [
-      `*Pedido Maxor Sports*`,
-      customer.name ? `Cliente: ${customer.name}` : "",
-      customer.city ? `Cidade: ${customer.city}` : "",
-      customer.phone ? `Telefone: ${customer.phone}` : "",
-      "",
-      "*Itens:*",
-    ].filter(Boolean);
     return [
-      ...header,
+      `*Novo pedido — Maxor Sports*`,
+      ``,
+      `*Dados do cliente*`,
+      `Nome: ${customer.name}`,
+      `Telefone: ${customer.phone}`,
+      `E-mail: ${customer.email}`,
+      `País: ${customer.country}`,
+      `Estado: ${customer.state}`,
+      `Cidade: ${customer.city}`,
+      `Endereço completo: ${customer.address}`,
+      `CEP: ${customer.zip}`,
+      ``,
+      `*Itens:*`,
       ...lines,
-      "",
+      ``,
       `*Subtotal:* ${brl(cart.subtotal)}`,
       `*Total:* ${brl(total)}`,
-      "",
-      `Combinar frete e confirmar disponibilidade.`,
+      ``,
+      `Combinar frete e confirmar pagamento via PIX.`,
     ].join("\n");
   };
 
-  const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summaryText())}`;
+  // api.whatsapp.com/send abre o chat direto (evita a confusão com "ligação" que alguns dispositivos fazem com wa.me)
+  const waHref = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(summaryText())}&type=phone_number&app_absent=0`;
 
   const copyPix = async () => {
     try {
