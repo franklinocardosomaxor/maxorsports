@@ -129,7 +129,7 @@ function Header() {
             <span className="text-[10px] font-medium tracking-[0.3em] text-offwhite/60">SPORTS</span>
           </div>
         </a>
-        <ImageSearch />
+        
 
         <div className="hidden flex-1 md:block">
           <label className="relative block">
