@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import monogram from "@/assets/maxor-monogram.png.asset.json";
 import { Shell } from "@/components/site/Shell";
-import identity from "@/assets/maxor-identity.png.asset.json";
+
 import heroRunner from "@/assets/hero-runner.jpg";
 import shoeBostonPink from "@/assets/shoe-boston-pink.jpg.asset.json";
 import shoeTerrexSpeed from "@/assets/shoe-terrex-speed.jpg.asset.json";
