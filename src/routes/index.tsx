@@ -173,6 +173,8 @@ function MegaNav() {
             Feminino: "/feminino",
             Infantil: "/infantil",
             Marcas: "/marcas",
+            Roupas: "/roupas",
+            Ofertas: "/ofertas",
           };
           const href = hrefMap[item] ?? "#";
           return (
