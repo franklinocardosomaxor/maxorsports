@@ -392,23 +392,17 @@ function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
 function BrandBanner() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-6">
-      <div className="relative overflow-hidden rounded-3xl bg-navy p-8 md:p-12">
+      <div className="relative overflow-hidden rounded-3xl bg-navy p-10 md:p-16">
         <div className="pointer-events-none absolute -right-16 -top-16 h-72 w-72 rounded-full bg-[color:var(--cyan-brand)]/30 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-[color:var(--lime-brand)]/20 blur-3xl" />
-        <div className="relative grid gap-6 md:grid-cols-2 md:items-center">
-          <div>
-            <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--cyan-brand)]">Maxor Sports</div>
-            <h3 className="mt-3 font-display text-3xl font-bold uppercase leading-tight text-offwhite md:text-5xl">
-              Performance com seu <span className="text-gradient-brand">estilo</span> e <span className="text-gradient-brand">personalidade</span>
-            </h3>
-            <p className="mt-4 max-w-lg text-sm text-offwhite/70">
-              Cada modelo com dezenas de variações de cor. Escolha o seu, feche com nosso agente e receba em casa.
-            </p>
-            <a href="#" className="mt-6 inline-flex rounded-full bg-[color:var(--lime-brand)] px-7 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110">
-              Explorar catálogo
-            </a>
-          </div>
-          <img src={identity.url} alt="Identidade Maxor Sports" loading="lazy" className="relative rounded-2xl object-cover" />
+        <div className="relative flex flex-col items-center text-center">
+          <div className="font-display text-xs uppercase tracking-[0.3em] text-[color:var(--cyan-brand)]">Maxor Sports</div>
+          <h3 className="mt-3 font-display text-3xl font-bold uppercase leading-tight text-offwhite md:text-5xl">
+            Performance com seu <span className="text-gradient-brand">estilo</span> e <span className="text-gradient-brand">personalidade</span>
+          </h3>
+          <a href="/masculino" className="mt-8 inline-flex rounded-full bg-[color:var(--lime-brand)] px-8 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110">
+            Explorar catálogo
+          </a>
         </div>
       </div>
     </section>
