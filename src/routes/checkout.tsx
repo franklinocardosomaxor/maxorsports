@@ -259,23 +259,16 @@ function CheckoutPage() {
                   <dd className="font-display text-2xl font-black text-navy">{brl(total)}</dd>
                 </div>
               </dl>
-              <a
-                href={requiredOk ? waHref : undefined}
-                onClick={(e) => {
-                  if (!requiredOk) {
-                    e.preventDefault();
-                    alert("Preencha todos os dados obrigatórios para enviar o pedido pelo WhatsApp.");
-                  }
-                }}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={openWhatsApp}
                 aria-disabled={!requiredOk}
                 className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-black uppercase tracking-widest text-white ${
                   requiredOk ? "bg-[#25D366] hover:brightness-110" : "cursor-not-allowed bg-neutral-400"
                 }`}
               >
                 Enviar pedido no WhatsApp
-              </a>
+              </button>
 
               <button
                 onClick={() => cart.clear()}
