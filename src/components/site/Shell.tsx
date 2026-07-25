@@ -440,7 +440,6 @@ function Footer() {
       links: [
         { label: `Central de atendimento ${WHATSAPP_DISPLAY}`, href: `tel:+${WHATSAPP_NUMBER}` },
         { label: `WhatsApp ${WHATSAPP_DISPLAY}`, href: `https://wa.me/${WHATSAPP_NUMBER}`, external: true },
-        { label: "Trocas e devoluções (até 7 dias após o recebimento)", href: "#" },
         { label: "Rastrear pedido", href: TRACKING_URL, external: true },
       ],
     },
