@@ -170,7 +170,12 @@ function MegaNav() {
     <nav className="border-b border-border bg-background">
       <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4">
         {NAV.map((item, i) => {
-          const href = item === "Masculino" ? "/masculino" : "#";
+          const hrefMap: Record<string, string> = {
+            Masculino: "/masculino",
+            Feminino: "/feminino",
+            Infantil: "/infantil",
+          };
+          const href = hrefMap[item] ?? "#";
           return (
             <a
               key={item}
