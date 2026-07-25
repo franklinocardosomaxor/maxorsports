@@ -44,18 +44,59 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+/**
+ * Cabeçalhos de segurança aplicados a toda resposta HTML/JSON.
+ * Defende contra:
+ *  - Clonagem via iframe / clickjacking (X-Frame-Options + CSP frame-ancestors)
+ *  - MIME sniffing (X-Content-Type-Options)
+ *  - Vazamento de referrer p/ terceiros (Referrer-Policy)
+ *  - Downgrade HTTPS (Strict-Transport-Security)
+ *  - Uso indevido de APIs sensíveis do navegador (Permissions-Policy)
+ *  - Cross-origin leaks (Cross-Origin-Opener-Policy)
+ *
+ * Preview (iframe do editor Lovable) fica liberado; produção nega frame.
+ */
+function applySecurityHeaders(request: Request, response: Response): Response {
+  const url = new URL(request.url);
+  const isPreview =
+    url.hostname.endsWith(".lovable.app") ||
+    url.hostname.endsWith(".lovableproject.com") ||
+    url.hostname === "localhost";
+
+  const headers = new Headers(response.headers);
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  headers.set(
+    "Permissions-Policy",
+    "camera=(self), microphone=(), geolocation=(), payment=(self), usb=(), interest-cohort=()",
+  );
+  headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
+  headers.set("X-DNS-Prefetch-Control", "off");
+
+  if (isPreview) {
+    headers.set("Content-Security-Policy", "frame-ancestors 'self' https://*.lovable.app https://*.lovable.dev https://lovable.dev");
+  } else {
+    headers.set("X-Frame-Options", "DENY");
+    headers.set("Content-Security-Policy", "frame-ancestors 'none'");
+    headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  }
+
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return applySecurityHeaders(request, await normalizeCatastrophicSsrResponse(response));
     } catch (error) {
       console.error(error);
-      return new Response(renderErrorPage(), {
+      return applySecurityHeaders(request, new Response(renderErrorPage(), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },
-      });
+      }));
     }
   },
 };
+
