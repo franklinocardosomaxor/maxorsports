@@ -34,17 +34,20 @@ function AccountLink() {
   return (
     <Link
       to={signedIn ? "/minha-conta" : "/login"}
-      className="hidden items-center gap-2 hover:text-[color:var(--cyan-brand)] lg:flex"
+      className="flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1.5 hover:border-[color:var(--cyan-brand)] hover:text-[color:var(--cyan-brand)] md:px-3"
+      aria-label={signedIn ? "Minha Conta" : "Entrar ou criar conta"}
+      title={signedIn ? "Minha Conta" : "Entrar ou criar conta"}
     >
       <User className="h-5 w-5" />
-      <div className="leading-tight">
+      <div className="hidden leading-tight sm:block">
         <div className="text-[10px] uppercase text-offwhite/60">
           {signedIn ? `Olá, ${name}` : "Entrar ou"}
         </div>
-        <div className="font-semibold">{signedIn ? "Minha Conta" : "Criar conta"}</div>
+        <div className="text-xs font-semibold">{signedIn ? "Minha Conta" : "Criar conta"}</div>
       </div>
     </Link>
   );
+
 }
 
 const NAV = [
