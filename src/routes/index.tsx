@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import monogram from "@/assets/maxor-monogram.png.asset.json";
+import { ImageSearch } from "@/components/site/Shell";
 import identity from "@/assets/maxor-identity.png.asset.json";
 import heroRunner from "@/assets/hero-runner.jpg";
 import shoeBostonPink from "@/assets/shoe-boston-pink.jpg.asset.json";
@@ -119,7 +120,7 @@ function TopBar() {
 function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-navy text-offwhite backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
         <button className="md:hidden" aria-label="menu"><Menu className="h-6 w-6" /></button>
         <a href="/" className="flex items-center gap-2">
           <img src={monogram.url} alt="Maxor Sports" className="h-10 w-auto" />
@@ -128,6 +129,7 @@ function Header() {
             <span className="text-[10px] font-medium tracking-[0.3em] text-offwhite/60">SPORTS</span>
           </div>
         </a>
+        <ImageSearch />
 
         <div className="hidden flex-1 md:block">
           <label className="relative block">

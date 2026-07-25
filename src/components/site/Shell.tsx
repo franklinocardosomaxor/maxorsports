@@ -101,7 +101,7 @@ function Header() {
  *   import { searchByImage } from "@/lib/crm.image-search.functions";
  *   const results = await searchByImage({ data: { imageBase64 } });
  */
-function ImageSearch() {
+export function ImageSearch() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [status, setStatus] = useState<"idle" | "sending">("idle");
