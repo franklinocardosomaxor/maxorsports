@@ -1,4 +1,4 @@
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X, Loader2,
   Instagram, Facebook, Youtube, Phone, Mail, Truck,
@@ -13,6 +13,39 @@ import {
 } from "@/lib/crm.image-search.functions";
 import { recordNewsletterSignup } from "@/lib/crm.contacts.functions";
 import { useCart } from "@/lib/cart";
+import { supabase } from "@/integrations/supabase/client";
+
+function AccountLink() {
+  const [name, setName] = useState<string | null>(null);
+  useEffect(() => {
+    let alive = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!alive) return;
+      const md = (data.user?.user_metadata ?? {}) as Record<string, string>;
+      setName(data.user ? (md.full_name?.split(" ")[0] ?? data.user.email ?? "conta") : null);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      const md = (session?.user?.user_metadata ?? {}) as Record<string, string>;
+      setName(session?.user ? (md.full_name?.split(" ")[0] ?? session.user.email ?? "conta") : null);
+    });
+    return () => { alive = false; sub.subscription.unsubscribe(); };
+  }, []);
+  const signedIn = Boolean(name);
+  return (
+    <Link
+      to={signedIn ? "/minha-conta" : "/login"}
+      className="hidden items-center gap-2 hover:text-[color:var(--cyan-brand)] lg:flex"
+    >
+      <User className="h-5 w-5" />
+      <div className="leading-tight">
+        <div className="text-[10px] uppercase text-offwhite/60">
+          {signedIn ? `Olá, ${name}` : "Entrar ou"}
+        </div>
+        <div className="font-semibold">{signedIn ? "Minha Conta" : "Criar conta"}</div>
+      </div>
+    </Link>
+  );
+}
 
 const NAV = [
   { label: "Masculino", href: "/masculino" },
