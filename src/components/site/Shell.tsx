@@ -335,6 +335,22 @@ function ImageSearch({ onImage }: { onImage: (dataUrl: string, fileName: string)
   );
 }
 
+function CartButton() {
+  const cart = useCart();
+  return (
+    <Link
+      to="/checkout"
+      className="relative flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-offwhite hover:bg-white/15 md:px-4"
+    >
+      <ShoppingBag className="h-5 w-5" />
+      <span className="hidden text-xs font-semibold uppercase tracking-wider md:inline">Sacola</span>
+      <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[color:var(--cyan-brand)] px-1 text-[10px] font-bold text-navy">
+        {cart.count}
+      </span>
+    </Link>
+  );
+}
+
 function MegaNav({ active }: { active?: string }) {
   return (
     <nav className="border-b border-white/10 bg-navy text-offwhite">
