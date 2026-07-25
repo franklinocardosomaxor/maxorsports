@@ -13,6 +13,8 @@ import { Route as MasculinoRouteImport } from './routes/masculino'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
+import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
 
@@ -36,6 +38,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarcasIndexRoute = MarcasIndexRouteImport.update({
+  id: '/marcas/',
+  path: '/marcas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarcasBrandRoute = MarcasBrandRouteImport.update({
+  id: '/marcas/$brand',
+  path: '/marcas/$brand',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksWhatsappRoute =
   ApiPublicWebhooksWhatsappRouteImport.update({
     id: '/api/public/webhooks/whatsapp',
@@ -53,6 +65,8 @@ export interface FileRoutesByFullPath {
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
+  '/marcas/$brand': typeof MarcasBrandRoute
+  '/marcas/': typeof MarcasIndexRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
 }
@@ -61,6 +75,8 @@ export interface FileRoutesByTo {
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
+  '/marcas/$brand': typeof MarcasBrandRoute
+  '/marcas': typeof MarcasIndexRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
 }
@@ -70,6 +86,8 @@ export interface FileRoutesById {
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
+  '/marcas/$brand': typeof MarcasBrandRoute
+  '/marcas/': typeof MarcasIndexRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
 }
@@ -80,6 +98,8 @@ export interface FileRouteTypes {
     | '/feminino'
     | '/infantil'
     | '/masculino'
+    | '/marcas/$brand'
+    | '/marcas/'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
   fileRoutesByTo: FileRoutesByTo
@@ -88,6 +108,8 @@ export interface FileRouteTypes {
     | '/feminino'
     | '/infantil'
     | '/masculino'
+    | '/marcas/$brand'
+    | '/marcas'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
   id:
@@ -96,6 +118,8 @@ export interface FileRouteTypes {
     | '/feminino'
     | '/infantil'
     | '/masculino'
+    | '/marcas/$brand'
+    | '/marcas/'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
   fileRoutesById: FileRoutesById
@@ -105,6 +129,8 @@ export interface RootRouteChildren {
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
   MasculinoRoute: typeof MasculinoRoute
+  MarcasBrandRoute: typeof MarcasBrandRoute
+  MarcasIndexRoute: typeof MarcasIndexRoute
   ApiPublicWebhooksStripeRoute: typeof ApiPublicWebhooksStripeRoute
   ApiPublicWebhooksWhatsappRoute: typeof ApiPublicWebhooksWhatsappRoute
 }
@@ -139,6 +165,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/marcas/': {
+      id: '/marcas/'
+      path: '/marcas'
+      fullPath: '/marcas/'
+      preLoaderRoute: typeof MarcasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marcas/$brand': {
+      id: '/marcas/$brand'
+      path: '/marcas/$brand'
+      fullPath: '/marcas/$brand'
+      preLoaderRoute: typeof MarcasBrandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/whatsapp': {
       id: '/api/public/webhooks/whatsapp'
       path: '/api/public/webhooks/whatsapp'
@@ -161,6 +201,8 @@ const rootRouteChildren: RootRouteChildren = {
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
   MasculinoRoute: MasculinoRoute,
+  MarcasBrandRoute: MarcasBrandRoute,
+  MarcasIndexRoute: MarcasIndexRoute,
   ApiPublicWebhooksStripeRoute: ApiPublicWebhooksStripeRoute,
   ApiPublicWebhooksWhatsappRoute: ApiPublicWebhooksWhatsappRoute,
 }

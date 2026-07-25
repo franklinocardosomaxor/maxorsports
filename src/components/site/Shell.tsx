@@ -9,10 +9,8 @@ const NAV = [
   { label: "Masculino", href: "/masculino" },
   { label: "Feminino", href: "/feminino" },
   { label: "Infantil", href: "/infantil" },
-  { label: "Tênis", href: "#" },
+  { label: "Marcas", href: "/marcas" },
   { label: "Roupas", href: "#" },
-  { label: "Acessórios", href: "#" },
-  { label: "Marcas", href: "#" },
   { label: "Ofertas", href: "#" },
 ];
 
