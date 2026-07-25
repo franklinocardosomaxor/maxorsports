@@ -50,32 +50,23 @@ function MarcasIndex() {
                 key={b.slug}
                 to="/marcas/$brand"
                 params={{ brand: b.slug }}
-                className="group relative overflow-hidden rounded-2xl border border-border shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+                className="group relative overflow-hidden rounded-2xl border border-border bg-white transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <div
-                  className="flex aspect-square flex-col items-center justify-center gap-3 p-4 text-center"
-                  style={{ backgroundImage: b.bg }}
-                >
+                <div className="flex aspect-square items-center justify-center bg-white p-6">
                   {b.logo ? (
                     <img
                       src={b.logo}
                       alt={b.name}
-                      className="h-16 w-auto max-w-[70%] object-contain brightness-0 invert drop-shadow sm:h-20"
+                      className="max-h-[55%] max-w-[75%] object-contain transition group-hover:scale-105"
                       loading="lazy"
                     />
                   ) : (
-                    <span className="font-display text-3xl font-black uppercase tracking-widest text-offwhite drop-shadow sm:text-4xl">
+                    <span className="font-display text-4xl font-black uppercase tracking-widest text-navy">
                       {b.mark}
                     </span>
                   )}
-                  <span className="font-display text-sm font-bold uppercase tracking-[0.25em] text-offwhite/90">
-                    {b.name}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-widest text-offwhite/60">
-                    {b.tagline}
-                  </span>
                 </div>
-                <div className="flex items-center justify-between border-t border-border bg-background px-3 py-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                <div className="flex items-center justify-between border-t border-border bg-white px-3 py-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                   <span>{count} modelos</span>
                   <span className="text-[color:var(--cyan-brand)] transition group-hover:translate-x-1">
                     ver →
