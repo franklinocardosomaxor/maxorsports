@@ -312,6 +312,7 @@ function SectionHeader({ title, subtitle, cta = "Ver todos" }: { title: string; 
 }
 
 type Product = {
+  id: string;
   name: string;
   price: number;
   old?: number;
