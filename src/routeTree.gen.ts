@@ -10,6 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MasculinoRouteImport } from './routes/masculino'
+import { Route as InfantilRouteImport } from './routes/infantil'
+import { Route as FemininoRouteImport } from './routes/feminino'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
@@ -17,6 +19,16 @@ import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public
 const MasculinoRoute = MasculinoRouteImport.update({
   id: '/masculino',
   path: '/masculino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InfantilRoute = InfantilRouteImport.update({
+  id: '/infantil',
+  path: '/infantil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FemininoRoute = FemininoRouteImport.update({
+  id: '/feminino',
+  path: '/feminino',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -38,12 +50,16 @@ const ApiPublicWebhooksStripeRoute = ApiPublicWebhooksStripeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/feminino': typeof FemininoRoute
+  '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/feminino': typeof FemininoRoute
+  '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
@@ -51,6 +67,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/feminino': typeof FemininoRoute
+  '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
@@ -59,18 +77,24 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/feminino'
+    | '/infantil'
     | '/masculino'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/feminino'
+    | '/infantil'
     | '/masculino'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
   id:
     | '__root__'
     | '/'
+    | '/feminino'
+    | '/infantil'
     | '/masculino'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
@@ -78,6 +102,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FemininoRoute: typeof FemininoRoute
+  InfantilRoute: typeof InfantilRoute
   MasculinoRoute: typeof MasculinoRoute
   ApiPublicWebhooksStripeRoute: typeof ApiPublicWebhooksStripeRoute
   ApiPublicWebhooksWhatsappRoute: typeof ApiPublicWebhooksWhatsappRoute
@@ -90,6 +116,20 @@ declare module '@tanstack/react-router' {
       path: '/masculino'
       fullPath: '/masculino'
       preLoaderRoute: typeof MasculinoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/infantil': {
+      id: '/infantil'
+      path: '/infantil'
+      fullPath: '/infantil'
+      preLoaderRoute: typeof InfantilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feminino': {
+      id: '/feminino'
+      path: '/feminino'
+      fullPath: '/feminino'
+      preLoaderRoute: typeof FemininoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -118,6 +158,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FemininoRoute: FemininoRoute,
+  InfantilRoute: InfantilRoute,
   MasculinoRoute: MasculinoRoute,
   ApiPublicWebhooksStripeRoute: ApiPublicWebhooksStripeRoute,
   ApiPublicWebhooksWhatsappRoute: ApiPublicWebhooksWhatsappRoute,
