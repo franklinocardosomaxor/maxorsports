@@ -238,13 +238,23 @@ function CheckoutPage() {
                 </div>
               </dl>
               <a
-                href={waHref}
+                href={requiredOk ? waHref : undefined}
+                onClick={(e) => {
+                  if (!requiredOk) {
+                    e.preventDefault();
+                    alert("Preencha todos os dados obrigatórios para enviar o pedido pelo WhatsApp.");
+                  }
+                }}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 text-sm font-black uppercase tracking-widest text-white hover:brightness-110"
+                aria-disabled={!requiredOk}
+                className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-black uppercase tracking-widest text-white ${
+                  requiredOk ? "bg-[#25D366] hover:brightness-110" : "cursor-not-allowed bg-neutral-400"
+                }`}
               >
-                Fechar pedido no WhatsApp
+                Enviar pedido no WhatsApp
               </a>
+
               <button
                 onClick={() => cart.clear()}
                 className="mt-3 w-full text-xs text-muted-foreground hover:text-red-500"
