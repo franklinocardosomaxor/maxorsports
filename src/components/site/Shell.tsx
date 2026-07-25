@@ -47,25 +47,25 @@ function TopBar() {
 
 function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy text-offwhite backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-4">
         <button className="md:hidden" aria-label="menu"><Menu className="h-6 w-6" /></button>
         <a href="/" className="flex items-center gap-2">
           <img src={monogram.url} alt="Maxor Sports" className="h-10 w-auto" />
           <div className="hidden flex-col leading-none sm:flex">
             <span className="font-display text-xl font-bold tracking-wider">MAXOR</span>
-            <span className="text-[10px] font-medium tracking-[0.3em] text-muted-foreground">SPORTS</span>
+            <span className="text-[10px] font-medium tracking-[0.3em] text-offwhite/60">SPORTS</span>
           </div>
         </a>
         <div className="hidden flex-1 md:block">
           <label className="relative block">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-offwhite/60" />
             <input
               type="search"
               placeholder="Buscar por tênis, marca ou modelo…"
-              className="w-full rounded-full border border-border bg-secondary/60 py-3 pl-11 pr-28 text-sm outline-none transition focus:border-[color:var(--cyan-brand)] focus:bg-background"
+              className="w-full rounded-full border border-white/10 bg-white/5 py-3 pl-11 pr-28 text-sm text-offwhite placeholder:text-offwhite/50 outline-none transition focus:border-[color:var(--cyan-brand)] focus:bg-white/10"
             />
-            <button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-navy px-5 py-2 text-xs font-semibold uppercase tracking-wider text-offwhite hover:opacity-90">
+            <button className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-[color:var(--cyan-brand)] px-5 py-2 text-xs font-semibold uppercase tracking-wider text-navy hover:brightness-110">
               Buscar
             </button>
           </label>
@@ -74,12 +74,12 @@ function Header() {
           <a href="#" className="hidden items-center gap-2 hover:text-[color:var(--cyan-brand)] md:flex">
             <User className="h-5 w-5" />
             <div className="leading-tight">
-              <div className="text-[10px] uppercase text-muted-foreground">Olá, Franklin</div>
+              <div className="text-[10px] uppercase text-offwhite/60">Olá, Franklin</div>
               <div className="font-semibold">Minha Conta</div>
             </div>
           </a>
           <a href="#" className="hidden hover:text-[color:var(--cyan-brand)] md:block"><Heart className="h-5 w-5" /></a>
-          <a href="#" className="relative flex items-center gap-2 rounded-full bg-navy px-4 py-2 text-offwhite hover:opacity-90">
+          <a href="#" className="relative flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-offwhite hover:bg-white/15">
             <ShoppingBag className="h-5 w-5" />
             <span className="text-xs font-semibold uppercase tracking-wider">Sacola</span>
             <span className="ml-1 grid h-5 w-5 place-items-center rounded-full bg-[color:var(--cyan-brand)] text-[10px] font-bold text-navy">2</span>
@@ -92,7 +92,7 @@ function Header() {
 
 function MegaNav({ active }: { active?: string }) {
   return (
-    <nav className="border-b border-border bg-background">
+    <nav className="border-b border-white/10 bg-navy text-offwhite">
       <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4">
         {NAV.map((item) => {
           const isActive = active === item.label;
@@ -104,7 +104,7 @@ function MegaNav({ active }: { active?: string }) {
               className={`whitespace-nowrap px-4 py-3 text-sm font-display font-semibold uppercase tracking-wider transition ${
                 isActive
                   ? "text-[color:var(--cyan-brand)] border-b-2 border-[color:var(--cyan-brand)]"
-                  : "hover:text-[color:var(--cyan-brand)]"
+                  : "text-offwhite/80 hover:text-[color:var(--cyan-brand)]"
               } ${isOffer ? "text-[color:var(--lime-brand)] font-bold" : ""}`}
             >
               {item.label}
