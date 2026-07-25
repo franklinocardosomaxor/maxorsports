@@ -28,6 +28,7 @@ import logoTimberland from "@/assets/brands/timberland.svg";
 import logoGucci from "@/assets/brands/gucci.svg";
 import logoPrada from "@/assets/brands/prada.svg";
 import logoLouisVuitton from "@/assets/brands/louis-vuitton.svg";
+import logoChuteiras from "@/assets/brands/chuteiras.png.asset.json";
 
 export type BrandAccent = "cyan" | "mint" | "lime";
 
@@ -59,6 +60,7 @@ export const BRANDS: Brand[] = [
   { slug: "gucci",         name: "Gucci",         mark: "GG", logo: logoGucci,         tagline: "Milano since 1921",      bg: "#ffffff", accent: "lime" },
   { slug: "prada",         name: "Prada",         mark: "PR", logo: logoPrada,         tagline: "Milano",                 bg: "#ffffff", accent: "cyan" },
   { slug: "louis-vuitton", name: "Louis Vuitton", mark: "LV", logo: logoLouisVuitton,  tagline: "Paris maison",           bg: "#ffffff", accent: "cyan" },
+  { slug: "chuteiras",     name: "Chuteiras",     mark: "CH", logo: logoChuteiras.url, tagline: "A melhor seleção para o seu jogo", bg: "#ffffff", accent: "lime" },
 ];
 
 // Sample products per brand — reusing existing shoe imagery as placeholders
@@ -131,6 +133,7 @@ export const BRAND_PRODUCTS: Record<string, CatalogProduct[]> = {
   "louis-vuitton": [
     { id: "lv-trainer", name: "LV Trainer Monogram", brand: "Louis Vuitton", category: "Casual", price: 8999.9, tag: "Luxo", img: shoeAf1Grey.url, colors: ["#8a5a2b", "#f5e6d8"], sizes: [40, 41, 42, 43] },
   ],
+  chuteiras: [],
 };
 
 export function getBrand(slug: string): Brand | undefined {
