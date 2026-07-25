@@ -1,9 +1,15 @@
 import { ReactNode, useRef, useState } from "react";
 import {
-  Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X,
+  Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X, Loader2,
   Instagram, Facebook, Youtube,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import monogram from "@/assets/maxor-monogram.png.asset.json";
+import {
+  searchByName,
+  searchByImage,
+  type ProductHit,
+} from "@/lib/crm.image-search.functions";
 
 const NAV = [
   { label: "Masculino", href: "/masculino" },
@@ -57,59 +63,89 @@ function TopBar() {
   );
 }
 
-function Header() {
-  // Estado "não encontrado" compartilhado entre busca por nome e por imagem.
-  // TODO(CRM/AI): quando a server fn de busca (texto/imagem) retornar 0
-  // resultados, chamar setNotFound(true) com o termo pesquisado.
-  const [notFound, setNotFound] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
+type SearchState =
+  | { kind: "idle" }
+  | { kind: "loading"; label: string }
+  | { kind: "results"; term: string; hits: ProductHit[] }
+  | { kind: "empty"; term: string }
+  | { kind: "error"; term: string; message: string };
 
-  const submitTextSearch = (e: React.FormEvent) => {
+function Header() {
+  const [query, setQuery] = useState("");
+  const [state, setState] = useState<SearchState>({ kind: "idle" });
+
+  const runName = useServerFn(searchByName);
+  const runImage = useServerFn(searchByImage);
+
+  const submitName = async (e: React.FormEvent) => {
     e.preventDefault();
     const q = query.trim();
     if (!q) return;
-    // Placeholder: sem backend de busca ainda → sempre "não encontrado".
-    console.log("[search] termo:", q);
-    setNotFound(q);
+    setState({ kind: "loading", label: `Buscando "${q}"…` });
+    try {
+      const r = await runName({ data: { query: q } });
+      if (r.count === 0) setState({ kind: "empty", term: q });
+      else setState({ kind: "results", term: q, hits: r.results });
+    } catch (err) {
+      setState({ kind: "error", term: q, message: (err as Error).message });
+    }
   };
 
-  const onImageAnalyzed = (fileName: string) => {
-    // Placeholder: sem backend de imagem ainda → sempre "não encontrado".
-    setNotFound(fileName);
+  const submitImage = async (dataUrl: string, fileName: string) => {
+    setState({ kind: "loading", label: "Analisando imagem…" });
+    try {
+      const r = await runImage({ data: { imageDataUrl: dataUrl } });
+      const term =
+        [r.vision.brand, r.vision.model].filter(Boolean).join(" ") || fileName;
+      if (r.count === 0) setState({ kind: "empty", term });
+      else setState({ kind: "results", term, hits: r.results });
+    } catch (err) {
+      setState({ kind: "error", term: fileName, message: (err as Error).message });
+    }
   };
+
+  const close = () => setState({ kind: "idle" });
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-navy text-offwhite backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-4">
         <button className="md:hidden" aria-label="menu"><Menu className="h-6 w-6" /></button>
-        <a href="/" className="flex items-center gap-2">
+        <a href="/" className="flex shrink-0 items-center gap-2">
           <img src={monogram.url} alt="Maxor Sports" className="h-10 w-auto" />
           <div className="hidden flex-col leading-none sm:flex">
             <span className="font-display text-xl font-bold tracking-wider">MAXOR</span>
             <span className="text-[10px] font-medium tracking-[0.3em] text-offwhite/60">SPORTS</span>
           </div>
         </a>
-        <ImageSearch onAnalyzed={onImageAnalyzed} />
-        <div className="hidden flex-1 md:block">
-          <form onSubmit={submitTextSearch} className="relative block">
-            <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-offwhite/60" />
+
+        {/* SEARCH BAR — sempre visível (nome + imagem), fica logo depois da logo */}
+        <form
+          onSubmit={submitName}
+          className="flex flex-1 items-stretch overflow-hidden rounded-full border border-white/10 bg-white/5 focus-within:border-[color:var(--cyan-brand)]"
+        >
+          <ImageSearch onImage={submitImage} />
+          <div className="relative flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-offwhite/60" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por tênis, marca ou modelo…"
-              className="w-full rounded-full border border-white/10 bg-white/5 py-3 pl-11 pr-28 text-sm text-offwhite placeholder:text-offwhite/50 outline-none transition focus:border-[color:var(--cyan-brand)] focus:bg-white/10"
+              placeholder="Buscar por nome, marca ou modelo…"
+              className="w-full bg-transparent py-2.5 pl-9 pr-3 text-sm text-offwhite placeholder:text-offwhite/50 outline-none md:py-3"
             />
-            <button
-              type="submit"
-              className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-[color:var(--cyan-brand)] px-5 py-2 text-xs font-semibold uppercase tracking-wider text-navy hover:brightness-110"
-            >
-              Buscar
-            </button>
-          </form>
-        </div>
-        <div className="ml-auto flex items-center gap-5 text-sm">
-          <a href="#" className="hidden items-center gap-2 hover:text-[color:var(--cyan-brand)] md:flex">
+          </div>
+          <button
+            type="submit"
+            className="shrink-0 bg-[color:var(--cyan-brand)] px-4 text-xs font-semibold uppercase tracking-wider text-navy hover:brightness-110 md:px-6"
+            aria-label="Buscar"
+          >
+            <span className="hidden sm:inline">Buscar</span>
+            <Search className="h-4 w-4 sm:hidden" />
+          </button>
+        </form>
+
+        <div className="ml-auto flex shrink-0 items-center gap-3 text-sm md:gap-5">
+          <a href="#" className="hidden items-center gap-2 hover:text-[color:var(--cyan-brand)] lg:flex">
             <User className="h-5 w-5" />
             <div className="leading-tight">
               <div className="text-[10px] uppercase text-offwhite/60">Olá, Franklin</div>
@@ -117,42 +153,77 @@ function Header() {
             </div>
           </a>
           <a href="#" className="hidden hover:text-[color:var(--cyan-brand)] md:block"><Heart className="h-5 w-5" /></a>
-          <a href="#" className="relative flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-offwhite hover:bg-white/15">
+          <a href="#" className="relative flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-offwhite hover:bg-white/15 md:px-4">
             <ShoppingBag className="h-5 w-5" />
-            <span className="text-xs font-semibold uppercase tracking-wider">Sacola</span>
-            <span className="ml-1 grid h-5 w-5 place-items-center rounded-full bg-[color:var(--cyan-brand)] text-[10px] font-bold text-navy">2</span>
+            <span className="hidden text-xs font-semibold uppercase tracking-wider md:inline">Sacola</span>
+            <span className="grid h-5 w-5 place-items-center rounded-full bg-[color:var(--cyan-brand)] text-[10px] font-bold text-navy">2</span>
           </a>
         </div>
       </div>
 
-      {/* Mobile search row — busca por nome sempre visível */}
-      <div className="border-t border-white/5 px-4 py-3 md:hidden">
-        <form onSubmit={submitTextSearch} className="relative block">
-          <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-offwhite/60" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por tênis, marca ou modelo…"
-            className="w-full rounded-full border border-white/10 bg-white/5 py-2.5 pl-11 pr-24 text-sm text-offwhite placeholder:text-offwhite/50 outline-none focus:border-[color:var(--cyan-brand)]"
-          />
-          <button
-            type="submit"
-            className="absolute right-1 top-1/2 -translate-y-1/2 rounded-full bg-[color:var(--cyan-brand)] px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-navy"
-          >
-            Buscar
-          </button>
-        </form>
-      </div>
-
-      {notFound && (
-        <NotFoundBalloon term={notFound} onClose={() => setNotFound(null)} />
-      )}
+      <SearchDropdown state={state} onClose={close} />
     </header>
   );
 }
 
-function NotFoundBalloon({ term, onClose }: { term: string; onClose: () => void }) {
+function SearchDropdown({ state, onClose }: { state: SearchState; onClose: () => void }) {
+  if (state.kind === "idle") return null;
+  return (
+    <div className="border-t border-white/5 bg-navy/95">
+      <div className="mx-auto max-w-7xl px-4 py-3">
+        {state.kind === "loading" && (
+          <div className="flex items-center gap-2 text-xs text-offwhite/80">
+            <Loader2 className="h-4 w-4 animate-spin text-[color:var(--cyan-brand)]" />
+            {state.label}
+          </div>
+        )}
+        {state.kind === "results" && (
+          <div>
+            <div className="mb-2 flex items-center justify-between text-xs text-offwhite/70">
+              <span>
+                {state.hits.length} resultado(s) para{" "}
+                <span className="text-[color:var(--lime-brand)]">{state.term}</span>
+              </span>
+              <button onClick={onClose} className="text-offwhite/60 hover:text-offwhite">
+                fechar
+              </button>
+            </div>
+            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6">
+              {state.hits.slice(0, 12).map((p) => (
+                <li key={p.id}>
+                  <a href={`/marcas/${p.brand.toLowerCase().replace(/\s+/g, "-")}`} className="group block rounded-xl bg-white/5 p-2 hover:bg-white/10">
+                    <div className="aspect-square overflow-hidden rounded-lg bg-white">
+                      <img src={p.img} alt={p.name} className="h-full w-full object-contain p-2 transition group-hover:scale-105" />
+                    </div>
+                    <div className="mt-2 truncate text-[11px] font-semibold text-offwhite">{p.name}</div>
+                    <div className="text-[10px] text-offwhite/60">{p.brand}</div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {(state.kind === "empty" || state.kind === "error") && (
+          <NotFoundBalloon
+            term={state.term}
+            error={state.kind === "error" ? state.message : undefined}
+            onClose={onClose}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function NotFoundBalloon({
+  term,
+  error,
+  onClose,
+}: {
+  term: string;
+  error?: string;
+  onClose: () => void;
+}) {
   const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     `${WHATSAPP_MSG} (Referência: ${term})`,
   )}`;
@@ -162,105 +233,88 @@ function NotFoundBalloon({ term, onClose }: { term: string; onClose: () => void 
     `Olá! Não encontrei este modelo no site: ${term}. Podem verificar disponibilidade?`,
   )}`;
   return (
-    <div className="border-t border-white/5 bg-navy/95">
-      <div className="mx-auto flex max-w-7xl items-start gap-3 px-4 py-3">
-        <div className="relative flex-1 rounded-2xl border border-[color:var(--cyan-brand)]/30 bg-white/5 px-4 py-3 text-xs text-offwhite/90">
-          <span
-            aria-hidden
-            className="absolute -top-1.5 left-6 h-3 w-3 rotate-45 border-l border-t border-[color:var(--cyan-brand)]/30 bg-navy"
-          />
-          Mande uma imagem ou nome do modelo para nosso email ou clica no botão do WhatsApp que vamos buscar e retornar pra você se teremos ou não o item procurado.
-        </div>
-        <a
-          href={waHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Falar no WhatsApp"
-          title="Falar no WhatsApp"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition hover:brightness-110"
-        >
-          <WhatsAppIcon className="h-5 w-5" />
-        </a>
-        <a
-          href={mailHref}
-          aria-label="Enviar por e-mail"
-          title="Enviar por e-mail"
-          className="hidden h-10 w-10 shrink-0 place-items-center rounded-full border border-white/15 text-offwhite/80 hover:border-[color:var(--cyan-brand)] hover:text-[color:var(--cyan-brand)] sm:grid"
-        >
-          <Search className="h-4 w-4" />
-        </a>
-        <button
-          onClick={onClose}
-          aria-label="Fechar"
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-offwhite/60 hover:bg-white/10 hover:text-offwhite"
-        >
-          <X className="h-4 w-4" />
-        </button>
+    <div className="flex items-start gap-3">
+      <div className="relative flex-1 rounded-2xl border border-[color:var(--cyan-brand)]/30 bg-white/5 px-4 py-3 text-xs text-offwhite/90">
+        <span
+          aria-hidden
+          className="absolute -top-1.5 left-6 h-3 w-3 rotate-45 border-l border-t border-[color:var(--cyan-brand)]/30 bg-navy"
+        />
+        {error ? (
+          <span>Não deu pra buscar agora ({error}). </span>
+        ) : (
+          <>
+            Não encontramos <span className="font-semibold text-[color:var(--lime-brand)]">{term}</span> no nosso site.{" "}
+          </>
+        )}
+        Mande uma imagem ou nome do modelo para nosso email ou clica no botão do WhatsApp que vamos buscar e retornar pra você se teremos ou não o item procurado.
       </div>
+      <a
+        href={waHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Falar no WhatsApp"
+        title="Falar no WhatsApp"
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#25D366] text-white shadow-md transition hover:brightness-110"
+      >
+        <WhatsAppIcon className="h-5 w-5" />
+      </a>
+      <a
+        href={mailHref}
+        aria-label="Enviar por e-mail"
+        title="Enviar por e-mail"
+        className="hidden h-10 w-10 shrink-0 place-items-center rounded-full border border-white/15 text-offwhite/80 hover:border-[color:var(--cyan-brand)] hover:text-[color:var(--cyan-brand)] sm:grid"
+      >
+        <Search className="h-4 w-4" />
+      </a>
+      <button
+        onClick={onClose}
+        aria-label="Fechar"
+        className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-offwhite/60 hover:bg-white/10 hover:text-offwhite"
+      >
+        <X className="h-4 w-4" />
+      </button>
     </div>
   );
 }
 
 /**
- * ImageSearch — barra de pesquisa por imagem no topo do site.
- * TODO(CRM/AI): trocar o console.log por server function que envia a
- * imagem pra um modelo multimodal (ex.: google/gemini-3.1-flash) via
- * AI Gateway e retorna candidatos do catálogo. Se retornar vazio,
- * manter o comportamento atual de acionar onAnalyzed(fileName).
+ * ImageSearch — botão de câmera embutido na barra de busca.
+ * Ao escolher a imagem, converte pra data URL e dispara a busca visual
+ * (Gemini vision + rank no catálogo). Ver `crm.image-search.functions.ts`.
  */
-export function ImageSearch({ onAnalyzed }: { onAnalyzed?: (fileName: string) => void }) {
+function ImageSearch({ onImage }: { onImage: (dataUrl: string, fileName: string) => void }) {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [status, setStatus] = useState<"idle" | "sending">("idle");
 
-  const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    const url = URL.createObjectURL(f);
-    setPreview(url);
-    setStatus("sending");
-    console.log("[image-search] arquivo recebido:", f.name, f.size, f.type);
-    setTimeout(() => {
-      setStatus("idle");
-      onAnalyzed?.(f.name);
-    }, 800);
-  };
-
-  const clear = () => {
-    setPreview(null);
+    // limita a 5MB pra não estourar payload da server fn
+    if (f.size > 5 * 1024 * 1024) {
+      alert("Imagem muito grande (máx. 5MB).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = String(reader.result ?? "");
+      if (dataUrl.startsWith("data:image/")) onImage(dataUrl, f.name);
+    };
+    reader.readAsDataURL(f);
     if (fileRef.current) fileRef.current.value = "";
   };
 
   return (
-    <div className="flex">
+    <>
       <button
         type="button"
         onClick={() => fileRef.current?.click()}
-        className="group flex items-center gap-2 rounded-full border border-[color:var(--lime-brand)]/40 bg-white/5 py-2.5 pl-3 pr-3 text-xs font-semibold uppercase tracking-wider text-[color:var(--lime-brand)] transition hover:border-[color:var(--lime-brand)] hover:bg-white/10 md:pr-4"
+        className="flex shrink-0 items-center gap-2 border-r border-white/10 px-3 text-[color:var(--lime-brand)] hover:bg-white/5"
         title="Pesquisar por imagem"
         aria-label="Pesquisar por imagem"
       >
-        {preview ? (
-          <img src={preview} alt="preview" className="h-6 w-6 rounded-full object-cover" />
-        ) : (
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-[color:var(--lime-brand)] text-navy">
-            <Camera className="h-3.5 w-3.5" />
-          </span>
-        )}
-        <span className="hidden lg:inline">
-          {status === "sending" ? "Analisando…" : preview ? "Nova foto" : "Buscar por imagem"}
+        <span className="grid h-6 w-6 place-items-center rounded-full bg-[color:var(--lime-brand)] text-navy">
+          <Camera className="h-3.5 w-3.5" />
         </span>
       </button>
-      {preview && (
-        <button
-          type="button"
-          onClick={clear}
-          className="ml-1 grid h-8 w-8 place-items-center rounded-full text-offwhite/60 hover:bg-white/10 hover:text-[color:var(--lime-brand)]"
-          aria-label="Limpar imagem"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      )}
       <input
         ref={fileRef}
         type="file"
@@ -269,7 +323,7 @@ export function ImageSearch({ onAnalyzed }: { onAnalyzed?: (fileName: string) =>
         className="hidden"
         onChange={onPick}
       />
-    </div>
+    </>
   );
 }
 
