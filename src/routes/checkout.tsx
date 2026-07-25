@@ -173,32 +173,28 @@ function CheckoutPage() {
 
             <section className="rounded-xl border border-border bg-white p-5">
               <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">
-                Seus dados (opcional)
+                Seus dados para envio
               </h2>
               <p className="mt-1 text-xs text-muted-foreground">
-                Se preencher, mandamos o resumo já identificado no WhatsApp.
+                Preencha todos os campos — essas informações são obrigatórias para fechar o pedido e vão no resumo enviado ao WhatsApp.
               </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                <input
-                  className="rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
-                  placeholder="Seu nome"
-                  value={customer.name}
-                  onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                />
-                <input
-                  className="rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
-                  placeholder="Cidade / UF"
-                  value={customer.city}
-                  onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
-                />
-                <input
-                  className="rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
-                  placeholder="Telefone / WhatsApp"
-                  value={customer.phone}
-                  onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                />
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <Field label="Nome completo *" value={customer.name} onChange={(v) => setCustomer({ ...customer, name: v })} placeholder="Como está no documento" />
+                <Field label="Telefone / WhatsApp *" value={customer.phone} onChange={(v) => setCustomer({ ...customer, phone: v })} placeholder="(77) 99999-0000" />
+                <Field label="E-mail *" value={customer.email} onChange={(v) => setCustomer({ ...customer, email: v })} placeholder="voce@email.com" type="email" />
+                <Field label="País *" value={customer.country} onChange={(v) => setCustomer({ ...customer, country: v })} placeholder="Brasil" />
+                <Field label="Estado *" value={customer.state} onChange={(v) => setCustomer({ ...customer, state: v })} placeholder="BA" />
+                <Field label="Cidade *" value={customer.city} onChange={(v) => setCustomer({ ...customer, city: v })} placeholder="Barreiras" />
+                <div className="sm:col-span-2">
+                  <Field label="Endereço completo *" value={customer.address} onChange={(v) => setCustomer({ ...customer, address: v })} placeholder="Rua, número, complemento, bairro" />
+                </div>
+                <Field label="CEP *" value={customer.zip} onChange={(v) => setCustomer({ ...customer, zip: v })} placeholder="47800-000" />
               </div>
+              <p className="mt-3 text-[11px] text-muted-foreground">
+                * Em breve o cadastro completo vai gerar uma área do cliente com histórico de pedidos, dados bancários e rastreio dos Correios.
+              </p>
             </section>
+
 
             <section className="rounded-xl border border-border bg-white p-5">
               <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">
