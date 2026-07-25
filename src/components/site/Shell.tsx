@@ -157,13 +157,7 @@ function Header() {
         </form>
 
         <div className="ml-auto flex shrink-0 items-center gap-3 text-sm md:gap-5">
-          <a href="#" className="hidden items-center gap-2 hover:text-[color:var(--cyan-brand)] lg:flex">
-            <User className="h-5 w-5" />
-            <div className="leading-tight">
-              <div className="text-[10px] uppercase text-offwhite/60">Olá, Franklin</div>
-              <div className="font-semibold">Minha Conta</div>
-            </div>
-          </a>
+          <AccountLink />
           <a href="#" className="hidden hover:text-[color:var(--cyan-brand)] md:block"><Heart className="h-5 w-5" /></a>
           <CartButton />
         </div>
