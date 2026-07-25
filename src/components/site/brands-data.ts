@@ -10,14 +10,26 @@ import shoeAf1Grey from "@/assets/shoe-af1-grey.jpg.asset.json";
 import shoeAf1Cpfm from "@/assets/shoe-af1-cpfm.jpg.asset.json";
 import type { CatalogProduct } from "./CatalogPage";
 
+// Brand logos supplied by Franklin (first batch). Rendered on tiles.
+import logoNike from "@/assets/brands/nike.svg";
+import logoAdidas from "@/assets/brands/adidas.svg";
+import logoNewBalance from "@/assets/brands/new-balance.svg";
+import logoPuma from "@/assets/brands/puma.svg";
+import logoAsics from "@/assets/brands/asics.svg";
+import logoJordan from "@/assets/brands/jordan.svg";
+import logoHoka from "@/assets/brands/on.svg"; // reserved
+import logoOn from "@/assets/brands/on.svg";
+import logoMizuno from "@/assets/brands/mizuno.svg";
+import logoFila from "@/assets/brands/fila.svg";
+import logoCrocs from "@/assets/brands/crocs.svg";
+
 export type BrandAccent = "cyan" | "mint" | "lime";
 
 export type Brand = {
   slug: string;
   name: string;
-  // Symbol shown on the brand tile — kept as short stylized wordmark/monogram
-  // (no third-party logo images) so we stay trademark-safe.
-  mark: string;
+  mark: string; // fallback wordmark when no logo is available
+  logo?: string; // optional logo SVG url
   tagline: string;
   bg: string; // css background for the tile
   accent: BrandAccent;
