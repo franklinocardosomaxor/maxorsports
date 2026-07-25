@@ -25,36 +25,61 @@ export const Route = createFileRoute("/checkout")({
 function CheckoutPage() {
   const cart = useCart();
   const [copied, setCopied] = useState(false);
-  const [customer, setCustomer] = useState({ name: "", phone: "", city: "" });
+  const [customer, setCustomer] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    country: "Brasil",
+    state: "",
+    city: "",
+    address: "",
+    zip: "",
+  });
 
   const shipping = 0; // combinado no atendimento
   const total = cart.subtotal + shipping;
+
+  const requiredOk = Boolean(
+    customer.name.trim() &&
+      customer.phone.trim() &&
+      customer.email.trim() &&
+      customer.country.trim() &&
+      customer.state.trim() &&
+      customer.city.trim() &&
+      customer.address.trim() &&
+      customer.zip.trim(),
+  );
 
   const summaryText = () => {
     const lines = cart.items.map(
       (i, n) =>
         `${n + 1}. ${i.name} (${i.brand}) — tam ${i.size} — ${i.qty}x ${brl(i.price)}`,
     );
-    const header = [
-      `*Pedido Maxor Sports*`,
-      customer.name ? `Cliente: ${customer.name}` : "",
-      customer.city ? `Cidade: ${customer.city}` : "",
-      customer.phone ? `Telefone: ${customer.phone}` : "",
-      "",
-      "*Itens:*",
-    ].filter(Boolean);
     return [
-      ...header,
+      `*Novo pedido — Maxor Sports*`,
+      ``,
+      `*Dados do cliente*`,
+      `Nome: ${customer.name}`,
+      `Telefone: ${customer.phone}`,
+      `E-mail: ${customer.email}`,
+      `País: ${customer.country}`,
+      `Estado: ${customer.state}`,
+      `Cidade: ${customer.city}`,
+      `Endereço completo: ${customer.address}`,
+      `CEP: ${customer.zip}`,
+      ``,
+      `*Itens:*`,
       ...lines,
-      "",
+      ``,
       `*Subtotal:* ${brl(cart.subtotal)}`,
       `*Total:* ${brl(total)}`,
-      "",
-      `Combinar frete e confirmar disponibilidade.`,
+      ``,
+      `Combinar frete e confirmar pagamento via PIX.`,
     ].join("\n");
   };
 
-  const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(summaryText())}`;
+  // api.whatsapp.com/send abre o chat direto (evita a confusão com "ligação" que alguns dispositivos fazem com wa.me)
+  const waHref = `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(summaryText())}&type=phone_number&app_absent=0`;
 
   const copyPix = async () => {
     try {
@@ -148,32 +173,28 @@ function CheckoutPage() {
 
             <section className="rounded-xl border border-border bg-white p-5">
               <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">
-                Seus dados (opcional)
+                Seus dados para envio
               </h2>
               <p className="mt-1 text-xs text-muted-foreground">
-                Se preencher, mandamos o resumo já identificado no WhatsApp.
+                Preencha todos os campos — essas informações são obrigatórias para fechar o pedido e vão no resumo enviado ao WhatsApp.
               </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                <input
-                  className="rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
-                  placeholder="Seu nome"
-                  value={customer.name}
-                  onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                />
-                <input
-                  className="rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
-                  placeholder="Cidade / UF"
-                  value={customer.city}
-                  onChange={(e) => setCustomer({ ...customer, city: e.target.value })}
-                />
-                <input
-                  className="rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
-                  placeholder="Telefone / WhatsApp"
-                  value={customer.phone}
-                  onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                />
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <Field label="Nome completo *" value={customer.name} onChange={(v) => setCustomer({ ...customer, name: v })} placeholder="Como está no documento" />
+                <Field label="Telefone / WhatsApp *" value={customer.phone} onChange={(v) => setCustomer({ ...customer, phone: v })} placeholder="(77) 99999-0000" />
+                <Field label="E-mail *" value={customer.email} onChange={(v) => setCustomer({ ...customer, email: v })} placeholder="voce@email.com" type="email" />
+                <Field label="País *" value={customer.country} onChange={(v) => setCustomer({ ...customer, country: v })} placeholder="Brasil" />
+                <Field label="Estado *" value={customer.state} onChange={(v) => setCustomer({ ...customer, state: v })} placeholder="BA" />
+                <Field label="Cidade *" value={customer.city} onChange={(v) => setCustomer({ ...customer, city: v })} placeholder="Barreiras" />
+                <div className="sm:col-span-2">
+                  <Field label="Endereço completo *" value={customer.address} onChange={(v) => setCustomer({ ...customer, address: v })} placeholder="Rua, número, complemento, bairro" />
+                </div>
+                <Field label="CEP *" value={customer.zip} onChange={(v) => setCustomer({ ...customer, zip: v })} placeholder="47800-000" />
               </div>
+              <p className="mt-3 text-[11px] text-muted-foreground">
+                * Em breve o cadastro completo vai gerar uma área do cliente com histórico de pedidos, dados bancários e rastreio dos Correios.
+              </p>
             </section>
+
 
             <section className="rounded-xl border border-border bg-white p-5">
               <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">
@@ -217,13 +238,23 @@ function CheckoutPage() {
                 </div>
               </dl>
               <a
-                href={waHref}
+                href={requiredOk ? waHref : undefined}
+                onClick={(e) => {
+                  if (!requiredOk) {
+                    e.preventDefault();
+                    alert("Preencha todos os dados obrigatórios para enviar o pedido pelo WhatsApp.");
+                  }
+                }}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 text-sm font-black uppercase tracking-widest text-white hover:brightness-110"
+                aria-disabled={!requiredOk}
+                className={`mt-5 flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-black uppercase tracking-widest text-white ${
+                  requiredOk ? "bg-[#25D366] hover:brightness-110" : "cursor-not-allowed bg-neutral-400"
+                }`}
               >
-                Fechar pedido no WhatsApp
+                Enviar pedido no WhatsApp
               </a>
+
               <button
                 onClick={() => cart.clear()}
                 className="mt-3 w-full text-xs text-muted-foreground hover:text-red-500"
@@ -241,3 +272,31 @@ function CheckoutPage() {
     </Shell>
   );
 }
+
+function Field({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-navy/70">{label}</span>
+      <input
+        type={type}
+        className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </label>
+  );
+}
+
