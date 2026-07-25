@@ -18,13 +18,14 @@ export const Route = createFileRoute("/marcas/")({
 function MarcasIndex() {
   return (
     <Shell active="Marcas">
-      <div className="border-b border-border bg-secondary/40">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-navy">Home</Link>
-          <ChevronRight className="h-3 w-3" />
-          <span className="text-foreground">Marcas</span>
+      <div className="border-b border-white/10 bg-navy">
+        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[color:var(--lime-brand)]">
+          <Link to="/" className="hover:brightness-110">Home</Link>
+          <ChevronRight className="h-3 w-3 text-[color:var(--lime-brand)]/60" />
+          <span className="text-offwhite">Marcas</span>
         </div>
       </div>
+
 
       <section
         className="relative overflow-hidden border-b border-border"
