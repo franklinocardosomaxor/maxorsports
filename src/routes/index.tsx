@@ -48,10 +48,8 @@ const NAV = [
   "Masculino",
   "Feminino",
   "Infantil",
-  "Tênis",
-  "Roupas",
-  "Acessórios",
   "Marcas",
+  "Roupas",
   "Ofertas",
 ];
 
@@ -174,6 +172,7 @@ function MegaNav() {
             Masculino: "/masculino",
             Feminino: "/feminino",
             Infantil: "/infantil",
+            Marcas: "/marcas",
           };
           const href = hrefMap[item] ?? "#";
           return (
