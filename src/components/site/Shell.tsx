@@ -1,7 +1,7 @@
 import { ReactNode, useRef, useState } from "react";
 import {
   Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X, Loader2,
-  Instagram, Facebook, Youtube,
+  Instagram, Facebook, Youtube, Phone, Mail, Truck,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import monogram from "@/assets/maxor-monogram.png.asset.json";
@@ -10,6 +10,7 @@ import {
   searchByImage,
   type ProductHit,
 } from "@/lib/crm.image-search.functions";
+import { recordNewsletterSignup } from "@/lib/crm.contacts.functions";
 
 const NAV = [
   { label: "Masculino", href: "/masculino" },
