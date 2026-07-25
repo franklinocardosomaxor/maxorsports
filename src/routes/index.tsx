@@ -17,7 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import monogram from "@/assets/maxor-monogram.png.asset.json";
-import { ImageSearch } from "@/components/site/Shell";
+import { Shell } from "@/components/site/Shell";
 import identity from "@/assets/maxor-identity.png.asset.json";
 import heroRunner from "@/assets/hero-runner.jpg";
 import shoeBostonPink from "@/assets/shoe-boston-pink.jpg.asset.json";
@@ -79,10 +79,7 @@ const OFFERS = [
 
 function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <TopBar />
-      <Header />
-      <MegaNav />
+    <Shell>
       <Hero />
       <BenefitsStrip />
       <CategoryCircles />
@@ -91,11 +88,14 @@ function Home() {
       <ProductCarousel title="Ofertas da semana" subtitle="Preços com desconto para levar hoje" items={OFFERS} accent />
       <CategoryBanners />
       <BrandStrip />
-      <Newsletter />
-      <Footer />
-    </div>
+    </Shell>
   );
 }
+
+// Header/TopBar/MegaNav/Newsletter/Footer legados abaixo ficam apenas
+// como referência histórica — não são mais renderizados; o Shell cuida disso.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _LegacyBits() { return null; }
 
 /* ---------- Header + Nav ---------- */
 
