@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
+import { ReactNode, useRef, useState } from "react";
 import {
-  Search, User, Heart, ShoppingBag, MapPin, Menu, Zap,
+  Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X,
   Instagram, Facebook, Youtube,
 } from "lucide-react";
 import monogram from "@/assets/maxor-monogram.png.asset.json";
@@ -11,7 +11,7 @@ const NAV = [
   { label: "Infantil", href: "/infantil" },
   { label: "Marcas", href: "/marcas" },
   { label: "Roupas", href: "/roupas" },
-  { label: "Ofertas", href: "#" },
+  { label: "Ofertas", href: "/ofertas" },
 ];
 
 export function Shell({ children, active }: { children: ReactNode; active?: string }) {

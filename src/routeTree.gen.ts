@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OfertasRouteImport } from './routes/ofertas'
 import { Route as MasculinoRouteImport } from './routes/masculino'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
@@ -20,6 +21,11 @@ import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
 
+const OfertasRoute = OfertasRouteImport.update({
+  id: '/ofertas',
+  path: '/ofertas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MasculinoRoute = MasculinoRouteImport.update({
   id: '/masculino',
   path: '/masculino',
@@ -77,6 +83,7 @@ export interface FileRoutesByFullPath {
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
+  '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/marcas/': typeof MarcasIndexRoute
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
+  '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/marcas': typeof MarcasIndexRoute
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
+  '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/marcas/': typeof MarcasIndexRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/feminino'
     | '/infantil'
     | '/masculino'
+    | '/ofertas'
     | '/marcas/$brand'
     | '/roupas/$category'
     | '/marcas/'
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/feminino'
     | '/infantil'
     | '/masculino'
+    | '/ofertas'
     | '/marcas/$brand'
     | '/roupas/$category'
     | '/marcas'
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/feminino'
     | '/infantil'
     | '/masculino'
+    | '/ofertas'
     | '/marcas/$brand'
     | '/roupas/$category'
     | '/marcas/'
@@ -153,6 +165,7 @@ export interface RootRouteChildren {
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
   MasculinoRoute: typeof MasculinoRoute
+  OfertasRoute: typeof OfertasRoute
   MarcasBrandRoute: typeof MarcasBrandRoute
   RoupasCategoryRoute: typeof RoupasCategoryRoute
   MarcasIndexRoute: typeof MarcasIndexRoute
@@ -163,6 +176,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/ofertas': {
+      id: '/ofertas'
+      path: '/ofertas'
+      fullPath: '/ofertas'
+      preLoaderRoute: typeof OfertasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/masculino': {
       id: '/masculino'
       path: '/masculino'
@@ -241,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
   MasculinoRoute: MasculinoRoute,
+  OfertasRoute: OfertasRoute,
   MarcasBrandRoute: MarcasBrandRoute,
   RoupasCategoryRoute: RoupasCategoryRoute,
   MarcasIndexRoute: MarcasIndexRoute,
