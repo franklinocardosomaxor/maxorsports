@@ -32,7 +32,7 @@ export const Route = createFileRoute("/produto/$id")({
 });
 
 function ProductPage() {
-  const { product, variants } = Route.useLoaderData();
+  const { product, variants } = Route.useLoaderData() as { product: ProductWithSection; variants: ProductWithSection[] };
   const navigate = useNavigate();
   const cart = useCart();
 
