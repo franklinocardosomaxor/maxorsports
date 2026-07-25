@@ -364,6 +364,31 @@ function MegaNav({ active }: { active?: string }) {
 }
 
 function Newsletter() {
+  const signup = useServerFn(recordNewsletterSignup);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [msg, setMsg] = useState<string>("");
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setStatus("loading");
+    try {
+      const r = await signup({ data: { email } });
+      if (r.ok) {
+        setStatus("ok");
+        setMsg("Pronto! Você entrou na tribo MX. Em breve retornaremos.");
+        setEmail("");
+      } else {
+        setStatus("error");
+        setMsg("Não conseguimos cadastrar agora. Tente novamente em instantes.");
+      }
+    } catch (err) {
+      setStatus("error");
+      setMsg((err as Error).message || "Erro ao cadastrar.");
+    }
+  };
+
   return (
     <section className="bg-navy text-offwhite">
       <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 py-14 md:grid-cols-2">
@@ -374,17 +399,27 @@ function Newsletter() {
           </h3>
           <p className="mt-2 text-sm text-offwhite/70">Receba lançamentos, drops e ofertas exclusivas Maxor Sports.</p>
         </div>
-        <form className="flex flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
+        <form className="flex flex-col gap-3 sm:flex-row" onSubmit={onSubmit}>
           <input
             type="email"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Seu melhor e-mail"
             className="flex-1 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-offwhite placeholder:text-offwhite/40 outline-none focus:border-[color:var(--cyan-brand)]"
           />
-          <button className="rounded-full bg-[color:var(--lime-brand)] px-7 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110">
-            Cadastrar
+          <button
+            disabled={status === "loading"}
+            className="rounded-full bg-[color:var(--lime-brand)] px-7 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110 disabled:opacity-60"
+          >
+            {status === "loading" ? "Enviando…" : "Cadastrar"}
           </button>
         </form>
+        {status !== "idle" && status !== "loading" && (
+          <p className={`text-xs md:col-span-2 ${status === "ok" ? "text-[color:var(--lime-brand)]" : "text-red-300"}`}>
+            {msg}
+          </p>
+        )}
       </div>
     </section>
   );
@@ -392,9 +427,35 @@ function Newsletter() {
 
 function Footer() {
   const cols = [
-    { title: "Institucional", links: ["Sobre a Maxor", "Nossa curadoria", "Trabalhe conosco", "Blog"] },
-    { title: "Ajuda", links: ["Central de atendimento", "Como comprar", "Trocas e devoluções", "Rastrear pedido"] },
-    { title: "Categorias", links: ["Tênis", "Roupas", "Acessórios", "Ofertas"] },
+    {
+      title: "Institucional",
+      links: [
+        { label: "Sobre a Maxor", href: "#" },
+        { label: "Nossa curadoria", href: "#" },
+        { label: "Trabalhe conosco", href: `mailto:${COMPANY_EMAIL}` },
+      ],
+    },
+    {
+      title: "Ajuda",
+      links: [
+        { label: `Central de atendimento ${WHATSAPP_DISPLAY}`, href: `tel:+${WHATSAPP_NUMBER}` },
+        { label: `WhatsApp ${WHATSAPP_DISPLAY}`, href: `https://wa.me/${WHATSAPP_NUMBER}`, external: true },
+        { label: "Trocas e devoluções (até 7 dias após o recebimento)", href: "#" },
+        { label: "Rastrear pedido", href: TRACKING_URL, external: true },
+      ],
+    },
+    {
+      title: "Categorias",
+      links: [
+        { label: "Masculino", href: "/masculino" },
+        { label: "Feminino", href: "/feminino" },
+        { label: "Infantil", href: "/infantil" },
+        { label: "Marcas", href: "/marcas" },
+        { label: "Chuteiras", href: "/marcas/chuteiras" },
+        { label: "Roupas", href: "/roupas" },
+        { label: "Ofertas", href: "/ofertas" },
+      ],
+    },
   ];
   return (
     <footer className="bg-[#050b13] text-offwhite">
@@ -410,6 +471,24 @@ function Footer() {
           <p className="mt-4 max-w-sm text-sm text-offwhite/60">
             Curadoria de tênis e artigos esportivos com performance, estilo e personalidade. Atendimento próximo — do primeiro clique à entrega.
           </p>
+          <ul className="mt-5 space-y-1.5 text-xs text-offwhite/70">
+            <li>{COMPANY_NAME}</li>
+            <li>CNPJ {COMPANY_CNPJ}</li>
+            <li className="flex items-center gap-2">
+              <Mail className="h-3.5 w-3.5 text-[color:var(--cyan-brand)]" />
+              <a href={`mailto:${COMPANY_EMAIL}`} className="hover:text-offwhite">{COMPANY_EMAIL}</a>
+            </li>
+            <li className="flex items-center gap-2">
+              <Phone className="h-3.5 w-3.5 text-[color:var(--cyan-brand)]" />
+              <a href={`tel:+${WHATSAPP_NUMBER}`} className="hover:text-offwhite">{WHATSAPP_DISPLAY}</a>
+            </li>
+            <li className="flex items-center gap-2">
+              <WhatsAppIcon className="h-3.5 w-3.5 text-[#25D366]" />
+              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className="hover:text-offwhite">
+                WhatsApp {WHATSAPP_DISPLAY}
+              </a>
+            </li>
+          </ul>
           <div className="mt-5 flex gap-3">
             {[Instagram, Facebook, Youtube].map((Icon, i) => (
               <a key={i} href="#" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 hover:border-[color:var(--cyan-brand)] hover:text-[color:var(--cyan-brand)]">
@@ -423,7 +502,15 @@ function Footer() {
             <div className="font-display text-sm font-bold uppercase tracking-widest text-[color:var(--cyan-brand)]">{c.title}</div>
             <ul className="mt-4 space-y-2 text-sm text-offwhite/70">
               {c.links.map((l) => (
-                <li key={l}><a href="#" className="hover:text-offwhite">{l}</a></li>
+                <li key={l.label}>
+                  <a
+                    href={l.href}
+                    {...("external" in l && l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="hover:text-offwhite"
+                  >
+                    {l.label}
+                  </a>
+                </li>
               ))}
             </ul>
           </div>
@@ -431,7 +518,7 @@ function Footer() {
       </div>
       <div className="border-t border-white/5">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-offwhite/50 md:flex-row">
-          <span>© {new Date().getFullYear()} Maxor Sports. Todos os direitos reservados.</span>
+          <span>© {new Date().getFullYear()} {COMPANY_NAME} — CNPJ {COMPANY_CNPJ}. Todos os direitos reservados.</span>
           <span className="font-display uppercase tracking-widest">Performance com seu estilo e personalidade</span>
         </div>
       </div>
