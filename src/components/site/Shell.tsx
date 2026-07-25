@@ -22,6 +22,11 @@ const NAV = [
 ];
 
 const WHATSAPP_NUMBER = "5577999599009";
+const WHATSAPP_DISPLAY = "(77) 99959-9009";
+const COMPANY_EMAIL = "maxortecnologia@gmail.com";
+const COMPANY_CNPJ = "68.105.594/0001-39";
+const COMPANY_NAME = "Maxor Importação LTDA";
+const TRACKING_URL = "https://rastreamento.correios.com.br/app/index.php";
 const WHATSAPP_MSG =
   "Olá Maxor! Não encontrei o modelo que procuro no site, podem me ajudar?";
 
