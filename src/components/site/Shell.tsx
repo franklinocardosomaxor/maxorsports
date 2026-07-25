@@ -60,9 +60,13 @@ function TopBar() {
           <span className="font-display uppercase tracking-widest">Performance com seu estilo e personalidade</span>
         </div>
         <div className="hidden items-center gap-5 md:flex">
-          <a href="#" className="flex items-center gap-1 hover:text-[color:var(--cyan-brand)]"><MapPin className="h-3.5 w-3.5" />Encontre uma loja</a>
-          <a href="#" className="hover:text-[color:var(--cyan-brand)]">Atendimento</a>
-          <a href="#" className="hover:text-[color:var(--cyan-brand)]">Rastreie seu pedido</a>
+          <span className="flex items-center gap-1 text-offwhite/70"><MapPin className="h-3.5 w-3.5" />Envio para todo Brasil</span>
+          <a href={`tel:+${WHATSAPP_NUMBER}`} className="flex items-center gap-1 hover:text-[color:var(--cyan-brand)]">
+            <Phone className="h-3.5 w-3.5" />Atendimento {WHATSAPP_DISPLAY}
+          </a>
+          <a href={TRACKING_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-[color:var(--cyan-brand)]">
+            <Truck className="h-3.5 w-3.5" />Rastreie seu pedido
+          </a>
         </div>
       </div>
     </div>
