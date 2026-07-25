@@ -10,39 +10,44 @@ import shoeAf1Grey from "@/assets/shoe-af1-grey.jpg.asset.json";
 import shoeAf1Cpfm from "@/assets/shoe-af1-cpfm.jpg.asset.json";
 import type { CatalogProduct } from "./CatalogPage";
 
+// Brand logos supplied by Franklin (first batch). Rendered on tiles.
+import logoNike from "@/assets/brands/nike.svg";
+import logoAdidas from "@/assets/brands/adidas.svg";
+import logoNewBalance from "@/assets/brands/new-balance.svg";
+import logoPuma from "@/assets/brands/puma.svg";
+import logoAsics from "@/assets/brands/asics.svg";
+import logoJordan from "@/assets/brands/jordan.svg";
+import logoHoka from "@/assets/brands/on.svg"; // reserved
+import logoOn from "@/assets/brands/on.svg";
+import logoMizuno from "@/assets/brands/mizuno.svg";
+import logoFila from "@/assets/brands/fila.svg";
+import logoCrocs from "@/assets/brands/crocs.svg";
+
 export type BrandAccent = "cyan" | "mint" | "lime";
 
 export type Brand = {
   slug: string;
   name: string;
-  // Symbol shown on the brand tile — kept as short stylized wordmark/monogram
-  // (no third-party logo images) so we stay trademark-safe.
-  mark: string;
+  mark: string; // fallback wordmark when no logo is available
+  logo?: string; // optional logo SVG url
   tagline: string;
   bg: string; // css background for the tile
   accent: BrandAccent;
 };
 
 export const BRANDS: Brand[] = [
-  { slug: "nike",        name: "Nike",             mark: "NK",  tagline: "Just performance",         bg: "linear-gradient(135deg,#0a0a0a,#1a1a1a)",           accent: "cyan" },
-  { slug: "adidas",      name: "Adidas",           mark: "△△△", tagline: "Impossible is nothing",   bg: "linear-gradient(135deg,#0F1720,#103642)",          accent: "cyan" },
-  { slug: "new-balance", name: "New Balance",      mark: "NB",  tagline: "Fearlessly independent",  bg: "linear-gradient(135deg,#1a2540,#3a4bff)",          accent: "cyan" },
-  { slug: "puma",        name: "Puma",             mark: "PM",  tagline: "Forever faster",          bg: "linear-gradient(135deg,#0a0a0a,#c8102e)",          accent: "lime" },
-  { slug: "asics",       name: "ASICS",            mark: "AS",  tagline: "Sound mind, sound body",  bg: "linear-gradient(135deg,#0033a0,#00BFC6)",          accent: "cyan" },
-  { slug: "converse",    name: "Converse",         mark: "★",   tagline: "All star since 1908",     bg: "linear-gradient(135deg,#111,#c8102e)",             accent: "lime" },
-  { slug: "vans",        name: "Vans",             mark: "VN",  tagline: "Off the wall",            bg: "linear-gradient(135deg,#111,#2b2b2b)",             accent: "lime" },
-  { slug: "jordan",      name: "Jordan",           mark: "23",  tagline: "Flight",                  bg: "linear-gradient(135deg,#111,#3b0a0a)",             accent: "lime" },
-  { slug: "hoka",        name: "HOKA",             mark: "HK",  tagline: "Time to fly",             bg: "linear-gradient(135deg,#124638,#7EEBC1)",          accent: "mint" },
-  { slug: "on",          name: "On",               mark: "◯",   tagline: "Swiss engineering",       bg: "linear-gradient(135deg,#0F1720,#00BFC6)",          accent: "cyan" },
-  { slug: "salomon",     name: "Salomon",          mark: "SL",  tagline: "Time to play",            bg: "linear-gradient(135deg,#0F1720,#ff5a2b)",          accent: "lime" },
-  { slug: "mizuno",      name: "Mizuno",           mark: "MZ",  tagline: "Reach beyond",            bg: "linear-gradient(135deg,#0033a0,#111)",             accent: "cyan" },
-  { slug: "fila",        name: "Fila",             mark: "FL",  tagline: "Since 1911",              bg: "linear-gradient(135deg,#0a2a5c,#c8102e)",          accent: "cyan" },
-  { slug: "crocs",       name: "Crocs",            mark: "◇",   tagline: "Come as you are",         bg: "linear-gradient(135deg,#124638,#C7F500)",          accent: "lime" },
-  { slug: "timberland",  name: "Timberland",       mark: "TB",  tagline: "Built for the bold",      bg: "linear-gradient(135deg,#2c1a0a,#a06a2b)",          accent: "lime" },
-  { slug: "gucci",       name: "Gucci",            mark: "GG",  tagline: "Luxury made in Italy",    bg: "linear-gradient(135deg,#1a0f0a,#7a5230)",          accent: "lime" },
-  { slug: "prada",       name: "Prada",            mark: "PR",  tagline: "Milano since 1913",       bg: "linear-gradient(135deg,#0a0a0a,#2c3a12)",          accent: "lime" },
-  { slug: "louis-vuitton", name: "Louis Vuitton",  mark: "LV",  tagline: "Maison depuis 1854",      bg: "linear-gradient(135deg,#3a1f0a,#8a5a2b)",          accent: "lime" },
+  { slug: "nike",        name: "Nike",        mark: "NK", logo: logoNike,        tagline: "Just performance",        bg: "linear-gradient(135deg,#0a0a0a,#1a1a1a)",  accent: "cyan" },
+  { slug: "adidas",      name: "Adidas",      mark: "AD", logo: logoAdidas,      tagline: "Impossible is nothing",   bg: "linear-gradient(135deg,#0F1720,#103642)", accent: "cyan" },
+  { slug: "new-balance", name: "New Balance", mark: "NB", logo: logoNewBalance,  tagline: "Fearlessly independent",  bg: "linear-gradient(135deg,#1a2540,#3a4bff)", accent: "cyan" },
+  { slug: "puma",        name: "Puma",        mark: "PM", logo: logoPuma,        tagline: "Forever faster",          bg: "linear-gradient(135deg,#0a0a0a,#c8102e)", accent: "lime" },
+  { slug: "asics",       name: "ASICS",       mark: "AS", logo: logoAsics,       tagline: "Sound mind, sound body",  bg: "linear-gradient(135deg,#0033a0,#00BFC6)", accent: "cyan" },
+  { slug: "jordan",      name: "Jordan",      mark: "23", logo: logoJordan,      tagline: "Flight",                  bg: "linear-gradient(135deg,#111,#3b0a0a)",    accent: "lime" },
+  { slug: "on",          name: "On",          mark: "◯",  logo: logoOn,          tagline: "Swiss engineering",       bg: "linear-gradient(135deg,#0F1720,#00BFC6)", accent: "cyan" },
+  { slug: "mizuno",      name: "Mizuno",      mark: "MZ", logo: logoMizuno,      tagline: "Reach beyond",            bg: "linear-gradient(135deg,#0033a0,#111)",    accent: "cyan" },
+  { slug: "fila",        name: "Fila",        mark: "FL", logo: logoFila,        tagline: "Since 1911",              bg: "linear-gradient(135deg,#0a2a5c,#c8102e)", accent: "cyan" },
+  { slug: "crocs",       name: "Crocs",       mark: "◇",  logo: logoCrocs,       tagline: "Come as you are",         bg: "linear-gradient(135deg,#124638,#C7F500)", accent: "lime" },
 ];
+void logoHoka;
 
 // Sample products per brand — reusing existing shoe imagery as placeholders
 // until the full per-brand catalog is imported.
