@@ -2,13 +2,13 @@ import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-ro
 import { useState } from "react";
 import { ChevronRight, Heart, ShieldCheck, Truck, RotateCw } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
-import { getProduct, getVariants, brl } from "@/lib/catalog";
+import { getProduct, getVariants, brl, type ProductWithSection } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
 
 const WHATSAPP_NUMBER = "5577999599009";
 
 export const Route = createFileRoute("/produto/$id")({
-  loader: ({ params }) => {
+  loader: ({ params }): { product: ProductWithSection; variants: ProductWithSection[] } => {
     const product = getProduct(params.id);
     if (!product) throw notFound();
     return { product, variants: getVariants(product) };

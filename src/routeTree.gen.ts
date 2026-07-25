@@ -13,10 +13,12 @@ import { Route as OfertasRouteImport } from './routes/ofertas'
 import { Route as MasculinoRouteImport } from './routes/masculino'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoupasIndexRouteImport } from './routes/roupas.index'
 import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
 import { Route as RoupasCategoryRouteImport } from './routes/roupas.$category'
+import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
@@ -41,6 +43,11 @@ const FemininoRoute = FemininoRouteImport.update({
   path: '/feminino',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -59,6 +66,11 @@ const MarcasIndexRoute = MarcasIndexRouteImport.update({
 const RoupasCategoryRoute = RoupasCategoryRouteImport.update({
   id: '/roupas/$category',
   path: '/roupas/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutoIdRoute = ProdutoIdRouteImport.update({
+  id: '/produto/$id',
+  path: '/produto/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarcasBrandRoute = MarcasBrandRouteImport.update({
@@ -80,11 +92,13 @@ const ApiPublicWebhooksStripeRoute = ApiPublicWebhooksStripeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
   '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
+  '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/marcas/': typeof MarcasIndexRoute
   '/roupas/': typeof RoupasIndexRoute
@@ -93,11 +107,13 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
   '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
+  '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/marcas': typeof MarcasIndexRoute
   '/roupas': typeof RoupasIndexRoute
@@ -107,11 +123,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/masculino': typeof MasculinoRoute
   '/ofertas': typeof OfertasRoute
   '/marcas/$brand': typeof MarcasBrandRoute
+  '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/marcas/': typeof MarcasIndexRoute
   '/roupas/': typeof RoupasIndexRoute
@@ -122,11 +140,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/checkout'
     | '/feminino'
     | '/infantil'
     | '/masculino'
     | '/ofertas'
     | '/marcas/$brand'
+    | '/produto/$id'
     | '/roupas/$category'
     | '/marcas/'
     | '/roupas/'
@@ -135,11 +155,13 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/checkout'
     | '/feminino'
     | '/infantil'
     | '/masculino'
     | '/ofertas'
     | '/marcas/$brand'
+    | '/produto/$id'
     | '/roupas/$category'
     | '/marcas'
     | '/roupas'
@@ -148,11 +170,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/checkout'
     | '/feminino'
     | '/infantil'
     | '/masculino'
     | '/ofertas'
     | '/marcas/$brand'
+    | '/produto/$id'
     | '/roupas/$category'
     | '/marcas/'
     | '/roupas/'
@@ -162,11 +186,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CheckoutRoute: typeof CheckoutRoute
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
   MasculinoRoute: typeof MasculinoRoute
   OfertasRoute: typeof OfertasRoute
   MarcasBrandRoute: typeof MarcasBrandRoute
+  ProdutoIdRoute: typeof ProdutoIdRoute
   RoupasCategoryRoute: typeof RoupasCategoryRoute
   MarcasIndexRoute: typeof MarcasIndexRoute
   RoupasIndexRoute: typeof RoupasIndexRoute
@@ -204,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FemininoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -232,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoupasCategoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produto/$id': {
+      id: '/produto/$id'
+      path: '/produto/$id'
+      fullPath: '/produto/$id'
+      preLoaderRoute: typeof ProdutoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/marcas/$brand': {
       id: '/marcas/$brand'
       path: '/marcas/$brand'
@@ -258,11 +298,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CheckoutRoute: CheckoutRoute,
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
   MasculinoRoute: MasculinoRoute,
   OfertasRoute: OfertasRoute,
   MarcasBrandRoute: MarcasBrandRoute,
+  ProdutoIdRoute: ProdutoIdRoute,
   RoupasCategoryRoute: RoupasCategoryRoute,
   MarcasIndexRoute: MarcasIndexRoute,
   RoupasIndexRoute: RoupasIndexRoute,
