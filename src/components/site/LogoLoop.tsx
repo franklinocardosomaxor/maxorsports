@@ -1,0 +1,248 @@
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  memo,
+  type CSSProperties,
+  type Key,
+  type ReactNode,
+} from "react";
+import "./LogoLoop.css";
+
+const ANIMATION_CONFIG = { SMOOTH_TAU: 0.25, MIN_COPIES: 2, COPY_HEADROOM: 2 };
+
+export type LogoItem = {
+  node?: ReactNode;
+  src?: string;
+  alt?: string;
+  title?: string;
+  href?: string;
+  ariaLabel?: string;
+};
+
+type LogoLoopProps = {
+  logos: LogoItem[];
+  speed?: number;
+  direction?: "left" | "right" | "up" | "down";
+  width?: number | string;
+  logoHeight?: number;
+  gap?: number;
+  pauseOnHover?: boolean;
+  hoverSpeed?: number;
+  fadeOut?: boolean;
+  fadeOutColor?: string;
+  scaleOnHover?: boolean;
+  renderItem?: (item: LogoItem, key: Key) => ReactNode;
+  ariaLabel?: string;
+  className?: string;
+  style?: CSSProperties;
+};
+
+const toCssLength = (value?: number | string) =>
+  typeof value === "number" ? `${value}px` : (value ?? undefined);
+
+export const LogoLoop = memo(function LogoLoop({
+  logos,
+  speed = 120,
+  direction = "left",
+  width = "100%",
+  logoHeight = 28,
+  gap = 32,
+  pauseOnHover,
+  hoverSpeed,
+  fadeOut = false,
+  fadeOutColor,
+  scaleOnHover = false,
+  renderItem,
+  ariaLabel = "Partner logos",
+  className,
+  style,
+}: LogoLoopProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const seqRef = useRef<HTMLUListElement | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const lastTimestampRef = useRef<number | null>(null);
+  const offsetRef = useRef(0);
+  const velocityRef = useRef(0);
+
+  const [seqWidth, setSeqWidth] = useState(0);
+  const [copyCount, setCopyCount] = useState(ANIMATION_CONFIG.MIN_COPIES);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const effectiveHoverSpeed = useMemo(() => {
+    if (hoverSpeed !== undefined) return hoverSpeed;
+    if (pauseOnHover === false) return undefined;
+    return 0;
+  }, [hoverSpeed, pauseOnHover]);
+
+  const targetVelocity = useMemo(() => {
+    const magnitude = Math.abs(speed);
+    const directionMultiplier = direction === "left" ? 1 : -1;
+    const speedMultiplier = speed < 0 ? -1 : 1;
+    return magnitude * directionMultiplier * speedMultiplier;
+  }, [speed, direction]);
+
+  const updateDimensions = useCallback(() => {
+    const containerWidth = containerRef.current?.clientWidth ?? 0;
+    const sequenceWidth = seqRef.current?.getBoundingClientRect?.().width ?? 0;
+    if (sequenceWidth > 0) {
+      setSeqWidth(Math.ceil(sequenceWidth));
+      const copiesNeeded =
+        Math.ceil(containerWidth / sequenceWidth) + ANIMATION_CONFIG.COPY_HEADROOM;
+      setCopyCount(Math.max(ANIMATION_CONFIG.MIN_COPIES, copiesNeeded));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!window.ResizeObserver) {
+      window.addEventListener("resize", updateDimensions);
+      updateDimensions();
+      return () => window.removeEventListener("resize", updateDimensions);
+    }
+    const observers = [containerRef, seqRef].map((ref) => {
+      if (!ref.current) return null;
+      const observer = new ResizeObserver(updateDimensions);
+      observer.observe(ref.current);
+      return observer;
+    });
+    updateDimensions();
+    return () => observers.forEach((o) => o?.disconnect());
+  }, [updateDimensions, logos, gap, logoHeight]);
+
+  useEffect(() => {
+    const images = seqRef.current?.querySelectorAll("img") ?? [];
+    if (images.length === 0) {
+      updateDimensions();
+      return;
+    }
+    let remaining = images.length;
+    const handleLoad = () => {
+      remaining -= 1;
+      if (remaining === 0) updateDimensions();
+    };
+    images.forEach((img) => {
+      if (img.complete) handleLoad();
+      else {
+        img.addEventListener("load", handleLoad, { once: true });
+        img.addEventListener("error", handleLoad, { once: true });
+      }
+    });
+    return () => {
+      images.forEach((img) => {
+        img.removeEventListener("load", handleLoad);
+        img.removeEventListener("error", handleLoad);
+      });
+    };
+  }, [updateDimensions, logos, gap, logoHeight]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    if (seqWidth > 0) {
+      offsetRef.current = ((offsetRef.current % seqWidth) + seqWidth) % seqWidth;
+      track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+    }
+
+    const animate = (timestamp: number) => {
+      if (lastTimestampRef.current === null) lastTimestampRef.current = timestamp;
+      const deltaTime = Math.max(0, timestamp - lastTimestampRef.current) / 1000;
+      lastTimestampRef.current = timestamp;
+
+      const target =
+        isHovered && effectiveHoverSpeed !== undefined ? effectiveHoverSpeed : targetVelocity;
+      const easingFactor = 1 - Math.exp(-deltaTime / ANIMATION_CONFIG.SMOOTH_TAU);
+      velocityRef.current += (target - velocityRef.current) * easingFactor;
+
+      if (seqWidth > 0) {
+        let nextOffset = offsetRef.current + velocityRef.current * deltaTime;
+        nextOffset = ((nextOffset % seqWidth) + seqWidth) % seqWidth;
+        offsetRef.current = nextOffset;
+        track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+      }
+      rafRef.current = requestAnimationFrame(animate);
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      lastTimestampRef.current = null;
+    };
+  }, [targetVelocity, seqWidth, isHovered, effectiveHoverSpeed]);
+
+  const rootClassName = [
+    "logoloop",
+    "logoloop--horizontal",
+    fadeOut && "logoloop--fade",
+    scaleOnHover && "logoloop--scale-hover",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const renderLogoItem = useCallback(
+    (item: LogoItem, key: Key) => {
+      if (renderItem) {
+        return (
+          <li className="logoloop__item" key={key} role="listitem">
+            {renderItem(item, key)}
+          </li>
+        );
+      }
+      const content = item.node ? (
+        <span className="logoloop__node" aria-hidden={!!item.href && !item.ariaLabel}>
+          {item.node}
+        </span>
+      ) : (
+        <img src={item.src} alt={item.alt ?? item.title ?? ""} title={item.title} loading="lazy" />
+      );
+      const itemAriaLabel = item.ariaLabel ?? item.title ?? item.alt;
+      const itemContent = item.href ? (
+        <a className="logoloop__link" href={item.href} aria-label={itemAriaLabel}>
+          {content}
+        </a>
+      ) : (
+        content
+      );
+      return (
+        <li className="logoloop__item" key={key} role="listitem">
+          {itemContent}
+        </li>
+      );
+    },
+    [renderItem],
+  );
+
+  const containerStyle: CSSProperties = {
+    width: toCssLength(width) ?? "100%",
+    ["--logoloop-gap" as string]: `${gap}px`,
+    ["--logoloop-logoHeight" as string]: `${logoHeight}px`,
+    ...(fadeOutColor ? { ["--logoloop-fadeColor" as string]: fadeOutColor } : {}),
+    ...style,
+  };
+
+  return (
+    <div ref={containerRef} className={rootClassName} style={containerStyle} role="region" aria-label={ariaLabel}>
+      <div className="logoloop__track" ref={trackRef}>
+        {Array.from({ length: copyCount }, (_, copyIndex) => (
+          <ul
+            className="logoloop__list"
+            key={`copy-${copyIndex}`}
+            role="list"
+            aria-hidden={copyIndex > 0}
+            ref={copyIndex === 0 ? seqRef : undefined}
+          >
+            {logos.map((item, itemIndex) => renderLogoItem(item, `${copyIndex}-${itemIndex}`))}
+          </ul>
+        ))}
+      </div>
+    </div>
+  );
+});
+
+export default LogoLoop;
