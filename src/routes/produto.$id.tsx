@@ -234,7 +234,7 @@ function ProductPage() {
             <div className="flex flex-col gap-2 sm:flex-row">
               <button
                 onClick={() => doAdd(true)}
-                className="flex-1 rounded-full bg-navy py-4 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] transition hover:brightness-110"
+                className="flex-1 rounded-full bg-[color:var(--cyan-brand)] py-4 text-sm font-black uppercase tracking-widest text-navy transition hover:brightness-110"
               >
                 Comprar agora
               </button>
