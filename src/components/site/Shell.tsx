@@ -179,7 +179,7 @@ function Header() {
     <header className="sticky top-0 z-40 overflow-hidden border-b border-white/10 bg-navy text-offwhite backdrop-blur">
       <HeaderAurora />
       <div className="relative z-10 mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-4">
-        <button className="md:hidden" aria-label="menu"><Menu className="h-6 w-6" /></button>
+        
         <a href="/" className="flex shrink-0 items-center gap-2">
           <img src={monogram} alt="Maxor Sports" className="h-10 w-auto" />
           <div className="hidden flex-col leading-none sm:flex">
