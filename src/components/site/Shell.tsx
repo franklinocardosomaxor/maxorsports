@@ -221,7 +221,9 @@ function Header() {
         </div>
       </div>
 
-      <SearchDropdown state={state} onClose={close} />
+      <div className="relative z-10">
+        <SearchDropdown state={state} onClose={close} />
+      </div>
     </header>
   );
 }
