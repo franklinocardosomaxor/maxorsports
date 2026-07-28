@@ -126,7 +126,10 @@ export const LogoLoop = memo(function LogoLoop({
       return observer;
     });
     updateDimensions();
-    return () => observers.forEach((o) => o?.disconnect());
+    return () => {
+      cancelAnimationFrame(raf);
+      observers.forEach((o) => o?.disconnect());
+    };
   }, [updateDimensions, logos, gap, logoHeight]);
 
   useEffect(() => {
