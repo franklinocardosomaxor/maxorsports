@@ -98,10 +98,26 @@ export const LogoLoop = memo(function LogoLoop({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // Re-measure on mount/remount (voltar para a home) até obter uma largura válida.
+    let tries = 0;
+    let raf = 0;
+    const retry = () => {
+      updateDimensions();
+      const w = seqRef.current?.getBoundingClientRect?.().width ?? 0;
+      if (w <= 0 && tries < 60) {
+        tries += 1;
+        raf = requestAnimationFrame(retry);
+      }
+    };
+    raf = requestAnimationFrame(retry);
+
     if (!window.ResizeObserver) {
       window.addEventListener("resize", updateDimensions);
       updateDimensions();
-      return () => window.removeEventListener("resize", updateDimensions);
+      return () => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener("resize", updateDimensions);
+      };
     }
     const observers = [containerRef, seqRef].map((ref) => {
       if (!ref.current) return null;
