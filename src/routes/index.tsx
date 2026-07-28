@@ -456,7 +456,8 @@ function BrandStrip() {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <LogoLoop
           logos={logos}
-          speed={70}
+          speed={28}
+          pauseOnHover
           direction="left"
           logoHeight={36}
           gap={56}
