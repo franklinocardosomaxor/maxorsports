@@ -146,14 +146,14 @@ function LoginPage() {
               <button
                 type="button"
                 onClick={() => { setMode("signin"); setMsg(null); }}
-                className={`rounded-full px-4 py-1.5 ${mode === "signin" ? "bg-navy text-[color:var(--lime-brand)]" : "text-offwhite/60"}`}
+                className={`rounded-full px-4 py-1.5 ${mode === "signin" ? "bg-[color:var(--cyan-brand)] text-navy" : "text-offwhite/60"}`}
               >
                 Entrar
               </button>
               <button
                 type="button"
                 onClick={() => { setMode("signup"); setMsg(null); }}
-                className={`rounded-full px-4 py-1.5 ${mode === "signup" ? "bg-navy text-[color:var(--lime-brand)]" : "text-offwhite/60"}`}
+                className={`rounded-full px-4 py-1.5 ${mode === "signup" ? "bg-[color:var(--cyan-brand)] text-navy" : "text-offwhite/60"}`}
               >
                 Criar conta
               </button>
@@ -193,7 +193,7 @@ function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy py-3 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] hover:brightness-110 disabled:opacity-60"
+                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--lime-brand)] py-3 text-sm font-black uppercase tracking-widest text-navy hover:brightness-110 disabled:opacity-60"
                 >
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   {mode === "signin" ? "Entrar" : "Criar conta"}

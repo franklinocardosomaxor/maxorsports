@@ -154,7 +154,7 @@ function AccountPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy py-3 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] hover:brightness-110 disabled:opacity-60"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--lime-brand)] py-3 text-sm font-black uppercase tracking-widest text-navy hover:brightness-110 disabled:opacity-60"
                 >
                   {saving && <Loader2 className="h-4 w-4 animate-spin" />} Salvar alterações
                 </button>

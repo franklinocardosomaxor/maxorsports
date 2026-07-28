@@ -121,7 +121,7 @@ function CheckoutPage() {
           <p className="mt-2 text-sm text-muted-foreground">Explore o catálogo e escolha seu próximo par.</p>
           <Link
             to="/masculino"
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] hover:brightness-110"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[color:var(--lime-brand)] px-6 py-3 text-sm font-black uppercase tracking-widest text-navy hover:brightness-110"
           >
             <ChevronLeft className="h-4 w-4" /> Ver catálogo
           </Link>
@@ -229,7 +229,7 @@ function CheckoutPage() {
                 <code className="flex-1 text-sm font-bold text-offwhite">{PIX_KEY}</code>
                 <button
                   onClick={copyPix}
-                  className="inline-flex items-center gap-1 rounded-md bg-navy px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[color:var(--lime-brand)] hover:brightness-110"
+                  className="inline-flex items-center gap-1 rounded-md bg-[color:var(--cyan-brand)] px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-navy hover:brightness-110"
                 >
                   {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                   {copied ? "Copiado" : "Copiar"}
