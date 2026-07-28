@@ -52,13 +52,15 @@ function RoupasIndex() {
                 params={{ category: r.slug }}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="flex aspect-square items-center justify-center bg-card p-8">
-                  <img
-                    src={r.icon}
-                    alt={r.name}
-                    className="max-h-[70%] max-w-[80%] object-contain brightness-0 invert opacity-90 transition group-hover:scale-105"
-                    loading="lazy"
-                  />
+                <div className="flex aspect-square items-center justify-center bg-card p-4">
+                  <div className="flex h-full w-full items-center justify-center rounded-xl bg-[color:var(--cream)] p-6">
+                    <img
+                      src={r.icon}
+                      alt={r.name}
+                      className="max-h-[70%] max-w-[80%] object-contain transition group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
                 </div>
                 <div className="flex items-center justify-between border-t border-border bg-card px-4 py-3">
                   <div>
