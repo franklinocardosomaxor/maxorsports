@@ -19,11 +19,15 @@ function AccountLink() {
   const [name, setName] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
-    supabase.auth.getUser().then(({ data }) => {
+    // getSession lê o token já em cache local (sem chamada de rede),
+    // então o cabeçalho renderiza instantaneamente.
+    supabase.auth.getSession().then(({ data }) => {
       if (!alive) return;
-      const md = (data.user?.user_metadata ?? {}) as Record<string, string>;
-      setName(data.user ? (md.full_name?.split(" ")[0] ?? data.user.email ?? "conta") : null);
+      const user = data.session?.user;
+      const md = (user?.user_metadata ?? {}) as Record<string, string>;
+      setName(user ? (md.full_name?.split(" ")[0] ?? user.email ?? "conta") : null);
     });
+
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       const md = (session?.user?.user_metadata ?? {}) as Record<string, string>;
       setName(session?.user ? (md.full_name?.split(" ")[0] ?? session.user.email ?? "conta") : null);
