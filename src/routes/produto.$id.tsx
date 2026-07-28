@@ -86,12 +86,8 @@ function ProductPage() {
                   {product.tag}
                 </span>
               )}
-              <button
-                aria-label="Favoritar"
-                className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-navy/90 text-muted-foreground shadow hover:text-offwhite"
-              >
-                <Heart className="h-5 w-5" />
-              </button>
+              <FavoriteButton product={product} />
+
               <div className="aspect-square">
                 <img src={product.img} alt={product.name} width={800} height={800} decoding="async" fetchPriority="high" className="h-full w-full object-contain p-6" />
               </div>
