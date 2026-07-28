@@ -15,6 +15,23 @@ import { recordNewsletterSignup } from "@/lib/crm.contacts.functions";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
 
+const Aurora = lazy(() => import("./Aurora"));
+
+function HeaderAurora() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0 opacity-70">
+      <Suspense fallback={null}>
+        <Aurora colorStops={["#00BFC6", "#7EEBC1", "#C7F500"]} blend={0.5} amplitude={1.0} speed={0.5} />
+      </Suspense>
+    </div>
+  );
+}
+
+
+
 function AccountLink() {
   const [name, setName] = useState<string | null>(null);
   useEffect(() => {
