@@ -189,7 +189,7 @@ function ProductPage() {
                       onClick={() => setSelectedColor(c)}
                       aria-label={`Cor ${c}`}
                       className={`h-6 w-6 rounded-full border transition ${
-                        selectedColor === c ? "border-navy ring-2 ring-[color:var(--cyan-brand)]" : "border-border"
+                        selectedColor === c ? "border-offwhite ring-2 ring-[color:var(--cyan-brand)]" : "border-border"
                       }`}
                       style={{ background: c }}
                     />
