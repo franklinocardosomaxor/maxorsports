@@ -127,13 +127,13 @@ function LoginPage() {
       </div>
 
       <div className="mx-auto max-w-5xl px-4 py-10">
-        <Link to="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-navy">
+        <Link to="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-offwhite">
           <ChevronLeft className="h-4 w-4" /> Voltar para a loja
         </Link>
 
         <div className="mt-4 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <section className="rounded-xl border border-border bg-white p-6">
-            <h1 className="font-display text-2xl font-black uppercase text-navy md:text-3xl">
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h1 className="font-display text-2xl font-black uppercase text-offwhite md:text-3xl">
               {mode === "signin" ? "Entrar na sua conta" : "Criar conta Maxor"}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -142,18 +142,18 @@ function LoginPage() {
                 : "Cadastro com validação por e-mail. Seus dados ficam salvos para o próximo pedido."}
             </p>
 
-            <div className="mt-4 inline-flex rounded-full border border-border bg-cream p-1 text-xs font-bold uppercase tracking-wider">
+            <div className="mt-4 inline-flex rounded-full border border-border bg-secondary p-1 text-xs font-bold uppercase tracking-wider">
               <button
                 type="button"
                 onClick={() => { setMode("signin"); setMsg(null); }}
-                className={`rounded-full px-4 py-1.5 ${mode === "signin" ? "bg-navy text-[color:var(--lime-brand)]" : "text-navy/60"}`}
+                className={`rounded-full px-4 py-1.5 ${mode === "signin" ? "bg-[color:var(--cyan-brand)] text-navy" : "text-offwhite/60"}`}
               >
                 Entrar
               </button>
               <button
                 type="button"
                 onClick={() => { setMode("signup"); setMsg(null); }}
-                className={`rounded-full px-4 py-1.5 ${mode === "signup" ? "bg-navy text-[color:var(--lime-brand)]" : "text-navy/60"}`}
+                className={`rounded-full px-4 py-1.5 ${mode === "signup" ? "bg-[color:var(--cyan-brand)] text-navy" : "text-offwhite/60"}`}
               >
                 Criar conta
               </button>
@@ -193,7 +193,7 @@ function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy py-3 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] hover:brightness-110 disabled:opacity-60"
+                  className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--lime-brand)] py-3 text-sm font-black uppercase tracking-widest text-navy hover:brightness-110 disabled:opacity-60"
                 >
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   {mode === "signin" ? "Entrar" : "Criar conta"}
@@ -202,8 +202,8 @@ function LoginPage() {
             </form>
           </section>
 
-          <aside className="rounded-xl border border-border bg-cream p-6">
-            <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">
+          <aside className="rounded-xl border border-border bg-secondary p-6">
+            <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">
               Prefere sem cadastro?
             </h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -235,10 +235,10 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-navy/70">{label}</span>
+      <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-offwhite/70">{label}</span>
       <input
         type={type}
-        className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
+        className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}

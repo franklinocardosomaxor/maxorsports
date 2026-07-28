@@ -157,7 +157,7 @@ export function CatalogPage({
             setSizes([]);
             setMaxPrice(1600);
           }}
-          className="w-full rounded-md border border-border py-2 text-sm font-semibold text-muted-foreground hover:text-navy"
+          className="w-full rounded-md border border-border py-2 text-sm font-semibold text-muted-foreground hover:text-offwhite"
           style={{ borderColor: accentColor, color: accentColor }}
         >
           Limpar filtros ({activeCount})
@@ -232,7 +232,7 @@ export function CatalogPage({
               Filtros
               {activeCount > 0 && (
                 <span
-                  className="rounded-full px-1.5 text-xs text-navy"
+                  className="rounded-full px-1.5 text-xs text-offwhite"
                   style={{ background: accentColor }}
                 >
                   {activeCount}
@@ -299,7 +299,7 @@ export function CatalogPage({
             {Sidebar}
             <button
               onClick={() => setDrawerOpen(false)}
-              className="mt-6 w-full rounded-full py-3 text-sm font-bold uppercase tracking-widest text-navy"
+              className="mt-6 w-full rounded-full py-3 text-sm font-bold uppercase tracking-widest text-offwhite"
               style={{ background: accentColor }}
             >
               Ver {filtered.length} produtos
@@ -343,7 +343,7 @@ function CheckRow({
   onChange: () => void;
 }) {
   return (
-    <label className="flex cursor-pointer items-center gap-2 text-sm hover:text-navy">
+    <label className="flex cursor-pointer items-center gap-2 text-sm hover:text-offwhite">
       <input
         type="checkbox"
         checked={checked}
@@ -363,7 +363,7 @@ function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
     <article className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-xl">
       {p.tag && (
         <span
-          className="absolute left-3 top-3 z-10 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-navy"
+          className="absolute left-3 top-3 z-10 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-offwhite"
           style={{ background: accent }}
         >
           {p.tag}
@@ -371,7 +371,7 @@ function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
       )}
       <button
         aria-label="Favoritar"
-        className="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-full bg-background/80 text-muted-foreground backdrop-blur hover:text-navy"
+        className="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-full bg-background/80 text-muted-foreground backdrop-blur hover:text-offwhite"
       >
         <Heart className="h-4 w-4" />
       </button>
@@ -390,14 +390,14 @@ function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
         >
           {p.brand}
         </p>
-        <h3 className="line-clamp-2 text-sm font-semibold leading-tight text-navy">{p.name}</h3>
+        <h3 className="line-clamp-2 text-sm font-semibold leading-tight text-offwhite">{p.name}</h3>
         <div className="mt-auto space-y-1">
           {p.old && <p className="text-xs text-muted-foreground line-through">{brl(p.old)}</p>}
           <div className="flex items-baseline gap-2">
-            <p className="font-display text-lg font-black text-navy">{brl(p.price)}</p>
+            <p className="font-display text-lg font-black text-offwhite">{brl(p.price)}</p>
             {off > 0 && (
               <span
-                className="rounded px-1.5 py-0.5 text-[10px] font-black text-navy"
+                className="rounded px-1.5 py-0.5 text-[10px] font-black text-offwhite"
                 style={{ background: accent }}
               >
                 -{off}%

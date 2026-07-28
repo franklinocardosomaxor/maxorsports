@@ -50,19 +50,21 @@ function RoupasIndex() {
                 key={r.slug}
                 to="/roupas/$category"
                 params={{ category: r.slug }}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-white transition hover:-translate-y-1 hover:shadow-lg"
+                className="group relative overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="flex aspect-square items-center justify-center bg-white p-8">
-                  <img
-                    src={r.icon}
-                    alt={r.name}
-                    className="max-h-[70%] max-w-[80%] object-contain transition group-hover:scale-105"
-                    loading="lazy"
-                  />
+                <div className="flex aspect-square items-center justify-center bg-card p-4">
+                  <div className="flex h-full w-full items-center justify-center rounded-xl bg-[color:var(--cream)] p-6">
+                    <img
+                      src={r.icon}
+                      alt={r.name}
+                      className="max-h-[70%] max-w-[80%] object-contain transition group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
                 </div>
-                <div className="flex items-center justify-between border-t border-border bg-white px-4 py-3">
+                <div className="flex items-center justify-between border-t border-border bg-card px-4 py-3">
                   <div>
-                    <div className="font-display text-sm font-black uppercase tracking-widest text-navy">{r.name}</div>
+                    <div className="font-display text-sm font-black uppercase tracking-widest text-offwhite">{r.name}</div>
                     <div className="text-[11px] text-muted-foreground">{count} modelos</div>
                   </div>
                   <span className="text-[color:var(--cyan-brand)] transition group-hover:translate-x-1">ver →</span>

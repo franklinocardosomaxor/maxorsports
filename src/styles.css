@@ -49,26 +49,28 @@
   --cream: #F7F8F5;
   --offwhite: #F7F8F5;
 
-  --background: #F7F8F5;
-  --foreground: #0F1720;
-  --card: #ffffff;
-  --card-foreground: #0F1720;
-  --popover: #ffffff;
-  --popover-foreground: #0F1720;
-  --primary: #0F1720;
-  --primary-foreground: #F7F8F5;
-  --secondary: #eef2ef;
-  --secondary-foreground: #0F1720;
-  --muted: #eaefea;
-  --muted-foreground: #4d5761;
-  --accent: #00BFC6;
+  /* Tema escuro Maxor (sem fundos brancos) */
+  --background: #0F1720;
+  --foreground: #F7F8F5;
+  --card: #16232E;
+  --card-foreground: #F7F8F5;
+  --popover: #16232E;
+  --popover-foreground: #F7F8F5;
+  --primary: #00BFC6;
+  --primary-foreground: #0F1720;
+  --secondary: #1B2A36;
+  --secondary-foreground: #F7F8F5;
+  --muted: #1B2A36;
+  --muted-foreground: #9FB1BD;
+  --accent: #7EEBC1;
   --accent-foreground: #0F1720;
   --destructive: #e5484d;
   --destructive-foreground: #ffffff;
-  --border: #dfe4de;
-  --input: #dfe4de;
+  --border: rgba(126, 235, 193, 0.14);
+  --input: rgba(126, 235, 193, 0.18);
   --ring: #00BFC6;
 }
+
 
 .dark {
   --background: #0a1420;

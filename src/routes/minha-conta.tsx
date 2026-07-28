@@ -116,27 +116,27 @@ function AccountPage() {
       <div className="mx-auto max-w-5xl px-4 py-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <Link to="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-navy">
+            <Link to="/" className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-offwhite">
               <ChevronLeft className="h-4 w-4" /> Voltar para a loja
             </Link>
-            <h1 className="mt-2 font-display text-2xl font-black uppercase text-navy md:text-3xl">Olá, {form.full_name || "comprador"}</h1>
+            <h1 className="mt-2 font-display text-2xl font-black uppercase text-offwhite md:text-3xl">Olá, {form.full_name || "comprador"}</h1>
             <p className="text-sm text-muted-foreground">{email}</p>
           </div>
           <button
             onClick={handleLogout}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-navy hover:bg-cream"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold uppercase tracking-wider text-offwhite hover:bg-secondary"
           >
             <LogOut className="h-4 w-4" /> Sair
           </button>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
-          <section className="rounded-xl border border-border bg-white p-6">
-            <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">Dados pessoais e entrega</h2>
+          <section className="rounded-xl border border-border bg-card p-6">
+            <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Dados pessoais e entrega</h2>
             <p className="mt-1 text-xs text-muted-foreground">Essas informações vão no resumo do WhatsApp e no envio pelos Correios.</p>
 
             {msg && (
-              <div className="mt-4 rounded-md border border-[color:var(--cyan-brand)]/40 bg-cream px-3 py-2 text-sm text-navy">{msg}</div>
+              <div className="mt-4 rounded-md border border-[color:var(--cyan-brand)]/40 bg-secondary px-3 py-2 text-sm text-offwhite">{msg}</div>
             )}
 
             <form onSubmit={handleSave} className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -154,7 +154,7 @@ function AccountPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-navy py-3 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] hover:brightness-110 disabled:opacity-60"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--lime-brand)] py-3 text-sm font-black uppercase tracking-widest text-navy hover:brightness-110 disabled:opacity-60"
                 >
                   {saving && <Loader2 className="h-4 w-4 animate-spin" />} Salvar alterações
                 </button>
@@ -163,8 +163,8 @@ function AccountPage() {
           </section>
 
           <aside className="space-y-6">
-            <div className="rounded-xl border border-border bg-white p-6">
-              <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">Rastreio dos Correios</h2>
+            <div className="rounded-xl border border-border bg-card p-6">
+              <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Rastreio dos Correios</h2>
               <p className="mt-1 text-xs text-muted-foreground">
                 Cole o código de rastreio recebido no WhatsApp para acompanhar seu pedido.
               </p>
@@ -173,7 +173,7 @@ function AccountPage() {
                 value={trackCode}
                 onChange={(e) => setTrackCode(e.target.value.toUpperCase())}
                 placeholder="Ex.: AA123456789BR"
-                className="mt-3 w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
+                className="mt-3 w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
               />
               <a
                 href={TRACKING_URL}
@@ -185,8 +185,8 @@ function AccountPage() {
               </a>
             </div>
 
-            <div className="rounded-xl border border-border bg-cream p-6">
-              <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">Pedidos e dados bancários</h2>
+            <div className="rounded-xl border border-border bg-secondary p-6">
+              <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Pedidos e dados bancários</h2>
               <p className="mt-2 text-xs text-muted-foreground">
                 Em breve: histórico de pedidos importados do WhatsApp e dados bancários salvos com segurança
                 para PIX recorrente.
@@ -206,10 +206,10 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-navy/70">{label}</span>
+      <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-offwhite/70">{label}</span>
       <input
         type={type}
-        className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
+        className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}

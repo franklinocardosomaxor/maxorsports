@@ -80,7 +80,7 @@ function ProductPage() {
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
           {/* Gallery */}
           <div>
-            <div className="relative overflow-hidden rounded-2xl border border-border bg-white">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-card">
               {product.tag && (
                 <span className="absolute left-4 top-4 z-10 rounded-full bg-[color:var(--lime-brand)] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-navy">
                   {product.tag}
@@ -88,7 +88,7 @@ function ProductPage() {
               )}
               <button
                 aria-label="Favoritar"
-                className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-white/90 text-muted-foreground shadow hover:text-navy"
+                className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-navy/90 text-muted-foreground shadow hover:text-offwhite"
               >
                 <Heart className="h-5 w-5" />
               </button>
@@ -104,7 +104,7 @@ function ProductPage() {
                     key={v.id}
                     to="/produto/$id"
                     params={{ id: v.id }}
-                    className={`overflow-hidden rounded-lg border bg-white p-1 transition ${
+                    className={`overflow-hidden rounded-lg border bg-card p-1 transition ${
                       v.id === product.id ? "border-[color:var(--cyan-brand)] ring-2 ring-[color:var(--cyan-brand)]" : "border-border hover:border-[color:var(--cyan-brand)]"
                     }`}
                   >
@@ -119,19 +119,19 @@ function ProductPage() {
           <div className="flex flex-col gap-5">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.3em] text-[color:var(--cyan-brand)]">{product.brand}</p>
-              <h1 className="mt-2 font-display text-3xl font-black uppercase leading-tight text-navy md:text-4xl">
+              <h1 className="mt-2 font-display text-3xl font-black uppercase leading-tight text-offwhite md:text-4xl">
                 {product.name}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">{product.category}</p>
             </div>
 
             {/* Preço */}
-            <div className="rounded-xl border border-border bg-white p-5">
+            <div className="rounded-xl border border-border bg-card p-5">
               {product.old && (
                 <p className="text-sm text-muted-foreground line-through">de {brl(product.old)}</p>
               )}
               <div className="flex items-baseline gap-3">
-                <p className="font-display text-4xl font-black text-navy">{brl(product.price)}</p>
+                <p className="font-display text-4xl font-black text-offwhite">{brl(product.price)}</p>
                 {off > 0 && (
                   <span className="rounded-md bg-[color:var(--lime-brand)] px-2 py-1 text-xs font-black text-navy">
                     -{off}%
@@ -146,7 +146,7 @@ function ProductPage() {
             {/* Variantes de cor */}
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-display text-sm font-black uppercase tracking-widest text-navy">
+                <h3 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">
                   {variants.length > 1 ? `Cores disponíveis (${variants.length})` : "Cor"}
                 </h3>
                 <span className="text-xs text-muted-foreground">
@@ -166,7 +166,7 @@ function ProductPage() {
                       className={`group flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                         isCurrent
                           ? "border-[color:var(--cyan-brand)] bg-navy text-offwhite"
-                          : "border-border bg-white hover:border-navy"
+                          : "border-border bg-card hover:border-[color:var(--cyan-brand)]"
                       }`}
                     >
                       <span
@@ -189,7 +189,7 @@ function ProductPage() {
                       onClick={() => setSelectedColor(c)}
                       aria-label={`Cor ${c}`}
                       className={`h-6 w-6 rounded-full border transition ${
-                        selectedColor === c ? "border-navy ring-2 ring-[color:var(--cyan-brand)]" : "border-border"
+                        selectedColor === c ? "border-offwhite ring-2 ring-[color:var(--cyan-brand)]" : "border-border"
                       }`}
                       style={{ background: c }}
                     />
@@ -201,7 +201,7 @@ function ProductPage() {
             {/* Tamanhos */}
             <div>
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-display text-sm font-black uppercase tracking-widest text-navy">Tamanho</h3>
+                <h3 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Tamanho</h3>
                 <span className="text-xs text-muted-foreground">Numeração BR</span>
               </div>
               <div className="grid grid-cols-5 gap-2 sm:grid-cols-6">
@@ -217,7 +217,7 @@ function ProductPage() {
                       className={`h-11 rounded-md border text-sm font-bold transition ${
                         on
                           ? "border-[color:var(--cyan-brand)] bg-[color:var(--cyan-brand)] text-navy"
-                          : "border-border bg-white hover:border-navy"
+                          : "border-border bg-card hover:border-[color:var(--cyan-brand)]"
                       }`}
                     >
                       {s}
@@ -234,13 +234,13 @@ function ProductPage() {
             <div className="flex flex-col gap-2 sm:flex-row">
               <button
                 onClick={() => doAdd(true)}
-                className="flex-1 rounded-full bg-navy py-4 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] transition hover:brightness-110"
+                className="flex-1 rounded-full bg-[color:var(--cyan-brand)] py-4 text-sm font-black uppercase tracking-widest text-navy transition hover:brightness-110"
               >
                 Comprar agora
               </button>
               <button
                 onClick={() => doAdd(false)}
-                className="flex-1 rounded-full border-2 border-navy py-4 text-sm font-black uppercase tracking-widest text-navy transition hover:bg-navy hover:text-offwhite"
+                className="flex-1 rounded-full border-2 border-[color:var(--lime-brand)] py-4 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] transition hover:bg-[color:var(--lime-brand)] hover:text-navy"
               >
                 Adicionar à sacola
               </button>
@@ -255,14 +255,14 @@ function ProductPage() {
             </a>
 
             {/* Descrição */}
-            <div className="rounded-xl border border-border bg-white p-5">
-              <h3 className="font-display text-sm font-black uppercase tracking-widest text-navy">Sobre o produto</h3>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <h3 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Sobre o produto</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 O <strong>{product.name}</strong> da {product.brand} é a escolha certa para {product.category.toLowerCase()}.
                 Curadoria Maxor Sports: importado sob demanda direto da fonte, garantia de originalidade e atendimento
                 pessoal com o agente Maxor até a entrega.
               </p>
-              <ul className="mt-4 grid gap-2 text-xs text-navy sm:grid-cols-2">
+              <ul className="mt-4 grid gap-2 text-xs text-offwhite sm:grid-cols-2">
                 <li className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[color:var(--cyan-brand)]" /> Curadoria e garantia Maxor</li>
                 <li className="flex items-center gap-2"><Truck className="h-4 w-4 text-[color:var(--cyan-brand)]" /> Envio para todo Brasil</li>
                 <li className="flex items-center gap-2"><RotateCw className="h-4 w-4 text-[color:var(--cyan-brand)]" /> Suporte pós-venda via WhatsApp</li>
