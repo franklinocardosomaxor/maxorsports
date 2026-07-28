@@ -51,9 +51,9 @@ function MarcasIndex() {
                 key={b.slug}
                 to="/marcas/$brand"
                 params={{ brand: b.slug }}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-white transition hover:-translate-y-1 hover:shadow-lg"
+                className="group relative overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="flex aspect-square items-center justify-center bg-white p-6">
+                <div className="flex aspect-square items-center justify-center bg-card p-6">
                   {b.logo ? (
                     <img
                       src={b.logo}
@@ -62,12 +62,12 @@ function MarcasIndex() {
                       loading="lazy"
                     />
                   ) : (
-                    <span className="font-display text-4xl font-black uppercase tracking-widest text-navy">
+                    <span className="font-display text-4xl font-black uppercase tracking-widest text-offwhite">
                       {b.mark}
                     </span>
                   )}
                 </div>
-                <div className="flex items-center justify-between border-t border-border bg-white px-3 py-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                <div className="flex items-center justify-between border-t border-border bg-card px-3 py-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                   <span>{count} modelos</span>
                   <span className="text-[color:var(--cyan-brand)] transition group-hover:translate-x-1">
                     ver →

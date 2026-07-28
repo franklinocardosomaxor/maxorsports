@@ -117,7 +117,7 @@ function CheckoutPage() {
     return (
       <Shell active="">
         <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-          <h1 className="font-display text-3xl font-black uppercase text-navy">Sua sacola está vazia</h1>
+          <h1 className="font-display text-3xl font-black uppercase text-offwhite">Sua sacola está vazia</h1>
           <p className="mt-2 text-sm text-muted-foreground">Explore o catálogo e escolha seu próximo par.</p>
           <Link
             to="/masculino"
@@ -139,7 +139,7 @@ function CheckoutPage() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-10">
-        <h1 className="font-display text-3xl font-black uppercase text-navy md:text-4xl">Finalizar pedido</h1>
+        <h1 className="font-display text-3xl font-black uppercase text-offwhite md:text-4xl">Finalizar pedido</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Como somos agentes, o fechamento acontece via WhatsApp. Você pode pagar no PIX abaixo ou combinar direto com a gente.
         </p>
@@ -147,21 +147,21 @@ function CheckoutPage() {
         <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           {/* Itens + dados */}
           <div className="space-y-6">
-            <section className="rounded-xl border border-border bg-white">
+            <section className="rounded-xl border border-border bg-card">
               <header className="border-b border-border px-5 py-3">
-                <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">
+                <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">
                   Itens ({cart.count})
                 </h2>
               </header>
               <ul className="divide-y divide-border">
                 {cart.items.map((i) => (
                   <li key={i.id} className="flex items-center gap-4 p-4">
-                    <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-border bg-white">
+                    <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-border bg-card">
                       <img src={i.img} alt={i.name} className="h-full w-full object-contain p-1" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-[11px] font-bold uppercase tracking-widest text-[color:var(--cyan-brand)]">{i.brand}</p>
-                      <p className="truncate text-sm font-semibold text-navy">{i.name}</p>
+                      <p className="truncate text-sm font-semibold text-offwhite">{i.name}</p>
                       <p className="text-xs text-muted-foreground">Tamanho {i.size}</p>
                       <div className="mt-2 flex items-center gap-2">
                         <button
@@ -180,7 +180,7 @@ function CheckoutPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-display text-base font-black text-navy">{brl(i.price * i.qty)}</p>
+                      <p className="font-display text-base font-black text-offwhite">{brl(i.price * i.qty)}</p>
                       <button
                         onClick={() => cart.remove(i.id)}
                         className="mt-2 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-red-500"
@@ -193,8 +193,8 @@ function CheckoutPage() {
               </ul>
             </section>
 
-            <section className="rounded-xl border border-border bg-white p-5">
-              <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">
+            <section className="rounded-xl border border-border bg-card p-5">
+              <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">
                 Seus dados para envio
               </h2>
               <p className="mt-1 text-xs text-muted-foreground">
@@ -218,15 +218,15 @@ function CheckoutPage() {
             </section>
 
 
-            <section className="rounded-xl border border-border bg-white p-5">
-              <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">
+            <section className="rounded-xl border border-border bg-card p-5">
+              <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">
                 Pagamento via PIX
               </h2>
               <p className="mt-2 text-xs text-muted-foreground">
                 Chave PIX (CNPJ) — {COMPANY_NAME}
               </p>
               <div className="mt-2 flex items-center gap-2 rounded-lg border border-dashed border-[color:var(--cyan-brand)] bg-cream/60 p-3">
-                <code className="flex-1 text-sm font-bold text-navy">{PIX_KEY}</code>
+                <code className="flex-1 text-sm font-bold text-offwhite">{PIX_KEY}</code>
                 <button
                   onClick={copyPix}
                   className="inline-flex items-center gap-1 rounded-md bg-navy px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[color:var(--lime-brand)] hover:brightness-110"
@@ -243,8 +243,8 @@ function CheckoutPage() {
 
           {/* Resumo */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-xl border border-border bg-white p-5">
-              <h2 className="font-display text-sm font-black uppercase tracking-widest text-navy">Resumo</h2>
+            <div className="rounded-xl border border-border bg-card p-5">
+              <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Resumo</h2>
               <dl className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Subtotal</dt>
@@ -255,8 +255,8 @@ function CheckoutPage() {
                   <dd className="text-xs italic text-muted-foreground">combinado no atendimento</dd>
                 </div>
                 <div className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
-                  <dt className="font-display text-sm font-black uppercase text-navy">Total</dt>
-                  <dd className="font-display text-2xl font-black text-navy">{brl(total)}</dd>
+                  <dt className="font-display text-sm font-black uppercase text-offwhite">Total</dt>
+                  <dd className="font-display text-2xl font-black text-offwhite">{brl(total)}</dd>
                 </div>
               </dl>
               <button
@@ -303,10 +303,10 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-navy/70">{label}</span>
+      <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-offwhite/70">{label}</span>
       <input
         type={type}
-        className="w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
+        className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-[color:var(--cyan-brand)]"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}

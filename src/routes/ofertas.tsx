@@ -167,7 +167,7 @@ function ComboSection() {
                         loading="lazy"
                       />
                       <span
-                        className={`absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full text-navy transition ${
+                        className={`absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full text-offwhite transition ${
                           on
                             ? "bg-[color:var(--lime-brand)]"
                             : "bg-[color:var(--cyan-brand)]"

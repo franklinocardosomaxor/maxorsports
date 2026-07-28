@@ -254,7 +254,7 @@ function SearchDropdown({ state, onClose }: { state: SearchState; onClose: () =>
               {state.hits.slice(0, 12).map((p) => (
                 <li key={p.id}>
                   <a href={`/marcas/${p.brand.toLowerCase().replace(/\s+/g, "-")}`} className="group block rounded-xl bg-white/5 p-2 hover:bg-white/10">
-                    <div className="aspect-square overflow-hidden rounded-lg bg-white">
+                    <div className="aspect-square overflow-hidden rounded-lg bg-card">
                       <img src={p.img} alt={p.name} loading="lazy" decoding="async" className="h-full w-full object-contain p-2 transition group-hover:scale-105" />
                     </div>
                     <div className="mt-2 truncate text-[11px] font-semibold text-offwhite">{p.name}</div>

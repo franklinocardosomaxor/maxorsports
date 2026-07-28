@@ -447,7 +447,7 @@ function BrandStrip() {
     <section className="border-y border-border bg-secondary/60">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-around gap-6 px-4 py-8">
         {brands.map((b) => (
-          <span key={b} className="font-display text-lg font-bold uppercase tracking-widest text-muted-foreground/70 hover:text-navy">
+          <span key={b} className="font-display text-lg font-bold uppercase tracking-widest text-muted-foreground/70 hover:text-offwhite">
             {b}
           </span>
         ))}
