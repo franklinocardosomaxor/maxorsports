@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
-  Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X, Loader2,
+  Search, User, Heart, ShoppingBag, MapPin, Zap, Camera, X, Loader2,
   Instagram, Facebook, Youtube, Phone, Mail, Truck,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -216,7 +216,7 @@ function Header() {
 
         <div className="ml-auto flex shrink-0 items-center gap-3 text-sm md:gap-5">
           <AccountLink />
-          <a href="#" className="hidden hover:text-[color:var(--cyan-brand)] md:block"><Heart className="h-5 w-5" /></a>
+          <Link to="/minha-conta" aria-label="Meus favoritos" title="Meus favoritos" className="hidden hover:text-[color:var(--cyan-brand)] md:block"><Heart className="h-5 w-5" /></Link>
           <CartButton />
         </div>
       </div>
