@@ -7,11 +7,24 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "../lib/cart";
+
+const SplashCursor = lazy(() => import("../components/site/SplashCursor"));
+
+function SplashCursorClient() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return (
+    <Suspense fallback={null}>
+      <SplashCursor />
+    </Suspense>
+  );
+}
 
 function NotFoundComponent() {
   return (
