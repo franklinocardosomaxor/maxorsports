@@ -166,7 +166,7 @@ function ProductPage() {
                       className={`group flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                         isCurrent
                           ? "border-[color:var(--cyan-brand)] bg-navy text-offwhite"
-                          : "border-border bg-card hover:border-navy"
+                          : "border-border bg-card hover:border-[color:var(--cyan-brand)]"
                       }`}
                     >
                       <span
@@ -217,7 +217,7 @@ function ProductPage() {
                       className={`h-11 rounded-md border text-sm font-bold transition ${
                         on
                           ? "border-[color:var(--cyan-brand)] bg-[color:var(--cyan-brand)] text-navy"
-                          : "border-border bg-card hover:border-navy"
+                          : "border-border bg-card hover:border-[color:var(--cyan-brand)]"
                       }`}
                     >
                       {s}
@@ -240,7 +240,7 @@ function ProductPage() {
               </button>
               <button
                 onClick={() => doAdd(false)}
-                className="flex-1 rounded-full border-2 border-navy py-4 text-sm font-black uppercase tracking-widest text-offwhite transition hover:bg-navy hover:text-offwhite"
+                className="flex-1 rounded-full border-2 border-[color:var(--lime-brand)] py-4 text-sm font-black uppercase tracking-widest text-[color:var(--lime-brand)] transition hover:bg-[color:var(--lime-brand)] hover:text-navy"
               >
                 Adicionar à sacola
               </button>
