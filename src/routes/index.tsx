@@ -235,6 +235,8 @@ function Hero() {
             alt="Atleta em movimento com performance Maxor"
             width={1600}
             height={900}
+            decoding="async"
+            fetchPriority="high"
             className="relative rounded-2xl object-cover"
           />
           <div className="absolute -bottom-4 -left-4 flex items-center gap-3 rounded-2xl border border-offwhite/10 bg-navy/80 px-4 py-3 backdrop-blur">
