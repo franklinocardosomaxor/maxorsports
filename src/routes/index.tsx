@@ -442,19 +442,32 @@ function CategoryBanners() {
 }
 
 function BrandStrip() {
-  const brands = ["Nike", "Adidas", "Puma", "New Balance", "Asics", "Mizuno", "Under Armour", "Fila"];
+  const logos = BRANDS.filter((b) => b.logo).map((b) => ({
+    src: b.logo!,
+    alt: b.name,
+    title: b.name,
+    href: `/marcas/${b.slug}`,
+  }));
   return (
     <section className="border-y border-border bg-secondary/60">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-around gap-6 px-4 py-8">
-        {brands.map((b) => (
-          <span key={b} className="font-display text-lg font-bold uppercase tracking-widest text-muted-foreground/70 hover:text-offwhite">
-            {b}
-          </span>
-        ))}
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <LogoLoop
+          logos={logos}
+          speed={70}
+          direction="left"
+          logoHeight={36}
+          gap={56}
+          fadeOut
+          fadeOutColor="#0F1720"
+          scaleOnHover
+          ariaLabel="Marcas Maxor Sports"
+          className="[&_img]:bg-[color:var(--cream)] [&_img]:rounded-xl [&_img]:p-2 [&_img]:box-content"
+        />
       </div>
     </section>
   );
 }
+
 
 function Newsletter() {
   return (
