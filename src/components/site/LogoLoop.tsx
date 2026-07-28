@@ -246,7 +246,15 @@ export const LogoLoop = memo(function LogoLoop({
   };
 
   return (
-    <div ref={containerRef} className={rootClassName} style={containerStyle} role="region" aria-label={ariaLabel}>
+    <div
+      ref={containerRef}
+      className={rootClassName}
+      style={containerStyle}
+      role="region"
+      aria-label={ariaLabel}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="logoloop__track" ref={trackRef}>
         {Array.from({ length: copyCount }, (_, copyIndex) => (
           <ul
