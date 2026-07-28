@@ -419,11 +419,11 @@ function CategoryBanners() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
       <div className="grid gap-6 md:grid-cols-2">
-        {[
-          { title: "Masculino", copy: "A força do movimento", img: catMasc, color: "var(--lime-brand)" },
-          { title: "Feminino", copy: "Potência com atitude", img: catFem, color: "var(--cyan-brand)" },
-        ].map((b) => (
-          <a key={b.title} href="#" className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-navy md:aspect-[16/10]">
+        {([
+          { title: "Masculino", copy: "A força do movimento", img: catMasc, color: "var(--lime-brand)", to: "/colecao/masculino" as const },
+          { title: "Feminino", copy: "Potência com atitude", img: catFem, color: "var(--cyan-brand)", to: "/colecao/feminino" as const },
+        ]).map((b) => (
+          <Link key={b.title} to={b.to} className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-navy md:aspect-[16/10]">
             <img src={b.img} alt={b.title} loading="lazy" className="h-full w-full object-cover opacity-80 transition duration-700 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-tr from-navy via-navy/40 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-end p-8">
@@ -436,8 +436,9 @@ function CategoryBanners() {
                 Ver coleção <ChevronRight className="h-4 w-4" />
               </span>
             </div>
-          </a>
+          </Link>
         ))}
+
       </div>
     </section>
   );
