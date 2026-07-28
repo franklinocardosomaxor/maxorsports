@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Loader2, LogOut, ChevronLeft } from "lucide-react";
+import { Loader2, LogOut, ChevronLeft, Heart, Trash2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Shell } from "@/components/site/Shell";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyBuyerProfile, upsertMyBuyerProfile } from "@/lib/buyer.functions";
+import { listMyFavorites, removeFavorite, type FavoriteRow } from "@/lib/favorites.functions";
 
 const TRACKING_URL = "https://rastreamento.correios.com.br/app/index.php";
 
@@ -185,6 +186,8 @@ function AccountPage() {
               </a>
             </div>
 
+            <FavoritesLibrary />
+
             <div className="rounded-xl border border-border bg-secondary p-6">
               <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Pedidos e dados bancários</h2>
               <p className="mt-2 text-xs text-muted-foreground">
@@ -215,5 +218,62 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
       />
     </label>
+  );
+}
+
+function FavoritesLibrary() {
+  const load = useServerFn(listMyFavorites);
+  const drop = useServerFn(removeFavorite);
+  const [rows, setRows] = useState<FavoriteRow[] | null>(null);
+
+  useEffect(() => {
+    load().then((r) => setRows(r)).catch(() => setRows([]));
+  }, [load]);
+
+  async function onRemove(id: string) {
+    setRows((prev) => (prev ?? []).filter((r) => r.id !== id));
+    try { await drop({ data: { id } }); } catch { /* ignore */ }
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-card p-6">
+      <h2 className="flex items-center gap-2 font-display text-sm font-black uppercase tracking-widest text-offwhite">
+        <Heart className="h-4 w-4 text-[color:var(--lime-brand)]" /> Minha biblioteca de favoritos
+      </h2>
+      {rows === null && (
+        <p className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+          <Loader2 className="h-3.5 w-3.5 animate-spin" /> Carregando favoritos…
+        </p>
+      )}
+      {rows !== null && rows.length === 0 && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          Você ainda não favoritou nenhum modelo. Toque no coração na página do produto para salvar aqui.
+        </p>
+      )}
+      {rows !== null && rows.length > 0 && (
+        <ul className="mt-4 space-y-3">
+          {rows.map((f) => (
+            <li key={f.id} className="flex items-center gap-3">
+              <Link to="/produto/$id" params={{ id: f.product_id }} className="shrink-0">
+                <img src={f.img ?? ""} alt={f.name} loading="lazy" className="h-14 w-14 rounded-lg bg-secondary object-contain p-1" />
+              </Link>
+              <div className="min-w-0 flex-1">
+                <Link to="/produto/$id" params={{ id: f.product_id }} className="block truncate text-sm font-semibold text-offwhite hover:text-[color:var(--cyan-brand)]">
+                  {f.name}
+                </Link>
+                <p className="text-[11px] text-muted-foreground">{f.brand}</p>
+              </div>
+              <button
+                onClick={() => onRemove(f.id)}
+                aria-label="Remover dos favoritos"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted-foreground hover:bg-secondary hover:text-offwhite"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
