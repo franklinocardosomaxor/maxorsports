@@ -21,7 +21,7 @@ function SplashCursorClient() {
   if (!mounted) return null;
   return (
     <Suspense fallback={null}>
-      <SplashCursor />
+      <SplashCursor SPLAT_RADIUS={0.08} SPLAT_FORCE={2500} DENSITY_DISSIPATION={5.5} />
     </Suspense>
   );
 }
