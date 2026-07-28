@@ -98,10 +98,26 @@ export const LogoLoop = memo(function LogoLoop({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // Re-measure on mount/remount (voltar para a home) até obter uma largura válida.
+    let tries = 0;
+    let raf = 0;
+    const retry = () => {
+      updateDimensions();
+      const w = seqRef.current?.getBoundingClientRect?.().width ?? 0;
+      if (w <= 0 && tries < 60) {
+        tries += 1;
+        raf = requestAnimationFrame(retry);
+      }
+    };
+    raf = requestAnimationFrame(retry);
+
     if (!window.ResizeObserver) {
       window.addEventListener("resize", updateDimensions);
       updateDimensions();
-      return () => window.removeEventListener("resize", updateDimensions);
+      return () => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener("resize", updateDimensions);
+      };
     }
     const observers = [containerRef, seqRef].map((ref) => {
       if (!ref.current) return null;
@@ -110,7 +126,10 @@ export const LogoLoop = memo(function LogoLoop({
       return observer;
     });
     updateDimensions();
-    return () => observers.forEach((o) => o?.disconnect());
+    return () => {
+      cancelAnimationFrame(raf);
+      observers.forEach((o) => o?.disconnect());
+    };
   }, [updateDimensions, logos, gap, logoHeight]);
 
   useEffect(() => {
@@ -227,7 +246,15 @@ export const LogoLoop = memo(function LogoLoop({
   };
 
   return (
-    <div ref={containerRef} className={rootClassName} style={containerStyle} role="region" aria-label={ariaLabel}>
+    <div
+      ref={containerRef}
+      className={rootClassName}
+      style={containerStyle}
+      role="region"
+      aria-label={ariaLabel}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="logoloop__track" ref={trackRef}>
         {Array.from({ length: copyCount }, (_, copyIndex) => (
           <ul
