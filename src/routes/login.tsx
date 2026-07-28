@@ -142,7 +142,7 @@ function LoginPage() {
                 : "Cadastro com validação por e-mail. Seus dados ficam salvos para o próximo pedido."}
             </p>
 
-            <div className="mt-4 inline-flex rounded-full border border-border bg-cream p-1 text-xs font-bold uppercase tracking-wider">
+            <div className="mt-4 inline-flex rounded-full border border-border bg-secondary p-1 text-xs font-bold uppercase tracking-wider">
               <button
                 type="button"
                 onClick={() => { setMode("signin"); setMsg(null); }}
@@ -202,7 +202,7 @@ function LoginPage() {
             </form>
           </section>
 
-          <aside className="rounded-xl border border-border bg-cream p-6">
+          <aside className="rounded-xl border border-border bg-secondary p-6">
             <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">
               Prefere sem cadastro?
             </h2>

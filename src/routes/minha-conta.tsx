@@ -124,7 +124,7 @@ function AccountPage() {
           </div>
           <button
             onClick={handleLogout}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold uppercase tracking-wider text-offwhite hover:bg-cream"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold uppercase tracking-wider text-offwhite hover:bg-secondary"
           >
             <LogOut className="h-4 w-4" /> Sair
           </button>
@@ -136,7 +136,7 @@ function AccountPage() {
             <p className="mt-1 text-xs text-muted-foreground">Essas informações vão no resumo do WhatsApp e no envio pelos Correios.</p>
 
             {msg && (
-              <div className="mt-4 rounded-md border border-[color:var(--cyan-brand)]/40 bg-cream px-3 py-2 text-sm text-navy">{msg}</div>
+              <div className="mt-4 rounded-md border border-[color:var(--cyan-brand)]/40 bg-secondary px-3 py-2 text-sm text-offwhite">{msg}</div>
             )}
 
             <form onSubmit={handleSave} className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -185,7 +185,7 @@ function AccountPage() {
               </a>
             </div>
 
-            <div className="rounded-xl border border-border bg-cream p-6">
+            <div className="rounded-xl border border-border bg-secondary p-6">
               <h2 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Pedidos e dados bancários</h2>
               <p className="mt-2 text-xs text-muted-foreground">
                 Em breve: histórico de pedidos importados do WhatsApp e dados bancários salvos com segurança
