@@ -53,14 +53,16 @@ function MarcasIndex() {
                 params={{ brand: b.slug }}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="flex aspect-square items-center justify-center bg-card p-6">
+                <div className="flex aspect-square items-center justify-center bg-card p-4">
                   {b.logo ? (
-                    <img
-                      src={b.logo}
-                      alt={b.name}
-                      className="max-h-[55%] max-w-[75%] object-contain brightness-0 invert opacity-90 transition group-hover:scale-105"
-                      loading="lazy"
-                    />
+                    <div className="flex h-full w-full items-center justify-center rounded-xl bg-[color:var(--cream)] p-4">
+                      <img
+                        src={b.logo}
+                        alt={b.name}
+                        className="max-h-[55%] max-w-[75%] object-contain transition group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
                   ) : (
                     <span className="font-display text-4xl font-black uppercase tracking-widest text-offwhite">
                       {b.mark}
