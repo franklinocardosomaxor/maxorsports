@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
-import monogram from "@/assets/maxor-monogram.png.asset.json";
+import monogram from "@/assets/opt/maxor-monogram.png";
 import {
   searchByName,
   searchByImage,
@@ -159,7 +159,7 @@ function Header() {
       <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-4">
         <button className="md:hidden" aria-label="menu"><Menu className="h-6 w-6" /></button>
         <a href="/" className="flex shrink-0 items-center gap-2">
-          <img src={monogram.url} alt="Maxor Sports" className="h-10 w-auto" />
+          <img src={monogram} alt="Maxor Sports" className="h-10 w-auto" />
           <div className="hidden flex-col leading-none sm:flex">
             <span className="font-display text-xl font-bold tracking-wider">MAXOR</span>
             <span className="text-[10px] font-medium tracking-[0.3em] text-offwhite/60">SPORTS</span>
@@ -505,7 +505,7 @@ function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-5">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3">
-            <img src={monogram.url} alt="Maxor Sports" className="h-10 w-auto" />
+            <img src={monogram} alt="Maxor Sports" className="h-10 w-auto" />
             <div>
               <div className="font-display text-lg font-bold tracking-wider">MAXOR SPORTS</div>
               <div className="text-[10px] uppercase tracking-[0.3em] text-offwhite/60">Seu esporte. Seu máximo.</div>
