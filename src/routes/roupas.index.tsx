@@ -56,7 +56,7 @@ function RoupasIndex() {
                   <img
                     src={r.icon}
                     alt={r.name}
-                    className="max-h-[70%] max-w-[80%] object-contain transition group-hover:scale-105"
+                    className="max-h-[70%] max-w-[80%] object-contain brightness-0 invert opacity-90 transition group-hover:scale-105"
                     loading="lazy"
                   />
                 </div>

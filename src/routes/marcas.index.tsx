@@ -58,7 +58,7 @@ function MarcasIndex() {
                     <img
                       src={b.logo}
                       alt={b.name}
-                      className="max-h-[55%] max-w-[75%] object-contain transition group-hover:scale-105"
+                      className="max-h-[55%] max-w-[75%] object-contain brightness-0 invert opacity-90 transition group-hover:scale-105"
                       loading="lazy"
                     />
                   ) : (
