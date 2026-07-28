@@ -22,6 +22,8 @@ import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
 import { Route as RoupasCategoryRouteImport } from './routes/roupas.$category'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
+import { Route as ColecaoMasculinoRouteImport } from './routes/colecao.masculino'
+import { Route as ColecaoFemininoRouteImport } from './routes/colecao.feminino'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
 
@@ -90,6 +92,16 @@ const MarcasBrandRoute = MarcasBrandRouteImport.update({
   path: '/marcas/$brand',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ColecaoMasculinoRoute = ColecaoMasculinoRouteImport.update({
+  id: '/colecao/masculino',
+  path: '/colecao/masculino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColecaoFemininoRoute = ColecaoFemininoRouteImport.update({
+  id: '/colecao/feminino',
+  path: '/colecao/feminino',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksWhatsappRoute =
   ApiPublicWebhooksWhatsappRouteImport.update({
     id: '/api/public/webhooks/whatsapp',
@@ -111,6 +123,8 @@ export interface FileRoutesByFullPath {
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
+  '/colecao/feminino': typeof ColecaoFemininoRoute
+  '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
@@ -128,6 +142,8 @@ export interface FileRoutesByTo {
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
+  '/colecao/feminino': typeof ColecaoFemininoRoute
+  '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
@@ -146,6 +162,8 @@ export interface FileRoutesById {
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
+  '/colecao/feminino': typeof ColecaoFemininoRoute
+  '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
@@ -165,6 +183,8 @@ export interface FileRouteTypes {
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
+    | '/colecao/feminino'
+    | '/colecao/masculino'
     | '/marcas/$brand'
     | '/produto/$id'
     | '/roupas/$category'
@@ -182,6 +202,8 @@ export interface FileRouteTypes {
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
+    | '/colecao/feminino'
+    | '/colecao/masculino'
     | '/marcas/$brand'
     | '/produto/$id'
     | '/roupas/$category'
@@ -199,6 +221,8 @@ export interface FileRouteTypes {
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
+    | '/colecao/feminino'
+    | '/colecao/masculino'
     | '/marcas/$brand'
     | '/produto/$id'
     | '/roupas/$category'
@@ -217,6 +241,8 @@ export interface RootRouteChildren {
   MasculinoRoute: typeof MasculinoRoute
   MinhaContaRoute: typeof MinhaContaRoute
   OfertasRoute: typeof OfertasRoute
+  ColecaoFemininoRoute: typeof ColecaoFemininoRoute
+  ColecaoMasculinoRoute: typeof ColecaoMasculinoRoute
   MarcasBrandRoute: typeof MarcasBrandRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   RoupasCategoryRoute: typeof RoupasCategoryRoute
@@ -319,6 +345,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarcasBrandRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/colecao/masculino': {
+      id: '/colecao/masculino'
+      path: '/colecao/masculino'
+      fullPath: '/colecao/masculino'
+      preLoaderRoute: typeof ColecaoMasculinoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colecao/feminino': {
+      id: '/colecao/feminino'
+      path: '/colecao/feminino'
+      fullPath: '/colecao/feminino'
+      preLoaderRoute: typeof ColecaoFemininoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/whatsapp': {
       id: '/api/public/webhooks/whatsapp'
       path: '/api/public/webhooks/whatsapp'
@@ -345,6 +385,8 @@ const rootRouteChildren: RootRouteChildren = {
   MasculinoRoute: MasculinoRoute,
   MinhaContaRoute: MinhaContaRoute,
   OfertasRoute: OfertasRoute,
+  ColecaoFemininoRoute: ColecaoFemininoRoute,
+  ColecaoMasculinoRoute: ColecaoMasculinoRoute,
   MarcasBrandRoute: MarcasBrandRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   RoupasCategoryRoute: RoupasCategoryRoute,
@@ -356,3 +398,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
