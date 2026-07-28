@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import monogram from "@/assets/opt/maxor-monogram.png";
 import { Shell } from "@/components/site/Shell";
+import { LogoLoop } from "@/components/site/LogoLoop";
+import { BRANDS } from "@/components/site/brands-data";
 
 import heroRunner from "@/assets/hero-runner.jpg";
 import shoeBostonPink from "@/assets/opt/shoe-boston-pink.jpg";
