@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
   Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X, Loader2,
   Instagram, Facebook, Youtube, Phone, Mail, Truck,
