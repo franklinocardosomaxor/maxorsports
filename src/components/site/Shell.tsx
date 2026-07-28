@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
   Search, User, Heart, ShoppingBag, MapPin, Menu, Zap, Camera, X, Loader2,
   Instagram, Facebook, Youtube, Phone, Mail, Truck,
@@ -14,6 +14,23 @@ import {
 import { recordNewsletterSignup } from "@/lib/crm.contacts.functions";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
+
+const Aurora = lazy(() => import("./Aurora"));
+
+function HeaderAurora() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0 opacity-70">
+      <Suspense fallback={null}>
+        <Aurora colorStops={["#00BFC6", "#7EEBC1", "#C7F500"]} blend={0.5} amplitude={1.0} speed={0.5} />
+      </Suspense>
+    </div>
+  );
+}
+
+
 
 function AccountLink() {
   const [name, setName] = useState<string | null>(null);
@@ -159,8 +176,9 @@ function Header() {
   const close = () => setState({ kind: "idle" });
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-navy text-offwhite backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-4">
+    <header className="sticky top-0 z-40 overflow-hidden border-b border-white/10 bg-navy text-offwhite backdrop-blur">
+      <HeaderAurora />
+      <div className="relative z-10 mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-4">
         <button className="md:hidden" aria-label="menu"><Menu className="h-6 w-6" /></button>
         <a href="/" className="flex shrink-0 items-center gap-2">
           <img src={monogram} alt="Maxor Sports" className="h-10 w-auto" />
@@ -203,7 +221,9 @@ function Header() {
         </div>
       </div>
 
-      <SearchDropdown state={state} onClose={close} />
+      <div className="relative z-10">
+        <SearchDropdown state={state} onClose={close} />
+      </div>
     </header>
   );
 }
