@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import monogram from "@/assets/opt/maxor-monogram.png";
 import { Shell } from "@/components/site/Shell";
+import { LogoLoop } from "@/components/site/LogoLoop";
+import { BRANDS } from "@/components/site/brands-data";
 
 import heroRunner from "@/assets/hero-runner.jpg";
 import shoeBostonPink from "@/assets/opt/shoe-boston-pink.jpg";
@@ -417,11 +419,11 @@ function CategoryBanners() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
       <div className="grid gap-6 md:grid-cols-2">
-        {[
-          { title: "Masculino", copy: "A força do movimento", img: catMasc, color: "var(--lime-brand)" },
-          { title: "Feminino", copy: "Potência com atitude", img: catFem, color: "var(--cyan-brand)" },
-        ].map((b) => (
-          <a key={b.title} href="#" className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-navy md:aspect-[16/10]">
+        {([
+          { title: "Masculino", copy: "A força do movimento", img: catMasc, color: "var(--lime-brand)", to: "/colecao/masculino" as const },
+          { title: "Feminino", copy: "Potência com atitude", img: catFem, color: "var(--cyan-brand)", to: "/colecao/feminino" as const },
+        ]).map((b) => (
+          <Link key={b.title} to={b.to} className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-navy md:aspect-[16/10]">
             <img src={b.img} alt={b.title} loading="lazy" className="h-full w-full object-cover opacity-80 transition duration-700 group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-tr from-navy via-navy/40 to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-end p-8">
@@ -434,27 +436,41 @@ function CategoryBanners() {
                 Ver coleção <ChevronRight className="h-4 w-4" />
               </span>
             </div>
-          </a>
+          </Link>
         ))}
+
       </div>
     </section>
   );
 }
 
 function BrandStrip() {
-  const brands = ["Nike", "Adidas", "Puma", "New Balance", "Asics", "Mizuno", "Under Armour", "Fila"];
+  const logos = BRANDS.filter((b) => b.logo).map((b) => ({
+    src: b.logo!,
+    alt: b.name,
+    title: b.name,
+    href: `/marcas/${b.slug}`,
+  }));
   return (
     <section className="border-y border-border bg-secondary/60">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-around gap-6 px-4 py-8">
-        {brands.map((b) => (
-          <span key={b} className="font-display text-lg font-bold uppercase tracking-widest text-muted-foreground/70 hover:text-offwhite">
-            {b}
-          </span>
-        ))}
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <LogoLoop
+          logos={logos}
+          speed={70}
+          direction="left"
+          logoHeight={36}
+          gap={56}
+          fadeOut
+          fadeOutColor="#0F1720"
+          scaleOnHover
+          ariaLabel="Marcas Maxor Sports"
+          className="[&_img]:bg-[color:var(--cream)] [&_img]:rounded-xl [&_img]:p-2 [&_img]:box-content"
+        />
       </div>
     </section>
   );
 }
+
 
 function Newsletter() {
   return (
