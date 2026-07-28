@@ -27,6 +27,7 @@ const STORAGE_KEY = "maxor.cart.v1";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [flash, setFlash] = useState<{ name: string; img: string } | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -47,6 +48,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items]);
 
+  useEffect(() => {
+    if (!flash) return;
+    const t = setTimeout(() => setFlash(null), 900);
+    return () => clearTimeout(t);
+  }, [flash]);
+
   const value = useMemo<CartCtx>(() => {
     const count = items.reduce((s, i) => s + i.qty, 0);
     const subtotal = items.reduce((s, i) => s + i.qty * i.price, 0);
@@ -61,6 +68,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           if (found) return prev.map((p) => (p.id === id ? { ...p, qty: p.qty + qty } : p));
           return [...prev, { ...item, id, qty }];
         });
+        setFlash({ name: item.name, img: item.img });
       },
       remove: (id) => setItems((prev) => prev.filter((p) => p.id !== id)),
       setQty: (id, qty) =>
@@ -71,8 +79,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
     };
   }, [items]);
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={value}>
+      {children}
+      {flash && (
+        <div
+          aria-live="polite"
+          className="pointer-events-none fixed inset-0 z-[120] grid place-items-center bg-black/70 backdrop-blur-[2px] animate-in fade-in duration-150"
+        >
+          <div className="flex items-center gap-3 rounded-2xl border border-[color:var(--cyan-brand)]/40 bg-navy/95 px-5 py-4 shadow-2xl">
+            <img src={flash.img} alt="" className="h-14 w-14 rounded-lg bg-white/5 object-contain p-1" />
+            <div>
+              <p className="text-[11px] font-black uppercase tracking-widest text-[color:var(--lime-brand)]">
+                Adicionado à sacola
+              </p>
+              <p className="max-w-[16rem] truncate text-sm font-semibold text-offwhite">{flash.name}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </Ctx.Provider>
+  );
 }
+
 
 export function useCart() {
   const ctx = useContext(Ctx);
