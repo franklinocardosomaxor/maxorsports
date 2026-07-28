@@ -55,6 +55,39 @@ export type Database = {
           },
         ]
       }
+      buyer_favorites: {
+        Row: {
+          brand: string | null
+          created_at: string
+          id: string
+          img: string | null
+          name: string
+          price: number
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          img?: string | null
+          name: string
+          price?: number
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          created_at?: string
+          id?: string
+          img?: string | null
+          name?: string
+          price?: number
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       buyer_profiles: {
         Row: {
           address: string | null

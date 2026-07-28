@@ -1,5 +1,8 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { supabase } from "@/integrations/supabase/client";
+import { listMyFavoriteIds, toggleFavorite } from "@/lib/favorites.functions";
 import { ChevronRight, Heart, ShieldCheck, Truck, RotateCw } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
 import { getProduct, getVariants, brl, type ProductWithSection } from "@/lib/catalog";
@@ -86,12 +89,8 @@ function ProductPage() {
                   {product.tag}
                 </span>
               )}
-              <button
-                aria-label="Favoritar"
-                className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-navy/90 text-muted-foreground shadow hover:text-offwhite"
-              >
-                <Heart className="h-5 w-5" />
-              </button>
+              <FavoriteButton product={product} />
+
               <div className="aspect-square">
                 <img src={product.img} alt={product.name} width={800} height={800} decoding="async" fetchPriority="high" className="h-full w-full object-contain p-6" />
               </div>
@@ -273,5 +272,58 @@ function ProductPage() {
         </div>
       </div>
     </Shell>
+  );
+}
+
+function FavoriteButton({ product }: { product: ProductWithSection }) {
+  const navigate = useNavigate();
+  const loadIds = useServerFn(listMyFavoriteIds);
+  const toggle = useServerFn(toggleFavorite);
+  const [signedIn, setSignedIn] = useState(false);
+  const [fav, setFav] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!alive || !data.session) return;
+      setSignedIn(true);
+      try {
+        const ids = await loadIds();
+        if (alive) setFav(ids.includes(product.id));
+      } catch { /* ignore */ }
+    });
+    return () => { alive = false; };
+  }, [loadIds, product.id]);
+
+  async function onClick() {
+    if (!signedIn) { navigate({ to: "/login" }); return; }
+    setBusy(true);
+    try {
+      const r = await toggle({
+        data: {
+          product_id: product.id,
+          name: product.name,
+          brand: product.brand,
+          img: product.img,
+          price: product.price,
+        },
+      });
+      setFav(r.favorited);
+    } catch { /* ignore */ } finally { setBusy(false); }
+  }
+
+  return (
+    <button
+      onClick={onClick}
+      disabled={busy}
+      aria-label={fav ? "Remover dos favoritos" : "Favoritar"}
+      title={signedIn ? (fav ? "Remover dos favoritos" : "Salvar na minha biblioteca") : "Entre para favoritar"}
+      className={`absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-navy/90 shadow transition hover:brightness-110 disabled:opacity-60 ${
+        fav ? "text-[color:var(--lime-brand)]" : "text-muted-foreground hover:text-offwhite"
+      }`}
+    >
+      <Heart className={`h-5 w-5 ${fav ? "fill-current" : ""}`} />
+    </button>
   );
 }
