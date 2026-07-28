@@ -16,20 +16,20 @@ import {
   Menu,
   Zap,
 } from "lucide-react";
-import monogram from "@/assets/maxor-monogram.png.asset.json";
+import monogram from "@/assets/opt/maxor-monogram.png";
 import { Shell } from "@/components/site/Shell";
 
 import heroRunner from "@/assets/hero-runner.jpg";
-import shoeBostonPink from "@/assets/shoe-boston-pink.jpg.asset.json";
-import shoeTerrexSpeed from "@/assets/shoe-terrex-speed.jpg.asset.json";
-import shoeUltraboost5 from "@/assets/shoe-ultraboost5.jpg.asset.json";
-import shoeUltraboost22 from "@/assets/shoe-ultraboost22.jpg.asset.json";
-import shoeUb20Osaka from "@/assets/shoe-ub20-osaka.jpg.asset.json";
-import shoeGazelleRed from "@/assets/shoe-gazelle-red.jpg.asset.json";
-import shoeSupernova from "@/assets/shoe-supernova.jpg.asset.json";
-import shoeTerrexDaroga from "@/assets/shoe-terrex-daroga.jpg.asset.json";
-import shoeAf1Grey from "@/assets/shoe-af1-grey.jpg.asset.json";
-import shoeAf1Cpfm from "@/assets/shoe-af1-cpfm.jpg.asset.json";
+import shoeBostonPink from "@/assets/opt/shoe-boston-pink.jpg";
+import shoeTerrexSpeed from "@/assets/opt/shoe-terrex-speed.jpg";
+import shoeUltraboost5 from "@/assets/opt/shoe-ultraboost5.jpg";
+import shoeUltraboost22 from "@/assets/opt/shoe-ultraboost22.jpg";
+import shoeUb20Osaka from "@/assets/opt/shoe-ub20-osaka.jpg";
+import shoeGazelleRed from "@/assets/opt/shoe-gazelle-red.jpg";
+import shoeSupernova from "@/assets/opt/shoe-supernova.jpg";
+import shoeTerrexDaroga from "@/assets/opt/shoe-terrex-daroga.jpg";
+import shoeAf1Grey from "@/assets/opt/shoe-af1-grey.jpg";
+import shoeAf1Cpfm from "@/assets/opt/shoe-af1-cpfm.jpg";
 import catFem from "@/assets/cat-feminino.jpg";
 import catMasc from "@/assets/cat-masculino.jpg";
 
@@ -55,26 +55,26 @@ const NAV = [
 ];
 
 const CATEGORIES = [
-  { label: "Corrida", img: shoeSupernova.url },
-  { label: "Basquete", img: shoeAf1Cpfm.url },
-  { label: "Casual", img: shoeGazelleRed.url },
-  { label: "Training", img: shoeUltraboost5.url },
-  { label: "Trail", img: shoeTerrexDaroga.url },
-  { label: "Lifestyle", img: shoeAf1Grey.url },
+  { label: "Corrida", img: shoeSupernova },
+  { label: "Basquete", img: shoeAf1Cpfm },
+  { label: "Casual", img: shoeGazelleRed },
+  { label: "Training", img: shoeUltraboost5 },
+  { label: "Trail", img: shoeTerrexDaroga },
+  { label: "Lifestyle", img: shoeAf1Grey },
 ];
 
 const PRODUCTS: Product[] = [
-  { id: "m-boston-13", name: "Adizero Boston 13", price: 899.9, old: 1199.9, tag: "Novo", img: shoeBostonPink.url, colors: ["#f5e6d8", "#ff4d8a", "#c0c0c0"] },
-  { id: "m-terrex-speed", name: "Terrex Agravic Speed 2", price: 949.9, old: 1249.9, tag: "-24%", img: shoeTerrexSpeed.url, colors: ["#f7f2e6", "#111111", "#ff5a2b"] },
-  { id: "m-ub5-gtx", name: "Ultraboost 5 GTX", price: 1099.9, old: 1399.9, tag: "Top", img: shoeUltraboost5.url, colors: ["#0a0a0a", "#3a4bff"] },
-  { id: "m-af1-cpfm", name: "Air Force 1 x CPFM", price: 1299.9, old: 1599.9, tag: "Drop", img: shoeAf1Cpfm.url, colors: ["#0a0a0a", "#ffffff"] },
+  { id: "m-boston-13", name: "Adizero Boston 13", price: 899.9, old: 1199.9, tag: "Novo", img: shoeBostonPink, colors: ["#f5e6d8", "#ff4d8a", "#c0c0c0"] },
+  { id: "m-terrex-speed", name: "Terrex Agravic Speed 2", price: 949.9, old: 1249.9, tag: "-24%", img: shoeTerrexSpeed, colors: ["#f7f2e6", "#111111", "#ff5a2b"] },
+  { id: "m-ub5-gtx", name: "Ultraboost 5 GTX", price: 1099.9, old: 1399.9, tag: "Top", img: shoeUltraboost5, colors: ["#0a0a0a", "#3a4bff"] },
+  { id: "m-af1-cpfm", name: "Air Force 1 x CPFM", price: 1299.9, old: 1599.9, tag: "Drop", img: shoeAf1Cpfm, colors: ["#0a0a0a", "#ffffff"] },
 ];
 
 const OFFERS: Product[] = [
-  { id: "o-ub22", name: "Ultraboost 22 Grey", price: 699.9, old: 999.9, tag: "-30%", img: shoeUltraboost22.url },
-  { id: "o-ub20-osaka", name: "Ultraboost 20 Osaka", price: 649.9, old: 949.9, tag: "-31%", img: shoeUb20Osaka.url },
-  { id: "o-supernova", name: "Supernova Rise 3M", price: 579.9, old: 819.9, tag: "-29%", img: shoeSupernova.url },
-  { id: "o-gazelle", name: "Gazelle Indoor Red", price: 549.9, old: 799.9, tag: "-31%", img: shoeGazelleRed.url },
+  { id: "o-ub22", name: "Ultraboost 22 Grey", price: 699.9, old: 999.9, tag: "-30%", img: shoeUltraboost22 },
+  { id: "o-ub20-osaka", name: "Ultraboost 20 Osaka", price: 649.9, old: 949.9, tag: "-31%", img: shoeUb20Osaka },
+  { id: "o-supernova", name: "Supernova Rise 3M", price: 579.9, old: 819.9, tag: "-29%", img: shoeSupernova },
+  { id: "o-gazelle", name: "Gazelle Indoor Red", price: 549.9, old: 799.9, tag: "-31%", img: shoeGazelleRed },
 ];
 
 function Home() {
@@ -123,7 +123,7 @@ function Header() {
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4">
         <button className="md:hidden" aria-label="menu"><Menu className="h-6 w-6" /></button>
         <a href="/" className="flex items-center gap-2">
-          <img src={monogram.url} alt="Maxor Sports" className="h-10 w-auto" />
+          <img src={monogram} alt="Maxor Sports" className="h-10 w-auto" />
           <div className="hidden flex-col leading-none sm:flex">
             <span className="font-display text-xl font-bold tracking-wider">MAXOR</span>
             <span className="text-[10px] font-medium tracking-[0.3em] text-offwhite/60">SPORTS</span>
@@ -235,10 +235,12 @@ function Hero() {
             alt="Atleta em movimento com performance Maxor"
             width={1600}
             height={900}
+            decoding="async"
+            fetchPriority="high"
             className="relative rounded-2xl object-cover"
           />
           <div className="absolute -bottom-4 -left-4 flex items-center gap-3 rounded-2xl border border-offwhite/10 bg-navy/80 px-4 py-3 backdrop-blur">
-            <img src={monogram.url} alt="" className="h-8 w-8" />
+            <img src={monogram} alt="" className="h-8 w-8" />
             <div className="text-xs">
               <div className="font-display font-bold uppercase tracking-widest text-[color:var(--cyan-brand)]">MX Runner Pro</div>
               <div className="text-offwhite/70">A partir de R$ 349,90</div>
@@ -492,7 +494,7 @@ function Footer() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-5">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3">
-            <img src={monogram.url} alt="Maxor Sports" className="h-10 w-auto" />
+            <img src={monogram} alt="Maxor Sports" className="h-10 w-auto" />
             <div>
               <div className="font-display text-lg font-bold tracking-wider">MAXOR SPORTS</div>
               <div className="text-[10px] uppercase tracking-[0.3em] text-offwhite/60">Seu esporte. Seu máximo.</div>

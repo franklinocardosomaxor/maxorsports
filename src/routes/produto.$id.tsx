@@ -93,7 +93,7 @@ function ProductPage() {
                 <Heart className="h-5 w-5" />
               </button>
               <div className="aspect-square">
-                <img src={product.img} alt={product.name} className="h-full w-full object-contain p-6" />
+                <img src={product.img} alt={product.name} width={800} height={800} decoding="async" fetchPriority="high" className="h-full w-full object-contain p-6" />
               </div>
             </div>
             {/* Thumbnails de variantes (mostra outras cores como galeria) */}
@@ -108,7 +108,7 @@ function ProductPage() {
                       v.id === product.id ? "border-[color:var(--cyan-brand)] ring-2 ring-[color:var(--cyan-brand)]" : "border-border hover:border-[color:var(--cyan-brand)]"
                     }`}
                   >
-                    <img src={v.img} alt={v.name} className="aspect-square w-full object-contain" />
+                    <img src={v.img} alt={v.name} loading="lazy" decoding="async" className="aspect-square w-full object-contain" />
                   </Link>
                 ))}
               </div>
