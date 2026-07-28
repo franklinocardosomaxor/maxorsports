@@ -146,14 +146,14 @@ function LoginPage() {
               <button
                 type="button"
                 onClick={() => { setMode("signin"); setMsg(null); }}
-                className={`rounded-full px-4 py-1.5 ${mode === "signin" ? "bg-navy text-[color:var(--lime-brand)]" : "text-navy/60"}`}
+                className={`rounded-full px-4 py-1.5 ${mode === "signin" ? "bg-navy text-[color:var(--lime-brand)]" : "text-offwhite/60"}`}
               >
                 Entrar
               </button>
               <button
                 type="button"
                 onClick={() => { setMode("signup"); setMsg(null); }}
-                className={`rounded-full px-4 py-1.5 ${mode === "signup" ? "bg-navy text-[color:var(--lime-brand)]" : "text-navy/60"}`}
+                className={`rounded-full px-4 py-1.5 ${mode === "signup" ? "bg-navy text-[color:var(--lime-brand)]" : "text-offwhite/60"}`}
               >
                 Criar conta
               </button>
