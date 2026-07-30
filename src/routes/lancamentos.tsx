@@ -5,7 +5,6 @@ import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ALL_PRODUCTS } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
-import { useCrmCatalog } from "@/hooks/use-crm-catalog";
 
 export const Route = createFileRoute("/lancamentos")({
   component: LancamentosPage,
