@@ -313,6 +313,83 @@ export type Database = {
           },
         ]
       }
+      products: {
+        Row: {
+          backorder: boolean
+          brand: string
+          category: string
+          colors: string[]
+          created_at: string
+          description: string | null
+          id: string
+          img: string | null
+          launch: boolean
+          name: string
+          old_price: number | null
+          org_id: string | null
+          price: number
+          section: string
+          site_visible: boolean
+          sizes: number[]
+          sku: string | null
+          stock: number
+          tag: string | null
+          updated_at: string
+        }
+        Insert: {
+          backorder?: boolean
+          brand?: string
+          category?: string
+          colors?: string[]
+          created_at?: string
+          description?: string | null
+          id?: string
+          img?: string | null
+          launch?: boolean
+          name: string
+          old_price?: number | null
+          org_id?: string | null
+          price?: number
+          section?: string
+          site_visible?: boolean
+          sizes?: number[]
+          sku?: string | null
+          stock?: number
+          tag?: string | null
+          updated_at?: string
+        }
+        Update: {
+          backorder?: boolean
+          brand?: string
+          category?: string
+          colors?: string[]
+          created_at?: string
+          description?: string | null
+          id?: string
+          img?: string | null
+          launch?: boolean
+          name?: string
+          old_price?: number | null
+          org_id?: string | null
+          price?: number
+          section?: string
+          site_visible?: boolean
+          sizes?: number[]
+          sku?: string | null
+          stock?: number
+          tag?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stages: {
         Row: {
           color: string | null
