@@ -205,19 +205,7 @@ function MegaNav() {
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-navy text-offwhite">
-      <div className="pointer-events-none absolute inset-0 opacity-40">
-        <ClientOnly>
-          <LetterGlitch
-            glitchColors={["#0F1720", "#00BFC6", "#C7F500"]}
-            glitchSpeed={60}
-            centerVignette
-            outerVignette={false}
-            smooth
-          />
-        </ClientOnly>
-      </div>
-
-      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 md:grid-cols-2 md:py-20">
+      <div className="relative mx-auto grid max-w-7xl place-items-center gap-10 px-4 py-14 text-center md:py-20">
         <div className="relative z-10">
           <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cyan-brand)]/40 bg-[color:var(--cyan-brand)]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[color:var(--cyan-brand)]">
             <Zap className="h-3.5 w-3.5" /> Nova coleção MX
@@ -226,23 +214,12 @@ function Hero() {
             SEU ESPORTE. <br />
             <span className="text-gradient-brand">SEU MÁXIMO.</span>
           </h1>
-          <p className="mt-5 max-w-md text-base text-offwhite/70">
+          <p className="mx-auto mt-5 max-w-md text-base text-offwhite/70">
             Tênis e artigos esportivos com curadoria Maxor. Escolha entre dezenas de cores e variações — todas com a performance que você merece.
           </p>
-          <div className="mt-10 flex flex-wrap gap-6 text-xs uppercase tracking-widest text-offwhite/60">
+          <div className="mt-10 flex flex-wrap justify-center gap-6 text-xs uppercase tracking-widest text-offwhite/60">
             <span>+ 500 modelos</span>
             <span>+ 30 cores por linha</span>
-          </div>
-        </div>
-
-        <div className="relative z-10">
-          <div className="relative overflow-hidden rounded-3xl border border-white/10">
-            <img
-              src={heroAtletas}
-              alt="Atletas Maxor Sports em velocidade"
-              className="h-full w-full object-cover"
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
           </div>
         </div>
       </div>
@@ -250,6 +227,7 @@ function Hero() {
     </section>
   );
 }
+
 
 /* ---------- Sections ---------- */
 
