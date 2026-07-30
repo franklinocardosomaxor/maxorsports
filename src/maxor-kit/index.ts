@@ -61,6 +61,19 @@ export {
   type ProductWithSection,
 } from "@/lib/catalog";
 
+/* -------------------------------------------- catálogo público do CRM */
+export {
+  CRM_API_BASE_URL,
+  CRM_CATALOG_URL,
+  LOCAL_CATALOG_TABS,
+  fetchCrmCatalog,
+  loadCatalogTabs,
+  normalizeProduct,
+  type CatalogTabKey,
+  type CatalogTabs,
+} from "@/lib/crm-catalog";
+export { useCrmCatalog } from "@/hooks/use-crm-catalog";
+
 /* ---------------------------------------------------- estado do comprador */
 export { CartProvider, useCart, type CartItem } from "@/lib/cart";
 
