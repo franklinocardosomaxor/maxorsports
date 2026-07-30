@@ -5,34 +5,61 @@ import { CRM_API_BASE_URL } from "@/lib/crm-catalog";
 /** URL da API de catálogo do CRM Maxor (configure VITE_CRM_API_URL no .env). */
 export const CRM_API_URL = `${CRM_API_BASE_URL}/api/site/catalog`;
 
+export type CrmSyncStatus = {
+  /** true enquanto a requisição ao CRM está em andamento */
+  loading: boolean;
+  /** true quando o catálogo do CRM foi aplicado com sucesso */
+  loaded: boolean;
+  /** mensagem de erro amigável quando o CRM não respondeu */
+  error: string | null;
+};
+
 /**
  * Sincroniza o catálogo do site com o CRM Maxor.
  * Se o CRM não responder, o site continua com o catálogo local (fallback).
  */
-export function useCrmSync() {
-  const [loaded, setLoaded] = useState(false);
+export function useCrmSync(): CrmSyncStatus {
+  const [status, setStatus] = useState<CrmSyncStatus>({
+    loading: true,
+    loaded: false,
+    error: null,
+  });
 
   useEffect(() => {
     const ctrl = new AbortController();
 
     fetch(CRM_API_URL, { signal: ctrl.signal, headers: { accept: "application/json" } })
-      .then((res) => res.json())
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         const products = data?.products ?? data?.tabs?.todos;
         if (data?.ok !== false && Array.isArray(products) && products.length > 0) {
           setCrmProducts(products);
-          setLoaded(true);
+          setStatus({ loading: false, loaded: true, error: null });
+        } else {
+          setStatus({
+            loading: false,
+            loaded: false,
+            error: "O CRM respondeu sem produtos — exibindo o catálogo local.",
+          });
         }
       })
       .catch((err) => {
         if (ctrl.signal.aborted) return;
         console.error("Erro ao sincronizar com o CRM Maxor:", err);
+        setStatus({
+          loading: false,
+          loaded: false,
+          error: "Não foi possível conectar ao CRM Maxor — exibindo o catálogo local.",
+        });
       });
 
     return () => ctrl.abort();
   }, []);
 
-  return loaded;
+  return status;
 }
 
 /** Re-renderiza o componente sempre que o catálogo é atualizado pelo CRM. */
