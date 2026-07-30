@@ -477,6 +477,7 @@ function BrandStrip() {
           fadeOut
           fadeOutColor="#0F1720"
           scaleOnHover
+          draggable
           ariaLabel="Marcas Maxor Sports"
           className="[&_img]:bg-[color:var(--cream)] [&_img]:rounded-xl [&_img]:p-2 [&_img]:box-content"
         />
