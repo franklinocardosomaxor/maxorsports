@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "../lib/cart";
 import { useCrmSync } from "../hooks/use-crm-sync";
+import { CrmSyncBanner } from "../components/site/CrmSyncBanner";
 
 
 const SplashCursor = lazy(() => import("../components/site/SplashCursor"));
@@ -137,13 +138,12 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   // Sincroniza o catálogo do site com o CRM Maxor (fallback local se offline).
-  useCrmSync();
-
-
+  const crmSync = useCrmSync();
 
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
+        <CrmSyncBanner status={crmSync} />
         <SplashCursorClient />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
