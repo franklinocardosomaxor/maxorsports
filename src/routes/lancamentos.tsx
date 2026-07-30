@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ALL_PRODUCTS } from "@/lib/catalog";
+import { useCrmCatalog } from "@/hooks/use-crm-catalog";
 
 export const Route = createFileRoute("/lancamentos")({
   component: LancamentosPage,
@@ -20,11 +21,18 @@ export const Route = createFileRoute("/lancamentos")({
 });
 
 function LancamentosPage() {
-  // Regra de lançamento: flag `launch` (vinda do CRM) ou tag "Novo"/"Drop".
-  const products = useMemo(
-    () => ALL_PRODUCTS.filter((p) => p.launch || p.tag === "Novo" || p.tag === "Drop" || p.tag === "Top"),
-    [],
-  );
+  // Fonte primária: aba "lancamentos" do CRM. Fallback: catálogo local do kit.
+  const { products: crmProducts, source } = useCrmCatalog("lancamentos");
+
+  const products = useMemo(() => {
+    if (source === "crm" && crmProducts.length > 0) {
+      return crmProducts.map((p) => ({ ...p, section: "ofertas" as const }));
+    }
+    return ALL_PRODUCTS.filter(
+      (p) => p.launch || p.tag === "Novo" || p.tag === "Drop" || p.tag === "Top",
+    );
+  }, [crmProducts, source]);
+
 
   return (
     <Shell active="Lançamentos">
