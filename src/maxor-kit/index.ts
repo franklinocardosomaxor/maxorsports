@@ -55,6 +55,10 @@ export {
 } from "@/components/site/roupas-data";
 export {
   ALL_PRODUCTS,
+  LOCAL_PRODUCTS,
+  setCrmProducts,
+  subscribeCatalog,
+
   getProduct,
   getVariants,
   brl,
