@@ -34,6 +34,7 @@ import { Route as BlogGuiaTenisNikeRouteImport } from './routes/blog.guia-tenis-
 import { Route as AdminCrmRouteImport } from './routes/admin.crm'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
+import { Route as ApiPublicCrmProductsRouteImport } from './routes/api/public/crm/products'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -161,6 +162,11 @@ const ApiPublicWebhooksStripeRoute = ApiPublicWebhooksStripeRouteImport.update({
   path: '/api/public/webhooks/stripe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCrmProductsRoute = ApiPublicCrmProductsRouteImport.update({
+  id: '/api/public/crm/products',
+  path: '/api/public/crm/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -186,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/marcas/': typeof MarcasIndexRoute
   '/roupas/': typeof RoupasIndexRoute
+  '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
 }
@@ -213,6 +220,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/marcas': typeof MarcasIndexRoute
   '/roupas': typeof RoupasIndexRoute
+  '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
 }
@@ -241,6 +249,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/marcas/': typeof MarcasIndexRoute
   '/roupas/': typeof RoupasIndexRoute
+  '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
 }
@@ -270,6 +279,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/marcas/'
     | '/roupas/'
+    | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
   fileRoutesByTo: FileRoutesByTo
@@ -297,6 +307,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/marcas'
     | '/roupas'
+    | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
   id:
@@ -324,6 +335,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/marcas/'
     | '/roupas/'
+    | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
   fileRoutesById: FileRoutesById
@@ -352,6 +364,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   MarcasIndexRoute: typeof MarcasIndexRoute
   RoupasIndexRoute: typeof RoupasIndexRoute
+  ApiPublicCrmProductsRoute: typeof ApiPublicCrmProductsRoute
   ApiPublicWebhooksStripeRoute: typeof ApiPublicWebhooksStripeRoute
   ApiPublicWebhooksWhatsappRoute: typeof ApiPublicWebhooksWhatsappRoute
 }
@@ -533,6 +546,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksStripeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/crm/products': {
+      id: '/api/public/crm/products'
+      path: '/api/public/crm/products'
+      fullPath: '/api/public/crm/products'
+      preLoaderRoute: typeof ApiPublicCrmProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -560,6 +580,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   MarcasIndexRoute: MarcasIndexRoute,
   RoupasIndexRoute: RoupasIndexRoute,
+  ApiPublicCrmProductsRoute: ApiPublicCrmProductsRoute,
   ApiPublicWebhooksStripeRoute: ApiPublicWebhooksStripeRoute,
   ApiPublicWebhooksWhatsappRoute: ApiPublicWebhooksWhatsappRoute,
 }
