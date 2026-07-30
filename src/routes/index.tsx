@@ -21,7 +21,6 @@ import { Shell } from "@/components/site/Shell";
 import { LogoLoop } from "@/components/site/LogoLoop";
 import { BRANDS } from "@/components/site/brands-data";
 
-import heroRunner from "@/assets/hero-runner.jpg";
 import shoeBostonPink from "@/assets/opt/shoe-boston-pink.jpg";
 import shoeTerrexSpeed from "@/assets/opt/shoe-terrex-speed.jpg";
 import shoeUltraboost5 from "@/assets/opt/shoe-ultraboost5.jpg";
