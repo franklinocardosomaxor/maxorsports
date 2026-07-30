@@ -203,7 +203,7 @@ function MegaNav() {
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-navy text-offwhite">
-      <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-14 md:grid-cols-2 md:py-20">
+      <div className="mx-auto max-w-7xl px-4 py-14 md:py-20">
         <div className="relative z-10">
           <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cyan-brand)]/40 bg-[color:var(--cyan-brand)]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[color:var(--cyan-brand)]">
             <Zap className="h-3.5 w-3.5" /> Nova coleção MX
