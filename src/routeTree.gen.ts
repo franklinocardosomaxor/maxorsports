@@ -14,6 +14,7 @@ import { Route as MinhaContaRouteImport } from './routes/minha-conta'
 import { Route as MasculinoRouteImport } from './routes/masculino'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LancamentosRouteImport } from './routes/lancamentos'
+import { Route as KitValidadorRouteImport } from './routes/kit-validador'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -53,6 +54,11 @@ const LoginRoute = LoginRouteImport.update({
 const LancamentosRoute = LancamentosRouteImport.update({
   id: '/lancamentos',
   path: '/lancamentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KitValidadorRoute = KitValidadorRouteImport.update({
+  id: '/kit-validador',
+  path: '/kit-validador',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InfantilRoute = InfantilRouteImport.update({
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/kit-validador': typeof KitValidadorRoute
   '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/kit-validador': typeof KitValidadorRoute
   '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
@@ -184,6 +192,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/kit-validador': typeof KitValidadorRoute
   '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/kit-validador'
     | '/lancamentos'
     | '/login'
     | '/masculino'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/kit-validador'
     | '/lancamentos'
     | '/login'
     | '/masculino'
@@ -252,6 +263,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/kit-validador'
     | '/lancamentos'
     | '/login'
     | '/masculino'
@@ -275,6 +287,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
+  KitValidadorRoute: typeof KitValidadorRoute
   LancamentosRoute: typeof LancamentosRoute
   LoginRoute: typeof LoginRoute
   MasculinoRoute: typeof MasculinoRoute
@@ -326,6 +339,13 @@ declare module '@tanstack/react-router' {
       path: '/lancamentos'
       fullPath: '/lancamentos'
       preLoaderRoute: typeof LancamentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kit-validador': {
+      id: '/kit-validador'
+      path: '/kit-validador'
+      fullPath: '/kit-validador'
+      preLoaderRoute: typeof KitValidadorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/infantil': {
@@ -443,6 +463,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
+  KitValidadorRoute: KitValidadorRoute,
   LancamentosRoute: LancamentosRoute,
   LoginRoute: LoginRoute,
   MasculinoRoute: MasculinoRoute,
@@ -461,3 +482,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
