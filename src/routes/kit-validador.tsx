@@ -21,6 +21,8 @@ const LogoLoopLazy = React.lazy(() =>
 
 type Check = { label: string; ok: boolean; detail: string };
 
+type LogEntry = { at: string; level: "info" | "ok" | "fail"; message: string };
+
 function KitValidador() {
   const checks: Check[] = [
     { label: "Tokens de cor", ok: !!maxorColors.navy, detail: `${Object.keys(maxorColors).length} tokens` },
@@ -37,6 +39,52 @@ function KitValidador() {
   ];
 
   const okCount = checks.filter((c) => c.ok).length;
+
+  const [logs, setLogs] = React.useState<LogEntry[]>([]);
+
+  React.useEffect(() => {
+    const stamp = () => new Date().toISOString();
+    const entries: LogEntry[] = [
+      { at: stamp(), level: "info", message: `[maxor-kit] validação iniciada — ${checks.length} verificações` },
+      ...checks.map<LogEntry>((c) => ({
+        at: stamp(),
+        level: c.ok ? "ok" : "fail",
+        message: `[maxor-kit] ${c.ok ? "OK  " : "FALHA"} ${c.label} — ${c.detail}`,
+      })),
+      {
+        at: stamp(),
+        level: okCount === checks.length ? "ok" : "fail",
+        message: `[maxor-kit] resultado ${okCount}/${checks.length}`,
+      },
+    ];
+    setLogs(entries);
+    entries.forEach((e) =>
+      e.level === "fail" ? console.error(e.message) : console.info(e.message),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const report = React.useMemo(
+    () =>
+      JSON.stringify(
+        { generatedAt: new Date().toISOString(), passed: okCount, total: checks.length, checks, logs },
+        null,
+        2,
+      ),
+    [logs, okCount],
+  );
+
+  function baixarRelatorio() {
+    const blob = new Blob([report], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "maxor-kit-validacao.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+
 
   return (
     <main className="min-h-screen bg-background px-6 py-12 text-foreground">
@@ -109,6 +157,36 @@ function KitValidador() {
             </ClientOnly>
           </div>
         </section>
+
+        <section className="rounded-xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-xl font-semibold">Logs da validação</h2>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => navigator.clipboard?.writeText(report)}
+                className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-secondary/60"
+              >
+                Copiar JSON
+              </button>
+              <button
+                type="button"
+                onClick={baixarRelatorio}
+                className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
+              >
+                Baixar relatório
+              </button>
+            </div>
+          </div>
+          <pre className="mt-4 max-h-72 overflow-auto rounded-md bg-secondary/30 p-4 text-[11px] leading-relaxed">
+            {logs.length === 0
+              ? "aguardando execução no cliente..."
+              : logs
+                  .map((l) => `${l.at}  ${l.level.toUpperCase().padEnd(4)}  ${l.message}`)
+                  .join("\n")}
+          </pre>
+        </section>
+
       </div>
     </main>
   );
