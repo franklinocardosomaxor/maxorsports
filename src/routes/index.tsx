@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import atletasVideo from "@/assets/atletas-correndo.mp4.asset.json";
+
 import {
   Search,
   User,
