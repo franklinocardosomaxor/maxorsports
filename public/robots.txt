@@ -4,6 +4,6 @@ Disallow: /checkout
 Disallow: /login
 Disallow: /minha-conta
 Disallow: /kit-validador
+Disallow: /admin
 
 Sitemap: https://maxorsports.lovable.app/sitemap.xml
-Disallow: /admin
