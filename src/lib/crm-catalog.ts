@@ -18,9 +18,17 @@ import { MASCULINO, FEMININO, INFANTIL } from "@/components/site/catalog-data";
 import { OFERTAS } from "@/components/site/ofertas-data";
 import { productPlaceholder } from "@/lib/product-media";
 
-export const CRM_API_BASE_URL =
-  (import.meta.env.VITE_CRM_API_URL as string | undefined)?.replace(/\/$/, "") ??
-  "http://127.0.0.1:3333";
+const RAW_CRM_URL = (import.meta.env.VITE_CRM_API_URL as string | undefined)?.replace(/\/$/, "") ?? "";
+
+/**
+ * A sincronização só é considerada configurada quando a URL do CRM é pública
+ * (http/https e fora de localhost). Assim o site não tenta buscar 127.0.0.1 no
+ * navegador do cliente — o que gerava "Failed to fetch" e faixa de erro.
+ */
+export const CRM_CONFIGURED =
+  /^https?:\/\//.test(RAW_CRM_URL) && !/(^https?:\/\/)(localhost|127\.0\.0\.1|0\.0\.0\.0)/.test(RAW_CRM_URL);
+
+export const CRM_API_BASE_URL = RAW_CRM_URL || "http://127.0.0.1:3333";
 
 /** URL pública do catálogo do CRM Maxor Sports. */
 export const CRM_CATALOG_URL = `${CRM_API_BASE_URL}/api/site/catalog`;
@@ -113,6 +121,7 @@ export async function loadCatalogTabs(signal?: AbortSignal): Promise<{
   error?: string;
 }> {
   try {
+    if (!CRM_CONFIGURED) return { tabs: LOCAL_CATALOG_TABS, source: "local" };
     const tabs = await fetchCrmCatalog(signal);
     return { tabs, source: "crm" };
   } catch (err) {

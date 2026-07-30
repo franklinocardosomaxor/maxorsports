@@ -68,6 +68,7 @@ export {
 /* -------------------------------------------- catálogo público do CRM */
 export {
   CRM_API_BASE_URL,
+  CRM_CONFIGURED,
   CRM_CATALOG_URL,
   LOCAL_CATALOG_TABS,
   fetchCrmCatalog,
