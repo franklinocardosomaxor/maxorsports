@@ -1,0 +1,43 @@
+import { useEffect, useState } from "react";
+import { setCrmProducts, subscribeCatalog, getCatalogVersion } from "@/lib/catalog";
+import { CRM_API_BASE_URL } from "@/lib/crm-catalog";
+
+/** URL da API de catálogo do CRM Maxor (configure VITE_CRM_API_URL no .env). */
+export const CRM_API_URL = `${CRM_API_BASE_URL}/api/site/catalog`;
+
+/**
+ * Sincroniza o catálogo do site com o CRM Maxor.
+ * Se o CRM não responder, o site continua com o catálogo local (fallback).
+ */
+export function useCrmSync() {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const ctrl = new AbortController();
+
+    fetch(CRM_API_URL, { signal: ctrl.signal, headers: { accept: "application/json" } })
+      .then((res) => res.json())
+      .then((data) => {
+        const products = data?.products ?? data?.tabs?.todos;
+        if (data?.ok !== false && Array.isArray(products) && products.length > 0) {
+          setCrmProducts(products);
+          setLoaded(true);
+        }
+      })
+      .catch((err) => {
+        if (ctrl.signal.aborted) return;
+        console.error("Erro ao sincronizar com o CRM Maxor:", err);
+      });
+
+    return () => ctrl.abort();
+  }, []);
+
+  return loaded;
+}
+
+/** Re-renderiza o componente sempre que o catálogo é atualizado pelo CRM. */
+export function useCatalogVersion() {
+  const [v, setV] = useState(getCatalogVersion);
+  useEffect(() => subscribeCatalog(() => setV(getCatalogVersion())), []);
+  return v;
+}

@@ -55,6 +55,10 @@ export {
 } from "@/components/site/roupas-data";
 export {
   ALL_PRODUCTS,
+  LOCAL_PRODUCTS,
+  setCrmProducts,
+  subscribeCatalog,
+
   getProduct,
   getVariants,
   brl,
@@ -73,6 +77,8 @@ export {
   type CatalogTabs,
 } from "@/lib/crm-catalog";
 export { useCrmCatalog } from "@/hooks/use-crm-catalog";
+export { useCrmSync, useCatalogVersion, CRM_API_URL } from "@/hooks/use-crm-sync";
+
 
 /* ---------------------------------------------------- estado do comprador */
 export { CartProvider, useCart, type CartItem } from "@/lib/cart";

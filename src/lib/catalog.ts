@@ -1,6 +1,8 @@
 import type { CatalogProduct } from "@/components/site/CatalogPage";
 import { MASCULINO, FEMININO, INFANTIL } from "@/components/site/catalog-data";
 import { OFERTAS } from "@/components/site/ofertas-data";
+import { normalizeProduct } from "@/lib/crm-catalog";
+
 
 /**
  * Índice unificado do catálogo — reunimos Masculino, Feminino, Infantil e Ofertas
@@ -25,16 +27,70 @@ export type ProductWithSection = CatalogProduct & {
 const tag = (list: CatalogProduct[], section: ProductWithSection["section"]) =>
   list.map((p) => ({ ...p, section }) as ProductWithSection);
 
-export const ALL_PRODUCTS: ProductWithSection[] = [
+/** Catálogo local (fallback usado enquanto o CRM não sincroniza). */
+export const LOCAL_PRODUCTS: ProductWithSection[] = [
   ...tag(MASCULINO, "masculino"),
   ...tag(FEMININO, "feminino"),
   ...tag(INFANTIL, "infantil"),
   ...tag(OFERTAS, "ofertas"),
 ];
 
+/**
+ * Índice vivo do catálogo. É a MESMA referência de array durante toda a vida
+ * da aplicação (mutada in-place por `setCrmProducts`), então quem já importou
+ * `ALL_PRODUCTS` continua enxergando os dados atualizados do CRM.
+ */
+export const ALL_PRODUCTS: ProductWithSection[] = [...LOCAL_PRODUCTS];
+
+type Listener = () => void;
+const listeners = new Set<Listener>();
+
+/** Assina mudanças no catálogo (usado por hooks React). */
+export function subscribeCatalog(fn: Listener): () => void {
+  listeners.add(fn);
+  return () => listeners.delete(fn);
+}
+
+let version = 0;
+/** Versão atual do catálogo — muda a cada sincronização com o CRM. */
+export const getCatalogVersion = () => version;
+
+const inferSection = (raw: Record<string, unknown>): ProductWithSection["section"] => {
+  const s = String(raw.section ?? raw.secao ?? raw.aba ?? raw.genero ?? "").toLowerCase();
+  if (s.includes("fem")) return "feminino";
+  if (s.includes("inf") || s.includes("kid")) return "infantil";
+  if (s.includes("ofer") || s.includes("promo")) return "ofertas";
+  return "masculino";
+};
+
+/**
+ * Substitui o catálogo do site pelos produtos vindos do CRM Maxor.
+ * Passe uma lista vazia/nula para voltar ao catálogo local.
+ */
+export function setCrmProducts(products: unknown[] | null | undefined): number {
+  const next: ProductWithSection[] =
+    Array.isArray(products) && products.length > 0
+      ? products.map((p) => {
+          const raw = p as Record<string, unknown>;
+          return {
+            ...normalizeProduct(raw),
+            section: inferSection(raw),
+            modelId: raw.modelId ? String(raw.modelId) : undefined,
+          };
+        })
+      : [...LOCAL_PRODUCTS];
+
+  ALL_PRODUCTS.length = 0;
+  ALL_PRODUCTS.push(...next);
+  version += 1;
+  listeners.forEach((fn) => fn());
+  return ALL_PRODUCTS.length;
+}
+
 export function getProduct(id: string): ProductWithSection | undefined {
   return ALL_PRODUCTS.find((p) => p.id === id);
 }
+
 
 /**
  * Retorna variantes de cor do mesmo modelo, incluindo o próprio produto.
