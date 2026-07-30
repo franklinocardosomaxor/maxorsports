@@ -385,6 +385,7 @@ function ImageSearch({ onImage }: { onImage: (dataUrl: string, fileName: string)
       <input
         ref={fileRef}
         type="file"
+        aria-label="Enviar imagem para buscar o tênis"
         accept="image/*"
         capture="environment"
         className="hidden"
@@ -476,6 +477,7 @@ function Newsletter() {
           <input
             type="email"
             required
+            aria-label="Seu e-mail para a newsletter"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Seu melhor e-mail"
