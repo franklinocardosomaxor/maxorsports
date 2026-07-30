@@ -42,14 +42,23 @@ export const Route = createFileRoute("/")({
   component: Home,
   head: () => ({
     meta: [
-      { title: "Maxor Sports — Tênis e artigos esportivos" },
-      { name: "description", content: "Curadoria Maxor Sports: tênis, roupas e acessórios esportivos com performance, estilo e personalidade." },
-      { property: "og:title", content: "Maxor Sports — Tênis e artigos esportivos" },
-      { property: "og:description", content: "Curadoria Maxor Sports: tênis, roupas e acessórios esportivos com performance, estilo e personalidade." },
-          { property: "og:url", content: "https://maxorsports.lovable.app/" },
-],
+      { title: "Maxor Sports | Tênis Nike, Adidas, New Balance e mais" },
+      {
+        name: "description",
+        content:
+          "Compre tênis de corrida, casual, trail e chuteiras das principais marcas na Maxor Sports. Lançamentos, ofertas da semana e atendimento direto no WhatsApp.",
+      },
+      { property: "og:title", content: "Maxor Sports | Tênis Nike, Adidas, New Balance e mais" },
+      {
+        property: "og:description",
+        content:
+          "Tênis masculinos, femininos e infantis com curadoria Maxor Sports: lançamentos, ofertas e atendimento no WhatsApp.",
+      },
+      { property: "og:url", content: "https://maxorsports.lovable.app/" },
+    ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/" }],
   }),
+
 });
 
 const NAV = [
