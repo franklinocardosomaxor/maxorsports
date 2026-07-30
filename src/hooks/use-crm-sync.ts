@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { setCrmProducts, subscribeCatalog, getCatalogVersion } from "@/lib/catalog";
-import { CRM_API_BASE_URL } from "@/lib/crm-catalog";
+import { CRM_API_BASE_URL, CRM_CONFIGURED } from "@/lib/crm-catalog";
 
 /** URL da API de catálogo do CRM Maxor (configure VITE_CRM_API_URL no .env). */
 export const CRM_API_URL = `${CRM_API_BASE_URL}/api/site/catalog`;
@@ -16,16 +16,22 @@ export type CrmSyncStatus = {
 
 /**
  * Sincroniza o catálogo do site com o CRM Maxor.
- * Se o CRM não responder, o site continua com o catálogo local (fallback).
+ * Só executa quando `VITE_CRM_API_URL` aponta para uma URL pública.
+ * Sem isso, o site usa o catálogo local em silêncio (sem erro na tela).
  */
 export function useCrmSync(): CrmSyncStatus {
   const [status, setStatus] = useState<CrmSyncStatus>({
-    loading: true,
+    loading: CRM_CONFIGURED,
     loaded: false,
     error: null,
   });
 
   useEffect(() => {
+    if (!CRM_CONFIGURED) {
+      setStatus({ loading: false, loaded: false, error: null });
+      return;
+    }
+
     const ctrl = new AbortController();
 
     fetch(CRM_API_URL, { signal: ctrl.signal, headers: { accept: "application/json" } })
