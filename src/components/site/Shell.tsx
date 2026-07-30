@@ -496,16 +496,28 @@ function Newsletter() {
   );
 }
 
+function ComicBubble({ text }: { text: string }) {
+  return (
+    <span
+      role="tooltip"
+      className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden w-56 -translate-y-1/2 rounded-2xl border-2 border-navy bg-[color:var(--cream)] px-3 py-2 text-xs font-semibold leading-snug text-navy shadow-[3px_3px_0_0_var(--cyan-brand)] group-hover/bubble:block group-focus-within/bubble:block md:w-64"
+    >
+      <span className="absolute left-[-9px] top-1/2 h-3 w-3 -translate-y-1/2 rotate-45 border-b-2 border-l-2 border-navy bg-[color:var(--cream)]" />
+      {text}
+    </span>
+  );
+}
+
 function Footer() {
   const cols = [
     {
       title: "Institucional",
+      bubble: "Desenvolvida em um sentimento de proporcionar saúde e bem-estar aos seus clientes.",
       links: [
-        { label: "Sobre a Maxor", href: "#" },
-        { label: "Nossa curadoria", href: "#" },
-        { label: "Trabalhe conosco", href: `mailto:${COMPANY_EMAIL}` },
+        { label: "Sobre a Maxor", href: "#", bubble: "Empresa de importação de material esportivo." },
       ],
     },
+
     {
       title: "Ajuda",
       links: [
@@ -573,10 +585,13 @@ function Footer() {
         </div>
         {cols.map((c) => (
           <div key={c.title}>
-            <div className="font-display text-sm font-bold uppercase tracking-widest text-[color:var(--cyan-brand)]">{c.title}</div>
+            <div className="group/bubble relative inline-block">
+              <span className="font-display text-sm font-bold uppercase tracking-widest text-[color:var(--cyan-brand)]">{c.title}</span>
+              {"bubble" in c && c.bubble ? <ComicBubble text={c.bubble} /> : null}
+            </div>
             <ul className="mt-4 space-y-2 text-sm text-offwhite/70">
               {c.links.map((l) => (
-                <li key={l.label}>
+                <li key={l.label} className="group/bubble relative">
                   <a
                     href={l.href}
                     {...("external" in l && l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
@@ -584,11 +599,13 @@ function Footer() {
                   >
                     {l.label}
                   </a>
+                  {"bubble" in l && l.bubble ? <ComicBubble text={l.bubble} /> : null}
                 </li>
               ))}
             </ul>
           </div>
         ))}
+
       </div>
       <div className="border-t border-white/5">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-offwhite/50 md:flex-row">
