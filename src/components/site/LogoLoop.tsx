@@ -172,16 +172,18 @@ export const LogoLoop = memo(function LogoLoop({
       const deltaTime = Math.max(0, timestamp - lastTimestampRef.current) / 1000;
       lastTimestampRef.current = timestamp;
 
-      const target =
-        isHovered && effectiveHoverSpeed !== undefined ? effectiveHoverSpeed : targetVelocity;
+      const paused = isHovered || isDragging;
+      const target = paused && effectiveHoverSpeed !== undefined ? effectiveHoverSpeed : targetVelocity;
       const easingFactor = 1 - Math.exp(-deltaTime / ANIMATION_CONFIG.SMOOTH_TAU);
       velocityRef.current += (target - velocityRef.current) * easingFactor;
 
       if (seqWidth > 0) {
-        let nextOffset = offsetRef.current + velocityRef.current * deltaTime;
+        let nextOffset = offsetRef.current + (isDragging ? 0 : velocityRef.current * deltaTime);
         nextOffset = ((nextOffset % seqWidth) + seqWidth) % seqWidth;
         offsetRef.current = nextOffset;
         track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+        const pct = Math.round((nextOffset / seqWidth) * 100);
+        setScrollPct((prev) => (prev === pct ? prev : pct));
       }
       rafRef.current = requestAnimationFrame(animate);
     };
@@ -192,7 +194,43 @@ export const LogoLoop = memo(function LogoLoop({
       rafRef.current = null;
       lastTimestampRef.current = null;
     };
-  }, [targetVelocity, seqWidth, isHovered, effectiveHoverSpeed]);
+  }, [targetVelocity, seqWidth, isHovered, isDragging, effectiveHoverSpeed]);
+
+  const applyOffset = useCallback(
+    (next: number) => {
+      if (seqWidth <= 0) return;
+      const wrapped = ((next % seqWidth) + seqWidth) % seqWidth;
+      offsetRef.current = wrapped;
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translate3d(${-wrapped}px, 0, 0)`;
+      }
+      setScrollPct(Math.round((wrapped / seqWidth) * 100));
+    },
+    [seqWidth],
+  );
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (!draggable) return;
+    setIsDragging(true);
+    dragStartXRef.current = e.clientX;
+    dragStartOffsetRef.current = offsetRef.current;
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  }, [draggable]);
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isDragging) return;
+      applyOffset(dragStartOffsetRef.current - (e.clientX - dragStartXRef.current));
+    },
+    [isDragging, applyOffset],
+  );
+
+  const endDrag = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+  }, [isDragging]);
+
 
   const rootClassName = [
     "logoloop",
