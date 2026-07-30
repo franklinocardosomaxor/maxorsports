@@ -496,16 +496,28 @@ function Newsletter() {
   );
 }
 
+function ComicBubble({ text }: { text: string }) {
+  return (
+    <span
+      role="tooltip"
+      className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden w-56 -translate-y-1/2 rounded-2xl border-2 border-navy bg-[color:var(--cream)] px-3 py-2 text-xs font-semibold leading-snug text-navy shadow-[3px_3px_0_0_var(--cyan-brand)] group-hover/bubble:block group-focus-within/bubble:block md:w-64"
+    >
+      <span className="absolute left-[-9px] top-1/2 h-3 w-3 -translate-y-1/2 rotate-45 border-b-2 border-l-2 border-navy bg-[color:var(--cream)]" />
+      {text}
+    </span>
+  );
+}
+
 function Footer() {
   const cols = [
     {
       title: "Institucional",
+      bubble: "Desenvolvida em um sentimento de proporcionar saúde e bem-estar aos seus clientes.",
       links: [
-        { label: "Sobre a Maxor", href: "#" },
-        { label: "Nossa curadoria", href: "#" },
-        { label: "Trabalhe conosco", href: `mailto:${COMPANY_EMAIL}` },
+        { label: "Sobre a Maxor", href: "#", bubble: "Empresa de importação de material esportivo." },
       ],
     },
+
     {
       title: "Ajuda",
       links: [
