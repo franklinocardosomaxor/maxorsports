@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "../lib/cart";
 import { useCrmSync } from "../hooks/use-crm-sync";
+import { CrmSyncBanner } from "../components/site/CrmSyncBanner";
 
 
 const SplashCursor = lazy(() => import("../components/site/SplashCursor"));
