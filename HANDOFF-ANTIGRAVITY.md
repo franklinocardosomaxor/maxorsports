@@ -149,7 +149,7 @@ Preview `*.lovable.app` fica com `frame-ancestors 'self' https://*.lovable.app h
 | **Stripe** | `api/public/webhooks/stripe` → cria contact + deal | `STRIPE_WEBHOOK_SECRET` |
 | **WhatsApp Cloud API** | `api/public/webhooks/whatsapp` → cria contact + activity | `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET` |
 | **Correios** | Link direto para `rastreamento.correios.com.br` | — |
-| **PIX** | CNPJ `68.105.594/0001-39` — copiado no checkout | — |
+| **PIX** | Chave aleatória `0010ef3f-7011-41f4-ae7d-43616eb08627` — copiada no checkout | — |
 
 ---
 
