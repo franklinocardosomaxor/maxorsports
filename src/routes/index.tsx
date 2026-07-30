@@ -86,9 +86,10 @@ function Home() {
       <Hero />
       <BenefitsStrip />
       <CategoryCircles />
-      <ProductCarousel title="Lançamentos" subtitle="A curadoria mais fresca da Maxor" items={PRODUCTS} />
+      <ProductCarousel title="Lançamentos" subtitle="A curadoria mais fresca da Maxor" items={PRODUCTS} to="/lancamentos" />
       <BrandBanner />
-      <ProductCarousel title="Ofertas da semana" subtitle="Preços com desconto para levar hoje" items={OFFERS} accent />
+      <ProductCarousel title="Ofertas da semana" subtitle="Preços com desconto para levar hoje" items={OFFERS} accent to="/ofertas" />
+
       <CategoryBanners />
       <BrandStrip />
     </Shell>
