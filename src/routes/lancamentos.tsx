@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ALL_PRODUCTS } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import { useCrmCatalog } from "@/hooks/use-crm-catalog";
 
 export const Route = createFileRoute("/lancamentos")({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/lancamentos")({
 });
 
 function LancamentosPage() {
+  const catalogVersion = useCatalogVersion();
   // Fonte primária: aba "lancamentos" do CRM. Fallback: catálogo local do kit.
   const { products: crmProducts, source } = useCrmCatalog("lancamentos");
 
@@ -33,7 +35,7 @@ function LancamentosPage() {
     return ALL_PRODUCTS.filter(
       (p) => p.launch || p.tag === "Novo" || p.tag === "Drop" || p.tag === "Top",
     );
-  }, [crmProducts, source]);
+  }, [crmProducts, source, catalogVersion]);
 
 
   return (

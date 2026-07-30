@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ALL_PRODUCTS } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/categorias")({
   component: CategoriasPage,
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/categorias")({
 });
 
 function CategoriasPage() {
+  useCatalogVersion();
   const categories = useMemo(
     () => Array.from(new Set(ALL_PRODUCTS.map((p) => p.category))).sort(),
     [],

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ALL_PRODUCTS } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import { BRANDS } from "@/components/site/brands-data";
 
 export const Route = createFileRoute("/catalogo")({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/catalogo")({
 });
 
 function CatalogoPage() {
+  useCatalogVersion();
   const groups = useMemo(() => {
     const map = new Map<string, typeof ALL_PRODUCTS>();
     for (const p of ALL_PRODUCTS) {
