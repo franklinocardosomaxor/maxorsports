@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
-  Search, User, Heart, ShoppingBag, MapPin, Zap, Camera, X, Loader2,
+  Search, User, Heart, ShoppingBag, Zap, Camera, X, Loader2,
   Instagram, Facebook, Youtube, Phone, Mail, Truck,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
