@@ -40,6 +40,52 @@ function KitValidador() {
 
   const okCount = checks.filter((c) => c.ok).length;
 
+  const [logs, setLogs] = React.useState<LogEntry[]>([]);
+
+  React.useEffect(() => {
+    const stamp = () => new Date().toISOString();
+    const entries: LogEntry[] = [
+      { at: stamp(), level: "info", message: `[maxor-kit] validação iniciada — ${checks.length} verificações` },
+      ...checks.map<LogEntry>((c) => ({
+        at: stamp(),
+        level: c.ok ? "ok" : "fail",
+        message: `[maxor-kit] ${c.ok ? "OK  " : "FALHA"} ${c.label} — ${c.detail}`,
+      })),
+      {
+        at: stamp(),
+        level: okCount === checks.length ? "ok" : "fail",
+        message: `[maxor-kit] resultado ${okCount}/${checks.length}`,
+      },
+    ];
+    setLogs(entries);
+    entries.forEach((e) =>
+      e.level === "fail" ? console.error(e.message) : console.info(e.message),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const report = React.useMemo(
+    () =>
+      JSON.stringify(
+        { generatedAt: new Date().toISOString(), passed: okCount, total: checks.length, checks, logs },
+        null,
+        2,
+      ),
+    [logs, okCount],
+  );
+
+  function baixarRelatorio() {
+    const blob = new Blob([report], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "maxor-kit-validacao.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+
+
   return (
     <main className="min-h-screen bg-background px-6 py-12 text-foreground">
       <div className="mx-auto max-w-4xl space-y-8">
