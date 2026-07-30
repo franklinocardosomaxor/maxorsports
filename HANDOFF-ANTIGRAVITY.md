@@ -185,7 +185,7 @@ Telas mínimas a construir no CRM:
 2. `buyer_profiles` + RLS por dono.
 3. Endurecimento: revoke de anon nos helpers, policies admin-only em `user_roles`.
 4. `ALTER TYPE app_role ADD VALUE 'super_admin'` (isolada — Postgres exige commit do enum).
-5. **Helena** (esta migração):
+5. **Helena**:
    - trigger `on_auth_user_created` (faltava!)
    - trigger `on_auth_user_confirmed_grant_super` (2 e-mails autorizados)
    - `is_super_admin()`
@@ -194,6 +194,7 @@ Telas mínimas a construir no CRM:
    - `seed_default_pipeline()` + trigger
    - `audit_user_roles()` + trigger
    - RLS granular por papel em contacts/deals/pipelines/stages/activities
+6. **Pré-importação CRM (Felipe)**: `REVOKE EXECUTE` de `anon`/`authenticated` nas funções de gatilho (`handle_new_user`, `audit_user_roles`, `seed_default_pipeline`, `grant_super_admin_for_authorized_email`, `set_updated_at`). Os helpers de RLS (`has_role`, `is_org_member`, `current_org_id`, `is_super_admin`) **permanecem executáveis por `authenticated`** — é requisito das próprias policies; são funções booleanas somente-leitura e sem efeito colateral.
 
 ---
 
