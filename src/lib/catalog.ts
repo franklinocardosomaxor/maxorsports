@@ -1,6 +1,8 @@
 import type { CatalogProduct } from "@/components/site/CatalogPage";
 import { MASCULINO, FEMININO, INFANTIL } from "@/components/site/catalog-data";
 import { OFERTAS } from "@/components/site/ofertas-data";
+import { normalizeProduct } from "@/lib/crm-catalog";
+
 
 /**
  * Índice unificado do catálogo — reunimos Masculino, Feminino, Infantil e Ofertas
