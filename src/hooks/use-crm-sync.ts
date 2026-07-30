@@ -22,7 +22,7 @@ export type CrmSyncStatus = {
  */
 export function useCrmSync(): CrmSyncStatus {
   const [status, setStatus] = useState<CrmSyncStatus>({
-    loading: CRM_CONFIGURED,
+    loading: true,
     loaded: false,
     error: null,
   });
