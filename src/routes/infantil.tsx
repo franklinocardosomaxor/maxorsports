@@ -1,25 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { CatalogPage } from "@/components/site/CatalogPage";
-import { INFANTIL } from "@/components/site/catalog-data";
+import { getSectionProducts } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/infantil")({
-  component: () => (
-    <CatalogPage
-      activeNav="Infantil"
-      breadcrumb={["Infantil", "Tênis"]}
-      theme={{
-        eyebrow: "Coleção Maxor Kids",
-        title: "Tênis Infantil",
-        subtitle: "Energia dos pequenos atletas. Modelos leves, resistentes e cheios de cor para todas as aventuras.",
-        headerGradient: "linear-gradient(120deg, #0F1720 0%, #2c3a12 55%, #C7F500 100%)",
-        accent: "lime",
-      }}
-      products={INFANTIL}
-      brands={["Adidas", "Nike", "New Balance", "Asics", "Puma"]}
-      categories={["Corrida", "Casual", "Trail"]}
-      sizes={[26, 27, 28, 29, 30, 31, 32, 33, 34]}
-    />
-  ),
+  component: SectionPage,
   head: () => ({
     meta: [
       { title: "Tênis Infantil — Maxor Sports" },
@@ -31,3 +16,25 @@ export const Route = createFileRoute("/infantil")({
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/infantil" }],
   }),
 });
+
+function SectionPage() {
+  useCatalogVersion();
+  const products = getSectionProducts("infantil");
+  return (
+    <CatalogPage
+      activeNav="Infantil"
+      breadcrumb={["Infantil", "Tênis"]}
+      theme={{
+        eyebrow: "Coleção Maxor Kids",
+        title: "Tênis Infantil",
+        subtitle: "Energia dos pequenos atletas. Modelos leves, resistentes e cheios de cor para todas as aventuras.",
+        headerGradient: "linear-gradient(120deg, #0F1720 0%, #2c3a12 55%, #C7F500 100%)",
+        accent: "lime",
+      }}
+      products={products}
+      brands={["Adidas", "Nike", "New Balance", "Asics", "Puma"]}
+      categories={["Corrida", "Casual", "Trail"]}
+      sizes={[26, 27, 28, 29, 30, 31, 32, 33, 34]}
+    />
+  );
+}

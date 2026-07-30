@@ -57,6 +57,8 @@ export {
   ALL_PRODUCTS,
   LOCAL_PRODUCTS,
   setCrmProducts,
+  mergeCrmProducts,
+  getSectionProducts,
   subscribeCatalog,
 
   getProduct,
@@ -101,3 +103,5 @@ export { searchByName, searchByImage, type ProductHit } from "@/lib/crm.image-se
 export { importLeadsCsv } from "@/lib/crm.import.functions";
 export { sendTransactional } from "@/lib/crm.email.functions";
 export { sendWhatsappTemplate } from "@/lib/crm.whatsapp.functions";
+
+export { fetchDbProducts, type DbProduct } from "@/lib/crm-db-catalog";

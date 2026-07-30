@@ -87,6 +87,31 @@ export function setCrmProducts(products: unknown[] | null | undefined): number {
   return ALL_PRODUCTS.length;
 }
 
+/**
+ * Mescla produtos vindos do banco compartilhado (CRM) com o catálogo local.
+ * Os produtos do CRM ficam à frente; os locais permanecem como vitrine base.
+ */
+export function mergeCrmProducts(products: unknown[] | null | undefined): number {
+  const crm: ProductWithSection[] =
+    Array.isArray(products) && products.length > 0
+      ? products.map((p) => {
+          const raw = p as Record<string, unknown>;
+          return {
+            ...normalizeProduct(raw),
+            section: inferSection(raw),
+            modelId: raw.modelId ? String(raw.modelId) : undefined,
+          };
+        })
+      : [];
+
+  const ids = new Set(crm.map((p) => p.id));
+  ALL_PRODUCTS.length = 0;
+  ALL_PRODUCTS.push(...crm, ...LOCAL_PRODUCTS.filter((p) => !ids.has(p.id)));
+  version += 1;
+  listeners.forEach((fn) => fn());
+  return crm.length;
+}
+
 export function getProduct(id: string): ProductWithSection | undefined {
   return ALL_PRODUCTS.find((p) => p.id === id);
 }
@@ -115,3 +140,8 @@ export function getVariants(base: ProductWithSection): ProductWithSection[] {
 
 export const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+/** Produtos de uma seção (inclui os cadastrados no CRM). */
+export function getSectionProducts(section: ProductWithSection["section"]) {
+  return ALL_PRODUCTS.filter((p) => p.section === section);
+}

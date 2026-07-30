@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { setCrmProducts, subscribeCatalog, getCatalogVersion } from "@/lib/catalog";
+import { setCrmProducts, mergeCrmProducts, subscribeCatalog, getCatalogVersion } from "@/lib/catalog";
+import { fetchDbProducts } from "@/lib/crm-db-catalog";
 import { CRM_API_BASE_URL, CRM_CONFIGURED } from "@/lib/crm-catalog";
 
 /** URL da API de catálogo do CRM Maxor (configure VITE_CRM_API_URL no .env). */
@@ -21,16 +22,34 @@ export type CrmSyncStatus = {
  */
 export function useCrmSync(): CrmSyncStatus {
   const [status, setStatus] = useState<CrmSyncStatus>({
-    loading: CRM_CONFIGURED,
+    loading: true,
     loaded: false,
     error: null,
   });
 
+  // 1) Banco compartilhado (Lovable Cloud): fonte principal do catálogo do CRM.
   useEffect(() => {
-    if (!CRM_CONFIGURED) {
-      setStatus({ loading: false, loaded: false, error: null });
-      return;
-    }
+    let alive = true;
+    setStatus((s) => ({ ...s, loading: true }));
+    fetchDbProducts()
+      .then((products) => {
+        if (!alive) return;
+        const n = mergeCrmProducts(products);
+        setStatus({ loading: false, loaded: n > 0, error: null });
+      })
+      .catch((err) => {
+        if (!alive) return;
+        console.warn("Catálogo do banco indisponível — usando catálogo local.", err?.message ?? err);
+        setStatus({ loading: false, loaded: false, error: null });
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // 2) API opcional do CRM (VITE_CRM_API_URL), quando publicada.
+  useEffect(() => {
+    if (!CRM_CONFIGURED) return;
 
     const ctrl = new AbortController();
 
