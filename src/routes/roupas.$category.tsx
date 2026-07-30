@@ -15,20 +15,24 @@ export const Route = createFileRoute("/roupas/$category")({
     return { roupa };
   },
   component: RoupaCategoryPage,
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     if (!loaderData) {
       return { meta: [{ title: "Categoria não encontrada — Maxor Sports" }, { name: "robots", content: "noindex" }] };
     }
     const { roupa } = loaderData;
+    const url = `https://maxorsports.lovable.app/roupas/${params.category}`;
     return {
       meta: [
         { title: `Roupas ${roupa.name} — Maxor Sports` },
         { name: "description", content: `Roupas ${roupa.name} com curadoria Maxor Sports: ${roupa.tagline}.` },
         { property: "og:title", content: `Roupas ${roupa.name} — Maxor Sports` },
         { property: "og:description", content: `${roupa.tagline} — coleção Maxor Sports.` },
+        { property: "og:url", content: url },
       ],
+      links: [{ rel: "canonical", href: url }],
     };
   },
+
 });
 
 function RoupaCategoryPage() {

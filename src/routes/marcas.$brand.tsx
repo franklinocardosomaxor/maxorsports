@@ -15,20 +15,24 @@ export const Route = createFileRoute("/marcas/$brand")({
     return { brand };
   },
   component: BrandPage,
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     if (!loaderData) {
       return { meta: [{ title: "Marca não encontrada — Maxor Sports" }, { name: "robots", content: "noindex" }] };
     }
     const { brand } = loaderData;
+    const url = `https://maxorsports.lovable.app/marcas/${params.brand}`;
     return {
       meta: [
         { title: `${brand.name} — Maxor Sports` },
         { name: "description", content: `Tênis ${brand.name} com curadoria Maxor Sports: ${brand.tagline}.` },
         { property: "og:title", content: `${brand.name} — Maxor Sports` },
         { property: "og:description", content: `Coleção ${brand.name} — ${brand.tagline}.` },
+        { property: "og:url", content: url },
       ],
+      links: [{ rel: "canonical", href: url }],
     };
   },
+
 });
 
 function BrandPage() {
