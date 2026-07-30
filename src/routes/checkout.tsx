@@ -6,7 +6,7 @@ import { useCart } from "@/lib/cart";
 import { brl } from "@/lib/catalog";
 
 const WHATSAPP_NUMBER = "5577999599009";
-const PIX_KEY = "68.105.594/0001-39";
+const PIX_KEY = "0010ef3f-7011-41f4-ae7d-43616eb08627";
 const COMPANY_NAME = "Maxor Importação LTDA";
 
 export const Route = createFileRoute("/checkout")({
