@@ -109,7 +109,6 @@ export function mergeCrmProducts(products: unknown[] | null | undefined): number
   ALL_PRODUCTS.push(...crm, ...LOCAL_PRODUCTS.filter((p) => !ids.has(p.id)));
   version += 1;
   listeners.forEach((fn) => fn());
-  console.log("[catalog] merge CRM", crm.length, ALL_PRODUCTS.length);
   return crm.length;
 }
 
