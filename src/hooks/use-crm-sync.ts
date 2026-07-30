@@ -54,7 +54,7 @@ export function useCrmSync(): CrmSyncStatus {
       })
       .catch((err) => {
         if (ctrl.signal.aborted) return;
-        console.error("Erro ao sincronizar com o CRM Maxor:", err);
+        console.warn("Catálogo do CRM indisponível — usando catálogo local.", err?.message ?? err);
         setStatus({
           loading: false,
           loaded: false,
