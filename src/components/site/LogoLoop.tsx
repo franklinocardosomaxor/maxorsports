@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import "./LogoLoop.css";
+import type React from "react";
 
 const ANIMATION_CONFIG = { SMOOTH_TAU: 0.25, MIN_COPIES: 2, COPY_HEADROOM: 2 };
 
@@ -34,6 +35,8 @@ type LogoLoopProps = {
   fadeOut?: boolean;
   fadeOutColor?: string;
   scaleOnHover?: boolean;
+  /** Permite arrastar as logos e exibe uma barra de rolagem. */
+  draggable?: boolean;
   renderItem?: (item: LogoItem, key: Key) => ReactNode;
   ariaLabel?: string;
   className?: string;
@@ -55,6 +58,7 @@ export const LogoLoop = memo(function LogoLoop({
   fadeOut = false,
   fadeOutColor,
   scaleOnHover = false,
+  draggable = false,
   renderItem,
   ariaLabel = "Partner logos",
   className,
@@ -71,6 +75,10 @@ export const LogoLoop = memo(function LogoLoop({
   const [seqWidth, setSeqWidth] = useState(0);
   const [copyCount, setCopyCount] = useState(ANIMATION_CONFIG.MIN_COPIES);
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [scrollPct, setScrollPct] = useState(0);
+  const dragStartXRef = useRef(0);
+  const dragStartOffsetRef = useRef(0);
 
   const effectiveHoverSpeed = useMemo(() => {
     if (hoverSpeed !== undefined) return hoverSpeed;
