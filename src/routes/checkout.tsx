@@ -223,10 +223,10 @@ function CheckoutPage() {
                 Pagamento via PIX
               </h2>
               <p className="mt-2 text-xs text-muted-foreground">
-                Chave PIX (CNPJ) — {COMPANY_NAME}
+                Chave PIX (aleatória) — {COMPANY_NAME}
               </p>
               <div className="mt-2 flex items-center gap-2 rounded-lg border border-dashed border-[color:var(--cyan-brand)] bg-secondary p-3">
-                <code className="flex-1 text-sm font-bold text-offwhite">{PIX_KEY}</code>
+                <code className="flex-1 break-all text-sm font-bold text-offwhite">{PIX_KEY}</code>
                 <button
                   onClick={copyPix}
                   className="inline-flex items-center gap-1 rounded-md bg-[color:var(--cyan-brand)] px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-navy hover:brightness-110"
