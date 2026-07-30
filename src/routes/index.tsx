@@ -418,9 +418,10 @@ function BrandBanner() {
           <h3 className="mt-3 font-display text-3xl font-bold uppercase leading-tight text-offwhite md:text-5xl">
             Performance com seu <span className="text-gradient-brand">estilo</span> e <span className="text-gradient-brand">personalidade</span>
           </h3>
-          <a href="/masculino" className="mt-8 inline-flex rounded-full bg-[color:var(--lime-brand)] px-8 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110">
+          <Link to="/catalogo" className="mt-8 inline-flex rounded-full bg-[color:var(--lime-brand)] px-8 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110">
             Explorar catálogo
-          </a>
+          </Link>
+
         </div>
       </div>
     </section>
