@@ -1,93 +1,31 @@
 import { useEffect, useState } from "react";
-import { setCrmProducts, mergeCrmProducts, subscribeCatalog, getCatalogVersion } from "@/lib/catalog";
-import { fetchDbProducts } from "@/lib/crm-db-catalog";
-import { CRM_API_BASE_URL, CRM_CONFIGURED } from "@/lib/crm-catalog";
+import { getCatalogVersion, subscribeCatalog } from "@/lib/catalog";
+import { CRM_API_BASE_URL } from "@/lib/crm-catalog";
 
-/** URL da API de catálogo do CRM Maxor (configure VITE_CRM_API_URL no .env). */
+/**
+ * MODO MOCK — a integração com o CRM está desativada.
+ *
+ * O site funciona 100% com o catálogo local (`src/components/site/catalog-data.ts`
+ * e `ofertas-data.ts`), sem exigir nenhuma secret, URL de API ou banco.
+ * Para reativar, restaure a busca em `fetchDbProducts()` / `CRM_API_URL`.
+ */
+export const CRM_SYNC_ENABLED = false;
+
+/** Mantido apenas por compatibilidade com o Maxor Kit. */
 export const CRM_API_URL = `${CRM_API_BASE_URL}/api/site/catalog`;
 
 export type CrmSyncStatus = {
-  /** true enquanto a requisição ao CRM está em andamento */
   loading: boolean;
-  /** true quando o catálogo do CRM foi aplicado com sucesso */
   loaded: boolean;
-  /** mensagem de erro amigável quando o CRM não respondeu */
   error: string | null;
 };
 
-/**
- * Sincroniza o catálogo do site com o CRM Maxor.
- * Só executa quando `VITE_CRM_API_URL` aponta para uma URL pública.
- * Sem isso, o site usa o catálogo local em silêncio (sem erro na tela).
- */
+/** No-op: retorna sempre "pronto", usando o catálogo local. */
 export function useCrmSync(): CrmSyncStatus {
-  const [status, setStatus] = useState<CrmSyncStatus>({
-    loading: true,
-    loaded: false,
-    error: null,
-  });
-
-  // 1) Banco compartilhado (Lovable Cloud): fonte principal do catálogo do CRM.
-  useEffect(() => {
-    let alive = true;
-    setStatus((s) => ({ ...s, loading: true }));
-    fetchDbProducts()
-      .then((products) => {
-        if (!alive) return;
-        const n = mergeCrmProducts(products);
-        setStatus({ loading: false, loaded: n > 0, error: null });
-      })
-      .catch((err) => {
-        if (!alive) return;
-        console.warn("Catálogo do banco indisponível — usando catálogo local.", err?.message ?? err);
-        setStatus({ loading: false, loaded: false, error: null });
-      });
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  // 2) API opcional do CRM (VITE_CRM_API_URL), quando publicada.
-  useEffect(() => {
-    if (!CRM_CONFIGURED) return;
-
-    const ctrl = new AbortController();
-
-    fetch(CRM_API_URL, { signal: ctrl.signal, headers: { accept: "application/json" } })
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
-        const products = data?.products ?? data?.tabs?.todos;
-        if (data?.ok !== false && Array.isArray(products) && products.length > 0) {
-          setCrmProducts(products);
-          setStatus({ loading: false, loaded: true, error: null });
-        } else {
-          setStatus({
-            loading: false,
-            loaded: false,
-            error: "O CRM respondeu sem produtos — exibindo o catálogo local.",
-          });
-        }
-      })
-      .catch((err) => {
-        if (ctrl.signal.aborted) return;
-        console.warn("Catálogo do CRM indisponível — usando catálogo local.", err?.message ?? err);
-        setStatus({
-          loading: false,
-          loaded: false,
-          error: "Não foi possível conectar ao CRM Maxor — exibindo o catálogo local.",
-        });
-      });
-
-    return () => ctrl.abort();
-  }, []);
-
-  return status;
+  return { loading: false, loaded: false, error: null };
 }
 
-/** Re-renderiza o componente sempre que o catálogo é atualizado pelo CRM. */
+/** Re-renderiza o componente sempre que o catálogo local muda. */
 export function useCatalogVersion() {
   const [v, setV] = useState(getCatalogVersion);
   useEffect(() => subscribeCatalog(() => setV(getCatalogVersion())), []);
