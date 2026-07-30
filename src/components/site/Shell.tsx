@@ -585,10 +585,13 @@ function Footer() {
         </div>
         {cols.map((c) => (
           <div key={c.title}>
-            <div className="font-display text-sm font-bold uppercase tracking-widest text-[color:var(--cyan-brand)]">{c.title}</div>
+            <div className="group/bubble relative inline-block">
+              <span className="font-display text-sm font-bold uppercase tracking-widest text-[color:var(--cyan-brand)]">{c.title}</span>
+              {"bubble" in c && c.bubble ? <ComicBubble text={c.bubble} /> : null}
+            </div>
             <ul className="mt-4 space-y-2 text-sm text-offwhite/70">
               {c.links.map((l) => (
-                <li key={l.label}>
+                <li key={l.label} className="group/bubble relative">
                   <a
                     href={l.href}
                     {...("external" in l && l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
@@ -596,11 +599,13 @@ function Footer() {
                   >
                     {l.label}
                   </a>
+                  {"bubble" in l && l.bubble ? <ComicBubble text={l.bubble} /> : null}
                 </li>
               ))}
             </ul>
           </div>
         ))}
+
       </div>
       <div className="border-t border-white/5">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-offwhite/50 md:flex-row">
