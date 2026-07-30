@@ -229,8 +229,8 @@ function Hero() {
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-6 text-xs uppercase tracking-widest text-offwhite/60">
             <span>+ 500 modelos</span>
-            <span>+ 30 cores por linha</span>
           </div>
+
         </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
