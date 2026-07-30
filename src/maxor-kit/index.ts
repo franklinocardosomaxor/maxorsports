@@ -77,7 +77,8 @@ export {
   type CatalogTabs,
 } from "@/lib/crm-catalog";
 export { useCrmCatalog } from "@/hooks/use-crm-catalog";
-export { useCrmSync, useCatalogVersion, CRM_API_URL } from "@/hooks/use-crm-sync";
+export { useCrmSync, useCatalogVersion, CRM_API_URL, type CrmSyncStatus } from "@/hooks/use-crm-sync";
+export { CrmSyncBanner } from "@/components/site/CrmSyncBanner";
 
 
 /* ---------------------------------------------------- estado do comprador */
