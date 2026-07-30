@@ -187,6 +187,9 @@ function KitValidador() {
           </pre>
         </section>
 
+        <CrmCatalogStatus />
+
+
       </div>
     </main>
   );
