@@ -137,13 +137,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  // Sincroniza o catálogo do site com o CRM Maxor (fallback local se offline).
-  const crmSync = useCrmSync();
+  // Catálogo em modo mock (local) — integração com o CRM desativada.
 
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
-        <CrmSyncBanner status={crmSync} />
         <SplashCursorClient />
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
