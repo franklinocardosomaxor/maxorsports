@@ -12,6 +12,8 @@ import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "../lib/cart";
+import { useCrmSync } from "../hooks/use-crm-sync";
+
 
 const SplashCursor = lazy(() => import("../components/site/SplashCursor"));
 
