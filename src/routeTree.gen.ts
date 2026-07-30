@@ -24,12 +24,14 @@ import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoupasIndexRouteImport } from './routes/roupas.index'
 import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as RoupasCategoryRouteImport } from './routes/roupas.$category'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
 import { Route as ColecaoMasculinoRouteImport } from './routes/colecao.masculino'
 import { Route as ColecaoFemininoRouteImport } from './routes/colecao.feminino'
 import { Route as BlogGuiaTenisNikeRouteImport } from './routes/blog.guia-tenis-nike'
+import { Route as AdminCrmRouteImport } from './routes/admin.crm'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
 
@@ -108,6 +110,11 @@ const MarcasIndexRoute = MarcasIndexRouteImport.update({
   path: '/marcas/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoupasCategoryRoute = RoupasCategoryRouteImport.update({
   id: '/roupas/$category',
   path: '/roupas/$category',
@@ -138,6 +145,11 @@ const BlogGuiaTenisNikeRoute = BlogGuiaTenisNikeRouteImport.update({
   path: '/blog/guia-tenis-nike',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCrmRoute = AdminCrmRouteImport.update({
+  id: '/admin/crm',
+  path: '/admin/crm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksWhatsappRoute =
   ApiPublicWebhooksWhatsappRouteImport.update({
     id: '/api/public/webhooks/whatsapp',
@@ -164,12 +176,14 @@ export interface FileRoutesByFullPath {
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/crm': typeof AdminCrmRoute
   '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
+  '/admin/': typeof AdminIndexRoute
   '/marcas/': typeof MarcasIndexRoute
   '/roupas/': typeof RoupasIndexRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
@@ -189,12 +203,14 @@ export interface FileRoutesByTo {
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/crm': typeof AdminCrmRoute
   '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
+  '/admin': typeof AdminIndexRoute
   '/marcas': typeof MarcasIndexRoute
   '/roupas': typeof RoupasIndexRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
@@ -215,12 +231,14 @@ export interface FileRoutesById {
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/crm': typeof AdminCrmRoute
   '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
+  '/admin/': typeof AdminIndexRoute
   '/marcas/': typeof MarcasIndexRoute
   '/roupas/': typeof RoupasIndexRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
@@ -242,12 +260,14 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/ofertas'
     | '/sitemap.xml'
+    | '/admin/crm'
     | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
     | '/produto/$id'
     | '/roupas/$category'
+    | '/admin/'
     | '/marcas/'
     | '/roupas/'
     | '/api/public/webhooks/stripe'
@@ -267,12 +287,14 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/ofertas'
     | '/sitemap.xml'
+    | '/admin/crm'
     | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
     | '/produto/$id'
     | '/roupas/$category'
+    | '/admin'
     | '/marcas'
     | '/roupas'
     | '/api/public/webhooks/stripe'
@@ -292,12 +314,14 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/ofertas'
     | '/sitemap.xml'
+    | '/admin/crm'
     | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
     | '/produto/$id'
     | '/roupas/$category'
+    | '/admin/'
     | '/marcas/'
     | '/roupas/'
     | '/api/public/webhooks/stripe'
@@ -318,12 +342,14 @@ export interface RootRouteChildren {
   MinhaContaRoute: typeof MinhaContaRoute
   OfertasRoute: typeof OfertasRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AdminCrmRoute: typeof AdminCrmRoute
   BlogGuiaTenisNikeRoute: typeof BlogGuiaTenisNikeRoute
   ColecaoFemininoRoute: typeof ColecaoFemininoRoute
   ColecaoMasculinoRoute: typeof ColecaoMasculinoRoute
   MarcasBrandRoute: typeof MarcasBrandRoute
   ProdutoIdRoute: typeof ProdutoIdRoute
   RoupasCategoryRoute: typeof RoupasCategoryRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   MarcasIndexRoute: typeof MarcasIndexRoute
   RoupasIndexRoute: typeof RoupasIndexRoute
   ApiPublicWebhooksStripeRoute: typeof ApiPublicWebhooksStripeRoute
@@ -437,6 +463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarcasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/roupas/$category': {
       id: '/roupas/$category'
       path: '/roupas/$category'
@@ -479,6 +512,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogGuiaTenisNikeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/crm': {
+      id: '/admin/crm'
+      path: '/admin/crm'
+      fullPath: '/admin/crm'
+      preLoaderRoute: typeof AdminCrmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/whatsapp': {
       id: '/api/public/webhooks/whatsapp'
       path: '/api/public/webhooks/whatsapp'
@@ -510,12 +550,14 @@ const rootRouteChildren: RootRouteChildren = {
   MinhaContaRoute: MinhaContaRoute,
   OfertasRoute: OfertasRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AdminCrmRoute: AdminCrmRoute,
   BlogGuiaTenisNikeRoute: BlogGuiaTenisNikeRoute,
   ColecaoFemininoRoute: ColecaoFemininoRoute,
   ColecaoMasculinoRoute: ColecaoMasculinoRoute,
   MarcasBrandRoute: MarcasBrandRoute,
   ProdutoIdRoute: ProdutoIdRoute,
   RoupasCategoryRoute: RoupasCategoryRoute,
+  AdminIndexRoute: AdminIndexRoute,
   MarcasIndexRoute: MarcasIndexRoute,
   RoupasIndexRoute: RoupasIndexRoute,
   ApiPublicWebhooksStripeRoute: ApiPublicWebhooksStripeRoute,
