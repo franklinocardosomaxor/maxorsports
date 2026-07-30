@@ -16,10 +16,12 @@ import {
   Menu,
   Zap,
 } from "lucide-react";
+import { ClientOnly } from "@tanstack/react-router";
 import monogram from "@/assets/opt/maxor-monogram.png";
+import heroAtletas from "@/assets/opt/hero-atletas.jpg";
 import { Shell } from "@/components/site/Shell";
 import { LogoLoop } from "@/components/site/LogoLoop";
-import { BRANDS } from "@/components/site/brands-data";
+import LetterGlitch from "@/components/site/LetterGlitch";
 
 import shoeBostonPink from "@/assets/opt/shoe-boston-pink.jpg";
 import shoeTerrexSpeed from "@/assets/opt/shoe-terrex-speed.jpg";
