@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
-  Search, User, Heart, ShoppingBag, MapPin, Zap, Camera, X, Loader2,
+  Search, User, Heart, ShoppingBag, Zap, Camera, X, Loader2,
   Instagram, Facebook, Youtube, Phone, Mail, Truck,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
@@ -119,7 +119,7 @@ function TopBar() {
           <span className="font-display uppercase tracking-widest">Performance com seu estilo e personalidade</span>
         </div>
         <div className="hidden items-center gap-5 md:flex">
-          <span className="flex items-center gap-1 text-offwhite/70"><MapPin className="h-3.5 w-3.5" />Envio para todo Brasil</span>
+          
           <a href={`tel:+${WHATSAPP_NUMBER}`} className="flex items-center gap-1 hover:text-[color:var(--cyan-brand)]">
             <Phone className="h-3.5 w-3.5" />Atendimento {WHATSAPP_DISPLAY}
           </a>
