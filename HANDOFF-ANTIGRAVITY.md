@@ -158,7 +158,7 @@ Preview `*.lovable.app` fica com `frame-ancestors 'self' https://*.lovable.app h
 1. PDP `/produto/$id` → seletor de cor + tamanho → **Comprar agora** / **Adicionar à sacola**.
 2. `/checkout` coleta: Nome, Telefone, E-mail, País, Estado, Cidade, Endereço, CEP.
 3. Botão gera mensagem estruturada e abre WhatsApp (`whatsapp://` mobile, `web.whatsapp.com` desktop, fallback `wa.me`) no número **+55 77 99959-9009**.
-4. Cliente copia chave PIX (CNPJ) e envia comprovante pelo mesmo WhatsApp.
+4. Cliente copia a chave PIX aleatória (`0010ef3f-7011-41f4-ae7d-43616eb08627`) e envia comprovante pelo mesmo WhatsApp.
 5. Comprador cadastrado tem os dados pré-preenchidos e vê rastreio em `/minha-conta`.
 
 ---
