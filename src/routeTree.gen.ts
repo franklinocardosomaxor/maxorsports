@@ -13,6 +13,7 @@ import { Route as OfertasRouteImport } from './routes/ofertas'
 import { Route as MinhaContaRouteImport } from './routes/minha-conta'
 import { Route as MasculinoRouteImport } from './routes/masculino'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LancamentosRouteImport } from './routes/lancamentos'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -46,6 +47,11 @@ const MasculinoRoute = MasculinoRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LancamentosRoute = LancamentosRouteImport.update({
+  id: '/lancamentos',
+  path: '/lancamentos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InfantilRoute = InfantilRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/lancamentos'
     | '/login'
     | '/masculino'
     | '/minha-conta'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/lancamentos'
     | '/login'
     | '/masculino'
     | '/minha-conta'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/lancamentos'
     | '/login'
     | '/masculino'
     | '/minha-conta'
@@ -250,6 +262,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
+  LancamentosRoute: typeof LancamentosRoute
   LoginRoute: typeof LoginRoute
   MasculinoRoute: typeof MasculinoRoute
   MinhaContaRoute: typeof MinhaContaRoute
@@ -293,6 +306,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lancamentos': {
+      id: '/lancamentos'
+      path: '/lancamentos'
+      fullPath: '/lancamentos'
+      preLoaderRoute: typeof LancamentosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/infantil': {
@@ -402,6 +422,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
+  LancamentosRoute: LancamentosRoute,
   LoginRoute: LoginRoute,
   MasculinoRoute: MasculinoRoute,
   MinhaContaRoute: MinhaContaRoute,
