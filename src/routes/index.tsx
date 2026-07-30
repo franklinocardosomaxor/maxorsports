@@ -215,40 +215,12 @@ function Hero() {
           <p className="mt-5 max-w-md text-base text-offwhite/70">
             Tênis e artigos esportivos com curadoria Maxor. Escolha entre dezenas de cores e variações — todas com a performance que você merece.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href="#" className="rounded-full bg-[color:var(--lime-brand)] px-7 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110">
-              Compre agora
-            </a>
-            <a href="#" className="rounded-full border border-offwhite/30 px-7 py-3 text-sm font-bold uppercase tracking-widest hover:border-[color:var(--cyan-brand)] hover:text-[color:var(--cyan-brand)]">
-              Ver catálogo
-            </a>
-          </div>
           <div className="mt-10 flex flex-wrap gap-6 text-xs uppercase tracking-widest text-offwhite/60">
             <span>+ 500 modelos</span>
             <span>+ 30 cores por linha</span>
-            <span>Envio para todo Brasil</span>
           </div>
         </div>
 
-        <div className="relative">
-          <div className="absolute -inset-8 rounded-[40%] bg-[color:var(--cyan-brand)]/20 blur-3xl" aria-hidden />
-          <img
-            src={heroRunner}
-            alt="Atleta em movimento com performance Maxor"
-            width={1600}
-            height={900}
-            decoding="async"
-            fetchPriority="high"
-            className="relative rounded-2xl object-cover"
-          />
-          <div className="absolute -bottom-4 -left-4 flex items-center gap-3 rounded-2xl border border-offwhite/10 bg-navy/80 px-4 py-3 backdrop-blur">
-            <img src={monogram} alt="" className="h-8 w-8" />
-            <div className="text-xs">
-              <div className="font-display font-bold uppercase tracking-widest text-[color:var(--cyan-brand)]">MX Runner Pro</div>
-              <div className="text-offwhite/70">A partir de R$ 349,90</div>
-            </div>
-          </div>
-        </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
     </section>
