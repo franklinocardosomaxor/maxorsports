@@ -16,7 +16,9 @@ export const Route = createFileRoute("/catalogo")({
       { property: "og:description", content: "Todos os tênis da Maxor Sports organizados por marca." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-    ],
+          { property: "og:url", content: "https://maxorsports.lovable.app/catalogo" },
+],
+    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/catalogo" }],
   }),
 });
 

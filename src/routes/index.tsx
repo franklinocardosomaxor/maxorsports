@@ -46,7 +46,9 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Curadoria Maxor Sports: tênis, roupas e acessórios esportivos com performance, estilo e personalidade." },
       { property: "og:title", content: "Maxor Sports — Tênis e artigos esportivos" },
       { property: "og:description", content: "Curadoria Maxor Sports: tênis, roupas e acessórios esportivos com performance, estilo e personalidade." },
-    ],
+          { property: "og:url", content: "https://maxorsports.lovable.app/" },
+],
+    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/" }],
   }),
 });
 

@@ -11,7 +11,9 @@ export const Route = createFileRoute("/roupas/")({
       { name: "description", content: "Roupas esportivas Maxor Sports: academia, futebol e peças diversas com curadoria premium." },
       { property: "og:title", content: "Roupas — Maxor Sports" },
       { property: "og:description", content: "Vista o seu esporte com a energia Maxor." },
-    ],
+          { property: "og:url", content: "https://maxorsports.lovable.app/roupas" },
+],
+    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/roupas" }],
   }),
 });
 
