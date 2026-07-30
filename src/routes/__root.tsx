@@ -134,6 +134,10 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  // Sincroniza o catálogo do site com o CRM Maxor (fallback local se offline).
+  useCrmSync();
+
+
 
   return (
     <QueryClientProvider client={queryClient}>
