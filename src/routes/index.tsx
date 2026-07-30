@@ -272,31 +272,43 @@ function BenefitsStrip() {
 function CategoryCircles() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
-      <SectionHeader title="Compre por categoria" subtitle="Escolha seu esporte e vá além" />
+      <SectionHeader title="Compre por categoria" subtitle="Escolha seu esporte e vá além" to="/categorias" />
       <div className="mt-8 grid grid-cols-3 gap-6 md:grid-cols-6">
         {CATEGORIES.map((c) => (
-          <a key={c.label} href="#" className="group flex flex-col items-center gap-3">
+          <Link key={c.label} to="/categorias" className="group flex flex-col items-center gap-3">
             <div className="relative aspect-square w-full overflow-hidden rounded-full border border-border bg-secondary transition group-hover:border-[color:var(--cyan-brand)]">
               <img src={c.img} alt={c.label} loading="lazy" className="h-full w-full scale-[1.15] object-contain object-center transition duration-500 group-hover:scale-[1.25]" />
             </div>
             <span className="font-display text-sm font-semibold uppercase tracking-wider">{c.label}</span>
-          </a>
+          </Link>
         ))}
       </div>
     </section>
   );
 }
 
-function SectionHeader({ title, subtitle, cta = "Ver todos" }: { title: string; subtitle?: string; cta?: string }) {
+function SectionHeader({
+  title,
+  subtitle,
+  cta = "Ver todos",
+  to,
+}: {
+  title: string;
+  subtitle?: string;
+  cta?: string;
+  to?: "/categorias" | "/lancamentos" | "/ofertas" | "/catalogo";
+}) {
   return (
     <div className="flex items-end justify-between gap-6">
       <div>
         <h2 className="font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">{title}</h2>
         {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
       </div>
-      <a href="#" className="hidden items-center gap-1 text-sm font-semibold text-[color:var(--cyan-brand)] hover:underline md:flex">
-        {cta} <ChevronRight className="h-4 w-4" />
-      </a>
+      {to && (
+        <Link to={to} className="hidden items-center gap-1 text-sm font-semibold text-[color:var(--cyan-brand)] hover:underline md:flex">
+          {cta} <ChevronRight className="h-4 w-4" />
+        </Link>
+      )}
     </div>
   );
 }
@@ -311,12 +323,24 @@ type Product = {
   colors?: string[];
 };
 
-function ProductCarousel({ title, subtitle, items, accent }: { title: string; subtitle?: string; items: Product[]; accent?: boolean }) {
+function ProductCarousel({
+  title,
+  subtitle,
+  items,
+  accent,
+  to,
+}: {
+  title: string;
+  subtitle?: string;
+  items: Product[];
+  accent?: boolean;
+  to?: "/categorias" | "/lancamentos" | "/ofertas" | "/catalogo";
+}) {
   return (
     <section className={`${accent ? "bg-navy text-offwhite" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 py-14">
         <div className={accent ? "[&_h2]:text-offwhite [&_p]:text-offwhite/60" : ""}>
-          <SectionHeader title={title} subtitle={subtitle} />
+          <SectionHeader title={title} subtitle={subtitle} to={to} />
         </div>
         <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
           {items.map((p) => (
@@ -327,6 +351,7 @@ function ProductCarousel({ title, subtitle, items, accent }: { title: string; su
     </section>
   );
 }
+
 
 function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
   const discount = product.old ? Math.round((1 - product.price / product.old) * 100) : 0;
