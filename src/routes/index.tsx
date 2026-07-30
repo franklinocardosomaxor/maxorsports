@@ -246,9 +246,10 @@ function BenefitsStrip() {
   const items = [
     { icon: Truck, title: "Frete grátis", sub: "Nas compras acima de R$ 299" },
     { icon: CreditCard, title: "Até 10x sem juros", sub: "Nos principais cartões" },
-    { icon: RotateCcw, title: "Troca fácil", sub: "Até 30 dias" },
-    { icon: ShieldCheck, title: "Compra segura", sub: "Curadoria Maxor" },
+    { icon: RotateCcw, title: "Troca até 7 dias", sub: "Após a compra" },
+    { icon: ShieldCheck, title: "Qualidade garantida", sub: "Curadoria Maxor" },
   ];
+
   return (
     <section className="border-b border-border bg-secondary/60">
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4">
