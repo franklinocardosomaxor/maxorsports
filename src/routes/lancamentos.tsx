@@ -25,17 +25,12 @@ export const Route = createFileRoute("/lancamentos")({
 
 function LancamentosPage() {
   const catalogVersion = useCatalogVersion();
-  // Fonte primária: aba "lancamentos" do CRM. Fallback: catálogo local do kit.
-  const { products: crmProducts, source } = useCrmCatalog("lancamentos");
 
   const products = useMemo(() => {
-    if (source === "crm" && crmProducts.length > 0) {
-      return crmProducts.map((p) => ({ ...p, section: "ofertas" as const }));
-    }
     return ALL_PRODUCTS.filter(
       (p) => p.launch || p.tag === "Novo" || p.tag === "Drop" || p.tag === "Top",
     );
-  }, [crmProducts, source, catalogVersion]);
+  }, [catalogVersion]);
 
 
   return (
