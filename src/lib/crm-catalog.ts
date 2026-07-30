@@ -121,6 +121,7 @@ export async function loadCatalogTabs(signal?: AbortSignal): Promise<{
   error?: string;
 }> {
   try {
+    if (!CRM_CONFIGURED) return { tabs: LOCAL_CATALOG_TABS, source: "local" };
     const tabs = await fetchCrmCatalog(signal);
     return { tabs, source: "crm" };
   } catch (err) {
