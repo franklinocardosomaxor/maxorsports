@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ClientOnly } from "@tanstack/react-router";
 import * as React from "react";
+import { CrmCatalogStatus } from "@/components/site/CrmCatalogStatus";
 import {
   MAXOR_ASSET_LIBRARY,
   maxorColors,
