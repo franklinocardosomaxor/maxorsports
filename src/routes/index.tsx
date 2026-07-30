@@ -202,6 +202,17 @@ function MegaNav() {
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-navy text-offwhite">
+      <video
+        src={atletasVideo.url}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-45"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-navy/85 via-navy/70 to-navy/95" />
       <div className="relative mx-auto grid max-w-7xl place-items-center gap-10 px-4 py-14 text-center md:py-20">
         <div className="relative z-10">
           <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cyan-brand)]/40 bg-[color:var(--cyan-brand)]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[color:var(--cyan-brand)]">
@@ -224,6 +235,7 @@ function Hero() {
     </section>
   );
 }
+
 
 
 /* ---------- Sections ---------- */
