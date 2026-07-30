@@ -28,6 +28,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/roupas", changefreq: "weekly", priority: "0.7" },
           { path: "/colecao/masculino", changefreq: "weekly", priority: "0.7" },
           { path: "/colecao/feminino", changefreq: "weekly", priority: "0.7" },
+          { path: "/blog/guia-tenis-nike", changefreq: "monthly", priority: "0.6" },
+
         ];
 
         for (const brand of BRANDS) {
