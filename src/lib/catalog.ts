@@ -140,3 +140,8 @@ export function getVariants(base: ProductWithSection): ProductWithSection[] {
 
 export const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+/** Produtos de uma seção (inclui os cadastrados no CRM). */
+export function getSectionProducts(section: ProductWithSection["section"]) {
+  return ALL_PRODUCTS.filter((p) => p.section === section);
+}
