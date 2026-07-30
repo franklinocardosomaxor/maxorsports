@@ -331,3 +331,19 @@ Faça, nesta ordem:
    (webhooks/cron) apenas em src/routes/api/public/* com verificação de
    assinatura HMAC.
 ```
+
+---
+
+## 14. MAXOR KIT — biblioteca reutilizável para o CRM
+
+`src/maxor-kit/` é o ponto único de importação de **imagens, componentes,
+efeitos e funcionalidades** do site para uso dentro do CRM Maxor:
+
+- `tokens.ts` — paleta, fontes, gradientes, variáveis CSS (`maxorRootCss()`).
+- `assets.ts` — 17 logos de marca, 4 ícones de categoria, monograma, capas e
+  vídeo do hero + `MAXOR_ASSET_LIBRARY` (catálogo plano da mídia).
+- `index.ts` — barrel com `Shell`, `CatalogPage`, `ProductMiniCard`,
+  `Aurora`, `SplashCursor`, `LogoLoop`, dados do catálogo, sacola/favoritos e
+  todas as server functions de CRM.
+
+Detalhes e regras de uso: `src/maxor-kit/README.md`.
