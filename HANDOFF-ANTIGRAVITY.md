@@ -149,7 +149,7 @@ Preview `*.lovable.app` fica com `frame-ancestors 'self' https://*.lovable.app h
 | **Stripe** | `api/public/webhooks/stripe` → cria contact + deal | `STRIPE_WEBHOOK_SECRET` |
 | **WhatsApp Cloud API** | `api/public/webhooks/whatsapp` → cria contact + activity | `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_APP_SECRET` |
 | **Correios** | Link direto para `rastreamento.correios.com.br` | — |
-| **PIX** | CNPJ `68.105.594/0001-39` — copiado no checkout | — |
+| **PIX** | Chave aleatória `0010ef3f-7011-41f4-ae7d-43616eb08627` — copiada no checkout | — |
 
 ---
 
@@ -158,7 +158,7 @@ Preview `*.lovable.app` fica com `frame-ancestors 'self' https://*.lovable.app h
 1. PDP `/produto/$id` → seletor de cor + tamanho → **Comprar agora** / **Adicionar à sacola**.
 2. `/checkout` coleta: Nome, Telefone, E-mail, País, Estado, Cidade, Endereço, CEP.
 3. Botão gera mensagem estruturada e abre WhatsApp (`whatsapp://` mobile, `web.whatsapp.com` desktop, fallback `wa.me`) no número **+55 77 99959-9009**.
-4. Cliente copia chave PIX (CNPJ) e envia comprovante pelo mesmo WhatsApp.
+4. Cliente copia a chave PIX aleatória (`0010ef3f-7011-41f4-ae7d-43616eb08627`) e envia comprovante pelo mesmo WhatsApp.
 5. Comprador cadastrado tem os dados pré-preenchidos e vê rastreio em `/minha-conta`.
 
 ---
@@ -185,7 +185,7 @@ Telas mínimas a construir no CRM:
 2. `buyer_profiles` + RLS por dono.
 3. Endurecimento: revoke de anon nos helpers, policies admin-only em `user_roles`.
 4. `ALTER TYPE app_role ADD VALUE 'super_admin'` (isolada — Postgres exige commit do enum).
-5. **Helena** (esta migração):
+5. **Helena**:
    - trigger `on_auth_user_created` (faltava!)
    - trigger `on_auth_user_confirmed_grant_super` (2 e-mails autorizados)
    - `is_super_admin()`
@@ -194,6 +194,7 @@ Telas mínimas a construir no CRM:
    - `seed_default_pipeline()` + trigger
    - `audit_user_roles()` + trigger
    - RLS granular por papel em contacts/deals/pipelines/stages/activities
+6. **Pré-importação CRM (Felipe)**: `REVOKE EXECUTE` de `anon`/`authenticated` nas funções de gatilho (`handle_new_user`, `audit_user_roles`, `seed_default_pipeline`, `grant_super_admin_for_authorized_email`, `set_updated_at`). Os helpers de RLS (`has_role`, `is_org_member`, `current_org_id`, `is_super_admin`) **permanecem executáveis por `authenticated`** — é requisito das próprias policies; são funções booleanas somente-leitura e sem efeito colateral.
 
 ---
 
@@ -226,3 +227,107 @@ Nunca ler segredos no topo do módulo. Nunca expor `SERVICE_ROLE` no browser.
 
 **Contato do cliente**
 Maxor Importação LTDA · CNPJ 68.105.594/0001-39 · PIX (CNPJ) · maxortecnologia@gmail.com · WhatsApp (77) 99959-9009
+
+---
+
+## 11. Mídia de produto — política pré-CRM (IMPORTANTE)
+
+O repositório foi **limpo de fotos de produto**. Não existe mais nenhum
+`.jpg` de tênis versionado em `src/assets/`. No lugar entrou:
+
+```
+src/lib/product-media.ts
+  productPlaceholder(slug, label) -> string (data-URI SVG, sem arquivo binário)
+  export const shoeBostonPink / shoeUltraboost5 / ... (placeholders por modelo)
+```
+
+Regras:
+- `CatalogProduct.img` continua sendo `string` — **a tipagem não muda**.
+- Cada modelo tem um placeholder **único e determinístico**; isso preserva o
+  agrupamento de variações de cor de `src/lib/catalog.ts`, que usa
+  `modelId ?? img` como chave de modelo.
+- Ao importar no CRM, substituir `img` pela URL pública da mídia
+  (Storage/CDN) e, de preferência, passar a preencher `modelId` — aí o
+  fallback por imagem deixa de ser usado.
+- Mídias que **permanecem** no repo (identidade, não produto):
+  `src/assets/opt/maxor-monogram.png`, `src/assets/brands/*.svg`,
+  `src/assets/opt/brands/chuteiras.png`, `src/assets/opt/roupas/*.png`,
+  `src/assets/cat-masculino.jpg`, `src/assets/cat-feminino.jpg`,
+  `src/assets/atletas-correndo.mp4.asset.json` (vídeo no CDN Lovable).
+
+### Modelo de dados sugerido para o CRM (produtos)
+
+```sql
+-- products
+id uuid pk, org_id uuid, model_id text,        -- agrupa variações de cor
+name text, brand text, category text,          -- Corrida | Trail | Casual | ...
+price_brl numeric, old_price_brl numeric,
+tag text, launch boolean default false,        -- checkbox "Lançamento"
+sizes int[], colors text[], active boolean default true
+
+-- product_media
+id uuid pk, product_id uuid fk, url text, position int, is_cover boolean
+```
+
+O front lê hoje os seeds em `catalog-data.ts` / `ofertas-data.ts` /
+`brands-data.ts` / `colecao-data.ts`. Ao ligar o CRM, trocar esses arrays por
+`createServerFn` que leem `products` + `product_media` mantendo **exatamente**
+o mesmo shape de `CatalogProduct`.
+
+---
+
+## 12. QA executado antes da entrega
+
+Build de produção (`vite build` + Nitro/Workers): **OK**. Typecheck: **OK**.
+Navegação verificada em headless (status HTTP + console limpo, 0 erros):
+
+`/` · `/masculino` · `/feminino` · `/infantil` · `/marcas` · `/marcas/$brand` ·
+`/roupas` · `/roupas/$category` · `/ofertas` · `/categorias` · `/lancamentos` ·
+`/catalogo` · `/colecao/masculino` · `/colecao/feminino` · `/produto/$id` ·
+`/checkout` · `/login` · `/minha-conta` → **todas 200**.
+
+Linter de segurança do banco: sem erros; restam apenas os 4 avisos esperados
+dos helpers de RLS (ver seção 8, item 6).
+
+### Bibliotecas em uso (manter no port)
+
+`@tanstack/react-start`, `@tanstack/react-router`, `@tanstack/react-query`,
+`react` 19, `zod`, `@supabase/supabase-js`, `tailwindcss` v4, `sonner`,
+`lucide-react`, componentes shadcn/ui, `ogl` (efeito Aurora / SplashCursor),
+`clsx` + `tailwind-merge`.
+
+---
+
+## 13. Comando de importação (colar no Antigravity)
+
+```text
+Importe este repositório como projeto TanStack Start v1 (React 19, Vite 7,
+Tailwind v4, Supabase/Postgres, deploy Cloudflare Workers).
+
+Contexto: e-commerce "Maxor Sports" (venda intermediada de tênis importados)
++ CRM interno de gestão no MESMO projeto.
+
+Faça, nesta ordem:
+1. Leia HANDOFF-ANTIGRAVITY.md por inteiro — ele descreve arquitetura, schema,
+   RLS, triggers, segurança, webhooks e fluxo de checkout.
+2. Rode as migrations na ordem da seção 8. Não altere schemas auth/storage.
+3. Não altere o layout nem a identidade visual
+   (Navy #0F1720 · Cyan #00BFC6 · Mint #7EEBC1 · Lime #C7F500 · Cream #F7F8F5,
+   fontes Rajdhani + Inter). Tudo em dark theme, sem fundos brancos.
+4. Crie as tabelas `products` e `product_media` da seção 11 e substitua os
+   seeds estáticos (catalog-data.ts, ofertas-data.ts, brands-data.ts,
+   colecao-data.ts) por leituras via createServerFn, mantendo o shape de
+   CatalogProduct. Enquanto não houver mídia cadastrada, use
+   productPlaceholder() de src/lib/product-media.ts.
+5. Construa as telas do CRM sob /_authenticated/crm/* (dashboard, contatos,
+   kanban de pipeline, timeline, configurações) — seção 7.
+6. Regras de acesso invioláveis: só usuários cadastrados no CRM acessam o CRM;
+   alterações estruturais apenas para maxortecnologia@gmail.com e
+   franklinocardoso@gmail.com (papel super_admin, concedido só após
+   confirmação de e-mail). Papéis SEMPRE na tabela user_roles, nunca no perfil.
+7. Mantenha as bibliotecas listadas na seção 12 e os cabeçalhos de segurança
+   de src/server.ts.
+8. Não crie Edge Functions: lógica de servidor via createServerFn; HTTP público
+   (webhooks/cron) apenas em src/routes/api/public/* com verificação de
+   assinatura HMAC.
+```

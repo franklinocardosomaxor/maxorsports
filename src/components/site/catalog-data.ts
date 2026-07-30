@@ -1,13 +1,15 @@
-import shoeBostonPink from "@/assets/opt/shoe-boston-pink.jpg";
-import shoeTerrexSpeed from "@/assets/opt/shoe-terrex-speed.jpg";
-import shoeUltraboost5 from "@/assets/opt/shoe-ultraboost5.jpg";
-import shoeUltraboost22 from "@/assets/opt/shoe-ultraboost22.jpg";
-import shoeUb20Osaka from "@/assets/opt/shoe-ub20-osaka.jpg";
-import shoeGazelleRed from "@/assets/opt/shoe-gazelle-red.jpg";
-import shoeSupernova from "@/assets/opt/shoe-supernova.jpg";
-import shoeTerrexDaroga from "@/assets/opt/shoe-terrex-daroga.jpg";
-import shoeAf1Grey from "@/assets/opt/shoe-af1-grey.jpg";
-import shoeAf1Cpfm from "@/assets/opt/shoe-af1-cpfm.jpg";
+import {
+  shoeBostonPink,
+  shoeTerrexSpeed,
+  shoeUltraboost5,
+  shoeUltraboost22,
+  shoeUb20Osaka,
+  shoeGazelleRed,
+  shoeSupernova,
+  shoeTerrexDaroga,
+  shoeAf1Grey,
+  shoeAf1Cpfm,
+} from "@/lib/product-media";
 import type { CatalogProduct } from "./CatalogPage";
 
 export const MASCULINO: CatalogProduct[] = [
