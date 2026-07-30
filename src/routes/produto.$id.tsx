@@ -16,21 +16,26 @@ export const Route = createFileRoute("/produto/$id")({
     if (!product) throw notFound();
     return { product, variants: getVariants(product) };
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     if (!loaderData) return { meta: [{ title: "Produto — Maxor Sports" }] };
     const { product } = loaderData;
     const title = `${product.name} — ${product.brand} | Maxor Sports`;
+    const url = `https://maxorsports.lovable.app/produto/${params.id}`;
     return {
       meta: [
         { title },
         { name: "description", content: `${product.name} da ${product.brand}. ${product.category} com curadoria Maxor Sports.` },
         { property: "og:title", content: title },
         { property: "og:description", content: `${product.brand} · ${product.category} · a partir de ${brl(product.price)}.` },
+        { property: "og:type", content: "product" },
+        { property: "og:url", content: url },
         { property: "og:image", content: product.img },
         { name: "twitter:image", content: product.img },
       ],
+      links: [{ rel: "canonical", href: url }],
     };
   },
+
   component: ProductPage,
 });
 

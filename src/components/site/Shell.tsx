@@ -204,8 +204,10 @@ function Header() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Buscar por nome, marca ou modelo…"
+              aria-label="Buscar tênis por nome, marca ou modelo"
               className="w-full bg-transparent py-2.5 pl-9 pr-3 text-sm text-offwhite placeholder:text-offwhite/50 outline-none md:py-3"
             />
+
           </div>
           <button
             type="submit"
@@ -383,6 +385,7 @@ function ImageSearch({ onImage }: { onImage: (dataUrl: string, fileName: string)
       <input
         ref={fileRef}
         type="file"
+        aria-label="Enviar imagem para buscar o tênis"
         accept="image/*"
         capture="environment"
         className="hidden"
@@ -474,6 +477,7 @@ function Newsletter() {
           <input
             type="email"
             required
+            aria-label="Seu e-mail para a newsletter"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Seu melhor e-mail"

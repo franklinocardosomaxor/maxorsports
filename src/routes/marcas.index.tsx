@@ -11,7 +11,9 @@ export const Route = createFileRoute("/marcas/")({
       { name: "description", content: "Explore tênis por marca: Nike, Adidas, New Balance, Puma, ASICS, Jordan, HOKA, On, Salomon e mais na Maxor Sports." },
       { property: "og:title", content: "Marcas — Maxor Sports" },
       { property: "og:description", content: "Curadoria por marca com performance e estilo." },
-    ],
+          { property: "og:url", content: "https://maxorsports.lovable.app/marcas" },
+],
+    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/marcas" }],
   }),
 });
 

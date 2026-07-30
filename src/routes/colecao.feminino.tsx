@@ -28,6 +28,8 @@ export const Route = createFileRoute("/colecao/feminino")({
       { property: "og:description", content: "Seleção exclusiva feminina da Maxor Sports." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-    ],
+          { property: "og:url", content: "https://maxorsports.lovable.app/colecao/feminino" },
+],
+    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/colecao/feminino" }],
   }),
 });

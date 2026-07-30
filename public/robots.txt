@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /checkout
+Disallow: /login
+Disallow: /minha-conta
+Disallow: /kit-validador
+
+Sitemap: https://maxorsports.lovable.app/sitemap.xml

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as OfertasRouteImport } from './routes/ofertas'
 import { Route as MinhaContaRouteImport } from './routes/minha-conta'
 import { Route as MasculinoRouteImport } from './routes/masculino'
@@ -28,9 +29,15 @@ import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
 import { Route as ColecaoMasculinoRouteImport } from './routes/colecao.masculino'
 import { Route as ColecaoFemininoRouteImport } from './routes/colecao.feminino'
+import { Route as BlogGuiaTenisNikeRouteImport } from './routes/blog.guia-tenis-nike'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OfertasRoute = OfertasRouteImport.update({
   id: '/ofertas',
   path: '/ofertas',
@@ -126,6 +133,11 @@ const ColecaoFemininoRoute = ColecaoFemininoRouteImport.update({
   path: '/colecao/feminino',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogGuiaTenisNikeRoute = BlogGuiaTenisNikeRouteImport.update({
+  id: '/blog/guia-tenis-nike',
+  path: '/blog/guia-tenis-nike',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksWhatsappRoute =
   ApiPublicWebhooksWhatsappRouteImport.update({
     id: '/api/public/webhooks/whatsapp',
@@ -151,6 +163,8 @@ export interface FileRoutesByFullPath {
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
@@ -174,6 +188,8 @@ export interface FileRoutesByTo {
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
@@ -198,6 +214,8 @@ export interface FileRoutesById {
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
@@ -223,6 +241,8 @@ export interface FileRouteTypes {
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
+    | '/sitemap.xml'
+    | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
@@ -246,6 +266,8 @@ export interface FileRouteTypes {
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
+    | '/sitemap.xml'
+    | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
@@ -269,6 +291,8 @@ export interface FileRouteTypes {
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
+    | '/sitemap.xml'
+    | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
@@ -293,6 +317,8 @@ export interface RootRouteChildren {
   MasculinoRoute: typeof MasculinoRoute
   MinhaContaRoute: typeof MinhaContaRoute
   OfertasRoute: typeof OfertasRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  BlogGuiaTenisNikeRoute: typeof BlogGuiaTenisNikeRoute
   ColecaoFemininoRoute: typeof ColecaoFemininoRoute
   ColecaoMasculinoRoute: typeof ColecaoMasculinoRoute
   MarcasBrandRoute: typeof MarcasBrandRoute
@@ -306,6 +332,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ofertas': {
       id: '/ofertas'
       path: '/ofertas'
@@ -439,6 +472,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ColecaoFemininoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog/guia-tenis-nike': {
+      id: '/blog/guia-tenis-nike'
+      path: '/blog/guia-tenis-nike'
+      fullPath: '/blog/guia-tenis-nike'
+      preLoaderRoute: typeof BlogGuiaTenisNikeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/whatsapp': {
       id: '/api/public/webhooks/whatsapp'
       path: '/api/public/webhooks/whatsapp'
@@ -469,6 +509,8 @@ const rootRouteChildren: RootRouteChildren = {
   MasculinoRoute: MasculinoRoute,
   MinhaContaRoute: MinhaContaRoute,
   OfertasRoute: OfertasRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  BlogGuiaTenisNikeRoute: BlogGuiaTenisNikeRoute,
   ColecaoFemininoRoute: ColecaoFemininoRoute,
   ColecaoMasculinoRoute: ColecaoMasculinoRoute,
   MarcasBrandRoute: MarcasBrandRoute,
