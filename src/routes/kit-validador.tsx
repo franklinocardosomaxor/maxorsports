@@ -157,6 +157,36 @@ function KitValidador() {
             </ClientOnly>
           </div>
         </section>
+
+        <section className="rounded-xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-xl font-semibold">Logs da validação</h2>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => navigator.clipboard?.writeText(report)}
+                className="rounded-md border border-border px-3 py-1.5 text-xs text-foreground hover:bg-secondary/60"
+              >
+                Copiar JSON
+              </button>
+              <button
+                type="button"
+                onClick={baixarRelatorio}
+                className="rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
+              >
+                Baixar relatório
+              </button>
+            </div>
+          </div>
+          <pre className="mt-4 max-h-72 overflow-auto rounded-md bg-secondary/30 p-4 text-[11px] leading-relaxed">
+            {logs.length === 0
+              ? "aguardando execução no cliente..."
+              : logs
+                  .map((l) => `${l.at}  ${l.level.toUpperCase().padEnd(4)}  ${l.message}`)
+                  .join("\n")}
+          </pre>
+        </section>
+
       </div>
     </main>
   );
