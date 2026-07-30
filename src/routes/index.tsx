@@ -86,9 +86,10 @@ function Home() {
       <Hero />
       <BenefitsStrip />
       <CategoryCircles />
-      <ProductCarousel title="Lançamentos" subtitle="A curadoria mais fresca da Maxor" items={PRODUCTS} />
+      <ProductCarousel title="Lançamentos" subtitle="A curadoria mais fresca da Maxor" items={PRODUCTS} to="/lancamentos" />
       <BrandBanner />
-      <ProductCarousel title="Ofertas da semana" subtitle="Preços com desconto para levar hoje" items={OFFERS} accent />
+      <ProductCarousel title="Ofertas da semana" subtitle="Preços com desconto para levar hoje" items={OFFERS} accent to="/ofertas" />
+
       <CategoryBanners />
       <BrandStrip />
     </Shell>
@@ -229,8 +230,8 @@ function Hero() {
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-6 text-xs uppercase tracking-widest text-offwhite/60">
             <span>+ 500 modelos</span>
-            <span>+ 30 cores por linha</span>
           </div>
+
         </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
@@ -246,9 +247,10 @@ function BenefitsStrip() {
   const items = [
     { icon: Truck, title: "Frete grátis", sub: "Nas compras acima de R$ 299" },
     { icon: CreditCard, title: "Até 10x sem juros", sub: "Nos principais cartões" },
-    { icon: RotateCcw, title: "Troca fácil", sub: "Até 30 dias" },
-    { icon: ShieldCheck, title: "Compra segura", sub: "Curadoria Maxor" },
+    { icon: RotateCcw, title: "Troca até 7 dias", sub: "Após a compra" },
+    { icon: ShieldCheck, title: "Qualidade garantida", sub: "Curadoria Maxor" },
   ];
+
   return (
     <section className="border-b border-border bg-secondary/60">
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4">
@@ -271,31 +273,43 @@ function BenefitsStrip() {
 function CategoryCircles() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
-      <SectionHeader title="Compre por categoria" subtitle="Escolha seu esporte e vá além" />
+      <SectionHeader title="Compre por categoria" subtitle="Escolha seu esporte e vá além" to="/categorias" />
       <div className="mt-8 grid grid-cols-3 gap-6 md:grid-cols-6">
         {CATEGORIES.map((c) => (
-          <a key={c.label} href="#" className="group flex flex-col items-center gap-3">
+          <Link key={c.label} to="/categorias" className="group flex flex-col items-center gap-3">
             <div className="relative aspect-square w-full overflow-hidden rounded-full border border-border bg-secondary transition group-hover:border-[color:var(--cyan-brand)]">
               <img src={c.img} alt={c.label} loading="lazy" className="h-full w-full scale-[1.15] object-contain object-center transition duration-500 group-hover:scale-[1.25]" />
             </div>
             <span className="font-display text-sm font-semibold uppercase tracking-wider">{c.label}</span>
-          </a>
+          </Link>
         ))}
       </div>
     </section>
   );
 }
 
-function SectionHeader({ title, subtitle, cta = "Ver todos" }: { title: string; subtitle?: string; cta?: string }) {
+function SectionHeader({
+  title,
+  subtitle,
+  cta = "Ver todos",
+  to,
+}: {
+  title: string;
+  subtitle?: string;
+  cta?: string;
+  to?: "/categorias" | "/lancamentos" | "/ofertas" | "/catalogo";
+}) {
   return (
     <div className="flex items-end justify-between gap-6">
       <div>
         <h2 className="font-display text-2xl font-bold uppercase tracking-wide md:text-3xl">{title}</h2>
         {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
       </div>
-      <a href="#" className="hidden items-center gap-1 text-sm font-semibold text-[color:var(--cyan-brand)] hover:underline md:flex">
-        {cta} <ChevronRight className="h-4 w-4" />
-      </a>
+      {to && (
+        <Link to={to} className="hidden items-center gap-1 text-sm font-semibold text-[color:var(--cyan-brand)] hover:underline md:flex">
+          {cta} <ChevronRight className="h-4 w-4" />
+        </Link>
+      )}
     </div>
   );
 }
@@ -310,12 +324,24 @@ type Product = {
   colors?: string[];
 };
 
-function ProductCarousel({ title, subtitle, items, accent }: { title: string; subtitle?: string; items: Product[]; accent?: boolean }) {
+function ProductCarousel({
+  title,
+  subtitle,
+  items,
+  accent,
+  to,
+}: {
+  title: string;
+  subtitle?: string;
+  items: Product[];
+  accent?: boolean;
+  to?: "/categorias" | "/lancamentos" | "/ofertas" | "/catalogo";
+}) {
   return (
     <section className={`${accent ? "bg-navy text-offwhite" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 py-14">
         <div className={accent ? "[&_h2]:text-offwhite [&_p]:text-offwhite/60" : ""}>
-          <SectionHeader title={title} subtitle={subtitle} />
+          <SectionHeader title={title} subtitle={subtitle} to={to} />
         </div>
         <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
           {items.map((p) => (
@@ -326,6 +352,7 @@ function ProductCarousel({ title, subtitle, items, accent }: { title: string; su
     </section>
   );
 }
+
 
 function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
   const discount = product.old ? Math.round((1 - product.price / product.old) * 100) : 0;
@@ -391,9 +418,10 @@ function BrandBanner() {
           <h3 className="mt-3 font-display text-3xl font-bold uppercase leading-tight text-offwhite md:text-5xl">
             Performance com seu <span className="text-gradient-brand">estilo</span> e <span className="text-gradient-brand">personalidade</span>
           </h3>
-          <a href="/masculino" className="mt-8 inline-flex rounded-full bg-[color:var(--lime-brand)] px-8 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110">
+          <Link to="/catalogo" className="mt-8 inline-flex rounded-full bg-[color:var(--lime-brand)] px-8 py-3 text-sm font-bold uppercase tracking-widest text-navy hover:brightness-110">
             Explorar catálogo
-          </a>
+          </Link>
+
         </div>
       </div>
     </section>
@@ -449,6 +477,7 @@ function BrandStrip() {
           fadeOut
           fadeOutColor="#0F1720"
           scaleOnHover
+          draggable
           ariaLabel="Marcas Maxor Sports"
           className="[&_img]:bg-[color:var(--cream)] [&_img]:rounded-xl [&_img]:p-2 [&_img]:box-content"
         />

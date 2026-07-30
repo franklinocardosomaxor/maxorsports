@@ -13,9 +13,12 @@ import { Route as OfertasRouteImport } from './routes/ofertas'
 import { Route as MinhaContaRouteImport } from './routes/minha-conta'
 import { Route as MasculinoRouteImport } from './routes/masculino'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LancamentosRouteImport } from './routes/lancamentos'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CategoriasRouteImport } from './routes/categorias'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoupasIndexRouteImport } from './routes/roupas.index'
 import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
@@ -47,6 +50,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LancamentosRoute = LancamentosRouteImport.update({
+  id: '/lancamentos',
+  path: '/lancamentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InfantilRoute = InfantilRouteImport.update({
   id: '/infantil',
   path: '/infantil',
@@ -60,6 +68,16 @@ const FemininoRoute = FemininoRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriasRoute = CategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -116,9 +134,12 @@ const ApiPublicWebhooksStripeRoute = ApiPublicWebhooksStripeRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
@@ -135,9 +156,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
@@ -155,9 +179,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/catalogo': typeof CatalogoRoute
+  '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
+  '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
@@ -176,9 +203,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/catalogo'
+    | '/categorias'
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/lancamentos'
     | '/login'
     | '/masculino'
     | '/minha-conta'
@@ -195,9 +225,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/catalogo'
+    | '/categorias'
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/lancamentos'
     | '/login'
     | '/masculino'
     | '/minha-conta'
@@ -214,9 +247,12 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/catalogo'
+    | '/categorias'
     | '/checkout'
     | '/feminino'
     | '/infantil'
+    | '/lancamentos'
     | '/login'
     | '/masculino'
     | '/minha-conta'
@@ -234,9 +270,12 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CatalogoRoute: typeof CatalogoRoute
+  CategoriasRoute: typeof CategoriasRoute
   CheckoutRoute: typeof CheckoutRoute
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
+  LancamentosRoute: typeof LancamentosRoute
   LoginRoute: typeof LoginRoute
   MasculinoRoute: typeof MasculinoRoute
   MinhaContaRoute: typeof MinhaContaRoute
@@ -282,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lancamentos': {
+      id: '/lancamentos'
+      path: '/lancamentos'
+      fullPath: '/lancamentos'
+      preLoaderRoute: typeof LancamentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/infantil': {
       id: '/infantil'
       path: '/infantil'
@@ -301,6 +347,20 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categorias': {
+      id: '/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof CategoriasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -378,9 +438,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CatalogoRoute: CatalogoRoute,
+  CategoriasRoute: CategoriasRoute,
   CheckoutRoute: CheckoutRoute,
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
+  LancamentosRoute: LancamentosRoute,
   LoginRoute: LoginRoute,
   MasculinoRoute: MasculinoRoute,
   MinhaContaRoute: MinhaContaRoute,

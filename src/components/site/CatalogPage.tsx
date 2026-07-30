@@ -7,6 +7,7 @@ export type CatalogProduct = {
   id: string;
   name: string;
   brand: string;
+  /** Categoria do produto (campo do cadastro no CRM). */
   category: string;
   price: number;
   old?: number;
@@ -14,7 +15,10 @@ export type CatalogProduct = {
   img: string;
   colors: string[];
   sizes: number[];
+  /** Checkbox "Lançamento" do cadastro do produto no CRM. */
+  launch?: boolean;
 };
+
 
 export type CatalogTheme = {
   eyebrow: string; // "Coleção Maxor"

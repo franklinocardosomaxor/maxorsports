@@ -75,10 +75,13 @@ const NAV = [
   { label: "Masculino", href: "/masculino" },
   { label: "Feminino", href: "/feminino" },
   { label: "Infantil", href: "/infantil" },
+  { label: "Categoria", href: "/categorias" },
+  { label: "Lançamentos", href: "/lancamentos" },
   { label: "Marcas", href: "/marcas" },
   { label: "Roupas", href: "/roupas" },
   { label: "Ofertas", href: "/ofertas" },
 ];
+
 
 const WHATSAPP_NUMBER = "5577999599009";
 const WHATSAPP_DISPLAY = "(77) 99959-9009";
@@ -517,10 +520,14 @@ function Footer() {
         { label: "Masculino", href: "/masculino" },
         { label: "Feminino", href: "/feminino" },
         { label: "Infantil", href: "/infantil" },
+        { label: "Categoria", href: "/categorias" },
+        { label: "Lançamentos", href: "/lancamentos" },
         { label: "Marcas", href: "/marcas" },
         { label: "Chuteiras", href: "/marcas/chuteiras" },
+        { label: "Catálogo completo", href: "/catalogo" },
         { label: "Roupas", href: "/roupas" },
         { label: "Ofertas", href: "/ofertas" },
+
       ],
     },
   ];

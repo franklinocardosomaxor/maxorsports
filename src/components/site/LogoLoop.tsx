@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import "./LogoLoop.css";
+import type React from "react";
 
 const ANIMATION_CONFIG = { SMOOTH_TAU: 0.25, MIN_COPIES: 2, COPY_HEADROOM: 2 };
 
@@ -34,6 +35,8 @@ type LogoLoopProps = {
   fadeOut?: boolean;
   fadeOutColor?: string;
   scaleOnHover?: boolean;
+  /** Permite arrastar as logos e exibe uma barra de rolagem. */
+  draggable?: boolean;
   renderItem?: (item: LogoItem, key: Key) => ReactNode;
   ariaLabel?: string;
   className?: string;
@@ -55,6 +58,7 @@ export const LogoLoop = memo(function LogoLoop({
   fadeOut = false,
   fadeOutColor,
   scaleOnHover = false,
+  draggable = false,
   renderItem,
   ariaLabel = "Partner logos",
   className,
@@ -71,6 +75,10 @@ export const LogoLoop = memo(function LogoLoop({
   const [seqWidth, setSeqWidth] = useState(0);
   const [copyCount, setCopyCount] = useState(ANIMATION_CONFIG.MIN_COPIES);
   const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [scrollPct, setScrollPct] = useState(0);
+  const dragStartXRef = useRef(0);
+  const dragStartOffsetRef = useRef(0);
 
   const effectiveHoverSpeed = useMemo(() => {
     if (hoverSpeed !== undefined) return hoverSpeed;
@@ -172,16 +180,18 @@ export const LogoLoop = memo(function LogoLoop({
       const deltaTime = Math.max(0, timestamp - lastTimestampRef.current) / 1000;
       lastTimestampRef.current = timestamp;
 
-      const target =
-        isHovered && effectiveHoverSpeed !== undefined ? effectiveHoverSpeed : targetVelocity;
+      const paused = isHovered || isDragging;
+      const target = paused && effectiveHoverSpeed !== undefined ? effectiveHoverSpeed : targetVelocity;
       const easingFactor = 1 - Math.exp(-deltaTime / ANIMATION_CONFIG.SMOOTH_TAU);
       velocityRef.current += (target - velocityRef.current) * easingFactor;
 
       if (seqWidth > 0) {
-        let nextOffset = offsetRef.current + velocityRef.current * deltaTime;
+        let nextOffset = offsetRef.current + (isDragging ? 0 : velocityRef.current * deltaTime);
         nextOffset = ((nextOffset % seqWidth) + seqWidth) % seqWidth;
         offsetRef.current = nextOffset;
         track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+        const pct = Math.round((nextOffset / seqWidth) * 100);
+        setScrollPct((prev) => (prev === pct ? prev : pct));
       }
       rafRef.current = requestAnimationFrame(animate);
     };
@@ -192,7 +202,43 @@ export const LogoLoop = memo(function LogoLoop({
       rafRef.current = null;
       lastTimestampRef.current = null;
     };
-  }, [targetVelocity, seqWidth, isHovered, effectiveHoverSpeed]);
+  }, [targetVelocity, seqWidth, isHovered, isDragging, effectiveHoverSpeed]);
+
+  const applyOffset = useCallback(
+    (next: number) => {
+      if (seqWidth <= 0) return;
+      const wrapped = ((next % seqWidth) + seqWidth) % seqWidth;
+      offsetRef.current = wrapped;
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translate3d(${-wrapped}px, 0, 0)`;
+      }
+      setScrollPct(Math.round((wrapped / seqWidth) * 100));
+    },
+    [seqWidth],
+  );
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (!draggable) return;
+    setIsDragging(true);
+    dragStartXRef.current = e.clientX;
+    dragStartOffsetRef.current = offsetRef.current;
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  }, [draggable]);
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isDragging) return;
+      applyOffset(dragStartOffsetRef.current - (e.clientX - dragStartXRef.current));
+    },
+    [isDragging, applyOffset],
+  );
+
+  const endDrag = useCallback((e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
+  }, [isDragging]);
+
 
   const rootClassName = [
     "logoloop",
@@ -246,30 +292,52 @@ export const LogoLoop = memo(function LogoLoop({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={rootClassName}
-      style={containerStyle}
-      role="region"
-      aria-label={ariaLabel}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="logoloop__track" ref={trackRef}>
-        {Array.from({ length: copyCount }, (_, copyIndex) => (
-          <ul
-            className="logoloop__list"
-            key={`copy-${copyIndex}`}
-            role="list"
-            aria-hidden={copyIndex > 0}
-            ref={copyIndex === 0 ? seqRef : undefined}
-          >
-            {logos.map((item, itemIndex) => renderLogoItem(item, `${copyIndex}-${itemIndex}`))}
-          </ul>
-        ))}
+    <div>
+      <div
+        ref={containerRef}
+        className={rootClassName}
+        style={{ ...containerStyle, cursor: draggable ? (isDragging ? "grabbing" : "grab") : undefined }}
+        role="region"
+        aria-label={ariaLabel}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+      >
+        <div className="logoloop__track" ref={trackRef}>
+          {Array.from({ length: copyCount }, (_, copyIndex) => (
+            <ul
+              className="logoloop__list"
+              key={`copy-${copyIndex}`}
+              role="list"
+              aria-hidden={copyIndex > 0}
+              ref={copyIndex === 0 ? seqRef : undefined}
+            >
+              {logos.map((item, itemIndex) => renderLogoItem(item, `${copyIndex}-${itemIndex}`))}
+            </ul>
+          ))}
+        </div>
       </div>
+
+      {draggable && (
+        <input
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={scrollPct}
+          aria-label="Rolar marcas"
+          onChange={(e) => applyOffset((Number(e.target.value) / 100) * seqWidth)}
+          onPointerDown={() => setIsDragging(true)}
+          onPointerUp={() => setIsDragging(false)}
+          className="logoloop__scrollbar"
+        />
+      )}
     </div>
   );
+
 });
 
 export default LogoLoop;

@@ -21,6 +21,7 @@ export type ProductWithSection = CatalogProduct & {
   modelId?: string;
 };
 
+
 const tag = (list: CatalogProduct[], section: ProductWithSection["section"]) =>
   list.map((p) => ({ ...p, section }) as ProductWithSection);
 
