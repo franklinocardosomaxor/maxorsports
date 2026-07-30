@@ -21,6 +21,8 @@ const LogoLoopLazy = React.lazy(() =>
 
 type Check = { label: string; ok: boolean; detail: string };
 
+type LogEntry = { at: string; level: "info" | "ok" | "fail"; message: string };
+
 function KitValidador() {
   const checks: Check[] = [
     { label: "Tokens de cor", ok: !!maxorColors.navy, detail: `${Object.keys(maxorColors).length} tokens` },
