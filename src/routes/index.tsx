@@ -202,7 +202,19 @@ function MegaNav() {
 function Hero() {
   return (
     <section className="relative overflow-hidden bg-navy text-offwhite">
-      <div className="mx-auto max-w-7xl px-4 py-14 md:py-20">
+      <div className="pointer-events-none absolute inset-0 opacity-40">
+        <ClientOnly>
+          <LetterGlitch
+            glitchColors={["#0F1720", "#00BFC6", "#C7F500"]}
+            glitchSpeed={60}
+            centerVignette
+            outerVignette={false}
+            smooth
+          />
+        </ClientOnly>
+      </div>
+
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 md:grid-cols-2 md:py-20">
         <div className="relative z-10">
           <span className="inline-flex items-center gap-2 rounded-full border border-[color:var(--cyan-brand)]/40 bg-[color:var(--cyan-brand)]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[color:var(--cyan-brand)]">
             <Zap className="h-3.5 w-3.5" /> Nova coleção MX
@@ -220,6 +232,16 @@ function Hero() {
           </div>
         </div>
 
+        <div className="relative z-10">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10">
+            <img
+              src={heroAtletas}
+              alt="Atletas Maxor Sports em velocidade"
+              className="h-full w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/70 via-transparent to-transparent" />
+          </div>
+        </div>
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
     </section>
