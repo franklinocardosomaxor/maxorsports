@@ -229,7 +229,6 @@ export const LogoLoop = memo(function LogoLoop({
     if (!el) return;
 
     const onDown = (e: PointerEvent) => {
-      console.log("MX down");
       pointerDownRef.current = true;
       movedRef.current = false;
       dragStartXRef.current = e.clientX;
@@ -248,19 +247,14 @@ export const LogoLoop = memo(function LogoLoop({
     };
 
     const onUp = (e: PointerEvent) => {
-      console.log("MX up", pointerDownRef.current, movedRef.current, (e.target as HTMLElement)?.tagName);
       if (!pointerDownRef.current) return;
       pointerDownRef.current = false;
-      console.log("MX a");
       setIsDragging(false);
-      console.log("MX b", movedRef.current);
       if (movedRef.current) return;
-      console.log("MX c");
-      const link = (e.target as HTMLElement | null)?.closest?.(
-        "a.logoloop__link",
-      ) as HTMLAnchorElement | null;
+      const target = e.target as HTMLElement | null;
+      const link = target?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!link || !el.contains(link)) return;
       const href = link?.getAttribute("href");
-      console.log("MX chain", (()=>{let n=e.target as HTMLElement|null,o=[];while(n){o.push(n.tagName+"."+(n.className&&n.className.toString().slice(0,20)));n=n.parentElement;}return o.join(" > ")})());
       if (!href || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
       if (href.startsWith("/")) router.navigate({ to: href });
