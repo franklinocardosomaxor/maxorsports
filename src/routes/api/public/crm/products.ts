@@ -50,10 +50,14 @@ export const Route = createFileRoute("/api/public/crm/products")({
       },
 
       POST: async ({ request }) => {
-        const secret = process.env.CRM_INGEST_SECRET;
-        if (!secret || request.headers.get("x-maxor-key") !== secret) {
+        const provided = request.headers.get("x-maxor-key") ?? "";
+        const accepted = [process.env.MAXOR_CRM_INGEST_KEY, process.env.CRM_INGEST_SECRET].filter(
+          (v): v is string => typeof v === "string" && v.length > 0,
+        );
+        if (accepted.length === 0 || !accepted.includes(provided)) {
           return json({ ok: false, error: "Unauthorized" }, 401);
         }
+
 
         let payload: unknown;
         try {
