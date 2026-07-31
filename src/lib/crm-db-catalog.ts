@@ -19,6 +19,7 @@ export type DbProduct = {
   price: number | string;
   old_price: number | string | null;
   img: string | null;
+  images: string[] | null;
   colors: string[] | null;
   sizes: number[] | null;
   stock: number;
@@ -32,7 +33,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, sku, name, brand, section, category, description, price, old_price, img, colors, sizes, stock, backorder, launch, tag",
+      "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag",
     )
     .eq("site_visible", true)
     .order("created_at", { ascending: false });
@@ -50,7 +51,8 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
       price: row.price,
       old: row.old_price ?? undefined,
       tag: row.tag ?? undefined,
-      img: row.img ?? undefined,
+      img: row.img ?? (row.images?.[0] ?? undefined),
+      images: row.images ?? undefined,
       colors: row.colors ?? undefined,
       sizes: row.sizes ?? undefined,
       launch: row.launch,

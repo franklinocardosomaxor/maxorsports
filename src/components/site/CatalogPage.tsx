@@ -13,6 +13,8 @@ export type CatalogProduct = {
   old?: number;
   tag?: string;
   img: string;
+  /** Galeria de fotos cadastradas no CRM (a primeira é a capa). */
+  images?: string[];
   colors: string[];
   sizes: number[];
   /** Checkbox "Lançamento" do cadastro do produto no CRM. */

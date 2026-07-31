@@ -10,24 +10,87 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-const productSchema = z.object({
-  sku: z.string().min(1).max(64),
-  name: z.string().min(1).max(200),
-  brand: z.string().min(1).max(80).default("Maxor"),
-  section: z.enum(["masculino", "feminino", "infantil", "ofertas"]).default("masculino"),
-  category: z.string().min(1).max(80).default("Casual"),
-  description: z.string().max(2000).optional().nullable(),
-  price: z.coerce.number().min(0).max(1_000_000),
-  old_price: z.coerce.number().min(0).max(1_000_000).optional().nullable(),
-  img: z.string().url().max(500).optional().nullable(),
-  colors: z.array(z.string().max(32)).max(30).optional(),
-  sizes: z.array(z.coerce.number().int().min(10).max(60)).max(40).optional(),
-  stock: z.coerce.number().int().min(0).max(1_000_000).default(0),
-  backorder: z.boolean().default(true),
-  launch: z.boolean().default(false),
-  tag: z.string().max(40).optional().nullable(),
-  site_visible: z.boolean().default(true),
-});
+/** Extrai a URL de uma foto vinda do CRM (string ou objeto {url|src|href|path}). */
+const toUrl = (v: unknown): string | null => {
+  if (typeof v === "string") return v.trim() || null;
+  if (v && typeof v === "object") {
+    const o = v as Record<string, unknown>;
+    const raw = o.url ?? o.src ?? o.href ?? o.path ?? o.secure_url ?? o.publicUrl;
+    if (typeof raw === "string" && raw.trim()) return raw.trim();
+  }
+  return null;
+};
+
+/**
+ * Normaliza o payload do CRM ANTES da validação.
+ * O CRM envia a galeria em campos variados (images, fotos, gallery, photos,
+ * imageUrls…) e às vezes como lista de objetos. Antes essas chaves eram
+ * simplesmente descartadas — por isso o produto chegava sem imagem.
+ */
+const normalizeIncoming = (input: unknown) => {
+  if (!input || typeof input !== "object") return input;
+  const raw = { ...(input as Record<string, unknown>) };
+
+  const galleryKeys = [
+    "images", "imgs", "gallery", "galeria", "photos", "fotos",
+    "imageUrls", "image_urls", "pictures", "midias", "media",
+  ];
+  const gallery: string[] = [];
+  for (const key of galleryKeys) {
+    const v = raw[key];
+    if (Array.isArray(v)) for (const item of v) { const u = toUrl(item); if (u) gallery.push(u); }
+    else { const u = toUrl(v); if (u) gallery.push(u); }
+  }
+
+  const mainKeys = ["img", "image", "imagem", "foto", "imageUrl", "image_url", "cover", "capa", "thumbnail"];
+  let main: string | null = null;
+  for (const key of mainKeys) {
+    const u = toUrl(raw[key]);
+    if (u) { main = u; break; }
+  }
+  if (!main && gallery.length) main = gallery[0];
+  if (main && !gallery.includes(main)) gallery.unshift(main);
+
+  for (const key of [...galleryKeys, ...mainKeys]) delete raw[key];
+
+  return {
+    ...raw,
+    sku: raw.sku ?? raw.codigo ?? raw.code,
+    name: raw.name ?? raw.nome,
+    brand: raw.brand ?? raw.marca,
+    section: typeof (raw.section ?? raw.secao ?? raw.genero) === "string"
+      ? String(raw.section ?? raw.secao ?? raw.genero).toLowerCase()
+      : raw.section,
+    price: raw.price ?? raw.preco,
+    old_price: raw.old_price ?? raw.oldPrice ?? raw.preco_antigo ?? null,
+    site_visible: raw.site_visible ?? raw.siteVisible ?? true,
+    img: main,
+    images: Array.from(new Set(gallery)).slice(0, 20),
+  };
+};
+
+const productSchema = z.preprocess(
+  normalizeIncoming,
+  z.object({
+    sku: z.string().min(1).max(64),
+    name: z.string().min(1).max(200),
+    brand: z.string().min(1).max(80).default("Maxor"),
+    section: z.enum(["masculino", "feminino", "infantil", "ofertas"]).default("masculino"),
+    category: z.string().min(1).max(80).default("Casual"),
+    description: z.string().max(2000).optional().nullable(),
+    price: z.coerce.number().min(0).max(1_000_000),
+    old_price: z.coerce.number().min(0).max(1_000_000).optional().nullable(),
+    img: z.string().max(1000).optional().nullable(),
+    images: z.array(z.string().max(1000)).max(20).default([]),
+    colors: z.array(z.string().max(32)).max(30).optional(),
+    sizes: z.array(z.coerce.number().int().min(10).max(60)).max(40).optional(),
+    stock: z.coerce.number().int().min(0).max(1_000_000).default(0),
+    backorder: z.boolean().default(true),
+    launch: z.boolean().default(false),
+    tag: z.string().max(40).optional().nullable(),
+    site_visible: z.boolean().default(true),
+  }),
+);
 
 const json = (body: unknown, status = 200) =>
   Response.json(body, { status, headers: { "cache-control": "no-store" } });
@@ -40,7 +103,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
         const { data, error } = await supabaseAdmin
           .from("products")
           .select(
-            "id, sku, name, brand, section, category, description, price, old_price, img, colors, sizes, stock, backorder, launch, tag, site_visible",
+            "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, site_visible",
           )
           .eq("site_visible", true)
           .order("created_at", { ascending: false });
