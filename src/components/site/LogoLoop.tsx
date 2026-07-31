@@ -247,19 +247,16 @@ export const LogoLoop = memo(function LogoLoop({
     };
 
     const onUp = (e: PointerEvent) => {
-      console.log("MX up", pointerDownRef.current, movedRef.current, (e.target as HTMLElement)?.tagName, !!(e.target as HTMLElement)?.closest?.("a[href]"));
       if (!pointerDownRef.current) return;
       pointerDownRef.current = false;
       setIsDragging(false);
       if (movedRef.current) return;
       const target = e.target as HTMLElement | null;
       const link = target?.closest?.("a[href]") as HTMLAnchorElement | null;
-      console.log("MX contains", el.contains(link), link.getAttribute("href"));
       if (!link || !el.contains(link)) return;
       const href = link?.getAttribute("href");
       if (!href || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
-      console.log("MX nav", href);
       if (href.startsWith("/")) router.navigate({ to: href });
       else window.open(href, "_blank", "noopener,noreferrer");
     };
