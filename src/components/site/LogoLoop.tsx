@@ -251,8 +251,11 @@ export const LogoLoop = memo(function LogoLoop({
       console.log("MX up", pointerDownRef.current, movedRef.current, (e.target as HTMLElement)?.tagName);
       if (!pointerDownRef.current) return;
       pointerDownRef.current = false;
+      console.log("MX a");
       setIsDragging(false);
+      console.log("MX b", movedRef.current);
       if (movedRef.current) return;
+      console.log("MX c");
       const link = (e.target as HTMLElement | null)?.closest?.(
         "a.logoloop__link",
       ) as HTMLAnchorElement | null;
