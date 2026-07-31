@@ -102,9 +102,27 @@ function ProductPage() {
               <FavoriteButton product={product} />
 
               <div className="aspect-square">
-                <img src={product.img} alt={product.name} width={800} height={800} decoding="async" fetchPriority="high" className="h-full w-full object-contain p-6" />
+                <img src={activeImg} alt={product.name} width={800} height={800} decoding="async" fetchPriority="high" className="h-full w-full object-contain p-6" />
               </div>
             </div>
+            {/* Galeria de fotos do produto (CRM) */}
+            {gallery.length > 1 && (
+              <div className="mt-4 grid grid-cols-5 gap-2">
+                {gallery.slice(0, 10).map((src) => (
+                  <button
+                    key={src}
+                    type="button"
+                    onClick={() => setActiveImg(src)}
+                    aria-label="Ver foto do produto"
+                    className={`overflow-hidden rounded-lg border bg-card p-1 transition ${
+                      src === activeImg ? "border-[color:var(--cyan-brand)] ring-2 ring-[color:var(--cyan-brand)]" : "border-border hover:border-[color:var(--cyan-brand)]"
+                    }`}
+                  >
+                    <img src={src} alt={product.name} loading="lazy" decoding="async" className="aspect-square w-full object-contain" />
+                  </button>
+                ))}
+              </div>
+            )}
             {/* Thumbnails de variantes (mostra outras cores como galeria) */}
             {variants.length > 1 && (
               <div className="mt-4 grid grid-cols-5 gap-2">
