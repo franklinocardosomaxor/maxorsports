@@ -257,6 +257,7 @@ export const LogoLoop = memo(function LogoLoop({
         "a.logoloop__link",
       ) as HTMLAnchorElement | null;
       const href = link?.getAttribute("href");
+      console.log("MX link", !!link, href, e.button);
       if (!href || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
       if (href.startsWith("/")) router.navigate({ to: href });
