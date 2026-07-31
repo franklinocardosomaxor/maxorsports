@@ -260,7 +260,7 @@ export const LogoLoop = memo(function LogoLoop({
         "a.logoloop__link",
       ) as HTMLAnchorElement | null;
       const href = link?.getAttribute("href");
-      console.log("MX link", !!link, href, e.button);
+      console.log("MX chain", (()=>{let n=e.target as HTMLElement|null,o=[];while(n){o.push(n.tagName+"."+(n.className&&n.className.toString().slice(0,20)));n=n.parentElement;}return o.join(" > ")})());
       if (!href || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
       if (href.startsWith("/")) router.navigate({ to: href });
