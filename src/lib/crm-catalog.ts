@@ -82,6 +82,9 @@ export function normalizeProduct(raw: Record<string, unknown>): CatalogProduct {
         ? (raw.tamanhos as unknown[]).map((s) => num(s))
         : [39, 40, 41, 42, 43],
     launch: Boolean(raw.launch ?? raw.lancamento ?? false),
+    images: Array.isArray(raw.images)
+      ? (raw.images as unknown[]).map(String).filter(Boolean)
+      : undefined,
   };
 }
 
