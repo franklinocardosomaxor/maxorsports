@@ -257,8 +257,12 @@ export const LogoLoop = memo(function LogoLoop({
       const href = link?.getAttribute("href");
       if (!href || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
-      if (href.startsWith("/")) router.navigate({ to: href });
-      else window.open(href, "_blank", "noopener,noreferrer");
+      if (href.startsWith("/")) {
+        // `href` bruto: rotas dinâmicas (/marcas/$brand) não aceitam `to` literal.
+        router.navigate({ href } as never).catch(() => {
+          window.location.assign(href);
+        });
+      } else window.open(href, "_blank", "noopener,noreferrer");
     };
 
     const onCancel = () => {
