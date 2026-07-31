@@ -247,6 +247,7 @@ export const LogoLoop = memo(function LogoLoop({
     };
 
     const onUp = (e: PointerEvent) => {
+      console.log("MX up", pointerDownRef.current, movedRef.current, (e.target as HTMLElement)?.tagName, !!(e.target as HTMLElement)?.closest?.("a[href]"));
       if (!pointerDownRef.current) return;
       pointerDownRef.current = false;
       setIsDragging(false);
