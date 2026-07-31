@@ -12,6 +12,8 @@ import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "../lib/cart";
+import { useCrmSync } from "../hooks/use-crm-sync";
+
 
 
 
@@ -136,7 +138,9 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  // Catálogo em modo mock (local) — integração com o CRM desativada.
+  // Sincroniza o catálogo publicado pelo CRM (tabela compartilhada products).
+  useCrmSync();
+
 
   return (
     <QueryClientProvider client={queryClient}>
