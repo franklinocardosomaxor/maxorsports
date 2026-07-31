@@ -83,6 +83,7 @@ export const LogoLoop = memo(function LogoLoop({
   const dragStartOffsetRef = useRef(0);
   const pointerDownRef = useRef(false);
   const movedRef = useRef(false);
+  const downLinkRef = useRef<string | null>(null);
 
   const effectiveHoverSpeed = useMemo(() => {
     if (hoverSpeed !== undefined) return hoverSpeed;
@@ -233,6 +234,9 @@ export const LogoLoop = memo(function LogoLoop({
       movedRef.current = false;
       dragStartXRef.current = e.clientX;
       dragStartOffsetRef.current = offsetRef.current;
+      const t = e.target as HTMLElement | null;
+      const l = t?.closest?.("a[href]") as HTMLAnchorElement | null;
+      downLinkRef.current = l && el.contains(l) ? l.getAttribute("href") : null;
       if (draggable) setIsDragging(true);
     };
 
@@ -250,16 +254,21 @@ export const LogoLoop = memo(function LogoLoop({
       if (!pointerDownRef.current) return;
       pointerDownRef.current = false;
       setIsDragging(false);
+      const href = downLinkRef.current;
+      downLinkRef.current = null;
       if (movedRef.current) return;
-      const target = e.target as HTMLElement | null;
-      const link = target?.closest?.("a[href]") as HTMLAnchorElement | null;
-      if (!link || !el.contains(link)) return;
-      const href = link?.getAttribute("href");
+      // A faixa se move: no pointerup o alvo já mudou, então usamos o link
+      // capturado no pointerdown.
       if (!href || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
       e.preventDefault();
-      if (href.startsWith("/")) router.navigate({ to: href });
-      else window.open(href, "_blank", "noopener,noreferrer");
+      if (href.startsWith("/")) {
+        // `href` bruto: rotas dinâmicas (/marcas/$brand) não aceitam `to` literal.
+        void Promise.resolve(router.navigate({ href } as never)).catch(() => {
+          window.location.assign(href);
+        });
+      } else window.open(href, "_blank", "noopener,noreferrer");
     };
+
 
     const onCancel = () => {
       pointerDownRef.current = false;
