@@ -103,7 +103,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
         const { data, error } = await supabaseAdmin
           .from("products")
           .select(
-            "id, sku, name, brand, section, category, description, price, old_price, img, colors, sizes, stock, backorder, launch, tag, site_visible",
+            "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, site_visible",
           )
           .eq("site_visible", true)
           .order("created_at", { ascending: false });

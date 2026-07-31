@@ -32,7 +32,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, sku, name, brand, section, category, description, price, old_price, img, colors, sizes, stock, backorder, launch, tag",
+      "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag",
     )
     .eq("site_visible", true)
     .order("created_at", { ascending: false });
