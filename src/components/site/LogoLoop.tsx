@@ -9,6 +9,7 @@ import {
   type Key,
   type ReactNode,
 } from "react";
+import { useRouter } from "@tanstack/react-router";
 import "./LogoLoop.css";
 import type React from "react";
 
@@ -64,6 +65,7 @@ export const LogoLoop = memo(function LogoLoop({
   className,
   style,
 }: LogoLoopProps) {
+  const router = useRouter();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const seqRef = useRef<HTMLUListElement | null>(null);
@@ -79,6 +81,8 @@ export const LogoLoop = memo(function LogoLoop({
   const [scrollPct, setScrollPct] = useState(0);
   const dragStartXRef = useRef(0);
   const dragStartOffsetRef = useRef(0);
+  const pointerDownRef = useRef(false);
+  const movedRef = useRef(false);
 
   const effectiveHoverSpeed = useMemo(() => {
     if (hoverSpeed !== undefined) return hoverSpeed;
@@ -217,27 +221,72 @@ export const LogoLoop = memo(function LogoLoop({
     [seqWidth],
   );
 
-  const onPointerDown = useCallback((e: React.PointerEvent) => {
-    if (!draggable) return;
-    setIsDragging(true);
-    dragStartXRef.current = e.clientX;
-    dragStartOffsetRef.current = offsetRef.current;
-    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
-  }, [draggable]);
+  // Listeners nativos: a faixa se move constantemente, então o clique do
+  // navegador se perde (pointerdown e pointerup caem em elementos distintos).
+  // Detectamos o "tap" manualmente e navegamos para a página da marca.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
 
-  const onPointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isDragging) return;
-      applyOffset(dragStartOffsetRef.current - (e.clientX - dragStartXRef.current));
-    },
-    [isDragging, applyOffset],
-  );
+    const onDown = (e: PointerEvent) => {
+      pointerDownRef.current = true;
+      movedRef.current = false;
+      dragStartXRef.current = e.clientX;
+      dragStartOffsetRef.current = offsetRef.current;
+      if (draggable) setIsDragging(true);
+    };
 
-  const endDrag = useCallback((e: React.PointerEvent) => {
-    if (!isDragging) return;
-    setIsDragging(false);
-    (e.currentTarget as HTMLElement).releasePointerCapture?.(e.pointerId);
-  }, [isDragging]);
+    const onMove = (e: PointerEvent) => {
+      if (!pointerDownRef.current) return;
+      const delta = e.clientX - dragStartXRef.current;
+      if (!movedRef.current) {
+        if (Math.abs(delta) < 6) return;
+        movedRef.current = true;
+      }
+      if (draggable) applyOffset(dragStartOffsetRef.current - delta);
+    };
+
+    const onUp = (e: PointerEvent) => {
+      if (!pointerDownRef.current) return;
+      pointerDownRef.current = false;
+      setIsDragging(false);
+      if (movedRef.current) return;
+      const target = e.target as HTMLElement | null;
+      const link = target?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!link || !el.contains(link)) return;
+      const href = link?.getAttribute("href");
+      if (!href || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      if (href.startsWith("/")) router.navigate({ to: href });
+      else window.open(href, "_blank", "noopener,noreferrer");
+    };
+
+    const onCancel = () => {
+      pointerDownRef.current = false;
+      setIsDragging(false);
+    };
+
+    const onClick = (e: MouseEvent) => {
+      if (movedRef.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        movedRef.current = false;
+      }
+    };
+
+    el.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onCancel);
+    el.addEventListener("click", onClick, true);
+    return () => {
+      el.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
+      el.removeEventListener("click", onClick, true);
+    };
+  }, [draggable, applyOffset, router]);
 
 
   const rootClassName = [
@@ -264,7 +313,7 @@ export const LogoLoop = memo(function LogoLoop({
           {item.node}
         </span>
       ) : (
-        <img src={item.src} alt={item.alt ?? item.title ?? ""} title={item.title} loading="lazy" />
+        <img src={item.src} alt={item.alt ?? item.title ?? ""} title={item.title} loading="lazy" draggable={false} />
       );
       const itemAriaLabel = item.ariaLabel ?? item.title ?? item.alt;
       const itemContent = item.href ? (
@@ -301,10 +350,6 @@ export const LogoLoop = memo(function LogoLoop({
         aria-label={ariaLabel}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
       >
         <div className="logoloop__track" ref={trackRef}>
           {Array.from({ length: copyCount }, (_, copyIndex) => (
