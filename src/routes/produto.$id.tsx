@@ -48,6 +48,11 @@ function ProductPage() {
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [sizeErr, setSizeErr] = useState(false);
 
+  /** Galeria: fotos cadastradas no CRM (fallback: foto de capa). */
+  const gallery = (product.images?.length ? product.images : [product.img]).filter(Boolean) as string[];
+  const [activeImg, setActiveImg] = useState(gallery[0]);
+  useEffect(() => setActiveImg(gallery[0]), [product.id]);
+
   const off = product.old ? Math.round(((product.old - product.price) / product.old) * 100) : 0;
 
   const doAdd = (redirectToCheckout: boolean) => {
