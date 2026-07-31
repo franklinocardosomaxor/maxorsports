@@ -83,6 +83,7 @@ export const LogoLoop = memo(function LogoLoop({
   const dragStartOffsetRef = useRef(0);
   const pointerDownRef = useRef(false);
   const movedRef = useRef(false);
+  const downLinkRef = useRef<string | null>(null);
 
   const effectiveHoverSpeed = useMemo(() => {
     if (hoverSpeed !== undefined) return hoverSpeed;
