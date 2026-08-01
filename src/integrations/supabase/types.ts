@@ -325,6 +325,7 @@ export type Database = {
           images: string[]
           img: string | null
           launch: boolean
+          model_group: string | null
           name: string
           old_price: number | null
           org_id: string | null
@@ -348,6 +349,7 @@ export type Database = {
           images?: string[]
           img?: string | null
           launch?: boolean
+          model_group?: string | null
           name: string
           old_price?: number | null
           org_id?: string | null
@@ -371,6 +373,7 @@ export type Database = {
           images?: string[]
           img?: string | null
           launch?: boolean
+          model_group?: string | null
           name?: string
           old_price?: number | null
           org_id?: string | null

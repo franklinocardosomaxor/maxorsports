@@ -83,17 +83,24 @@ const normalizeIncoming = (input: unknown) => {
 
   for (const key of [...galleryKeys, ...mainKeys]) delete raw[key];
 
+  // Aliases do Maxor CRM (Antigravity): id_produto, name_prod, marca_prod,
+  // categoria_prod, tipo_prod, valor_dec, discountPrice, siteVisible, modelGroup.
   return {
     ...raw,
-    sku: raw.sku ?? raw.codigo ?? raw.code,
-    name: raw.name ?? raw.nome,
-    brand: raw.brand ?? raw.marca,
-    category: raw.category ?? raw.categoria ?? raw.tipo,
+    sku: raw.sku ?? raw.id_produto ?? raw.codigo ?? raw.code ?? raw.id,
+    name: raw.name ?? raw.name_prod ?? raw.nome,
+    brand: raw.brand ?? raw.marca_prod ?? raw.marca,
+    category: raw.category ?? raw.categoria_prod ?? raw.categoria ?? raw.tipo_prod ?? raw.tipo,
     description: raw.description ?? raw.descricao ?? null,
-    section: toSection(raw.section ?? raw.secao ?? raw.genero ?? raw.aba),
+    section: toSection(
+      raw.section ?? raw.secao ?? raw.genero ?? raw.genero_prod ?? raw.aba ?? raw.tipo_prod,
+    ),
 
-    price: toMoney(raw.price ?? raw.preco),
-    old_price: toMoney(raw.old_price ?? raw.oldPrice ?? raw.preco_antigo ?? null),
+    price: toMoney(raw.price ?? raw.valor_dec ?? raw.preco ?? raw.valor),
+    old_price: toMoney(
+      raw.old_price ?? raw.oldPrice ?? raw.discountPrice ?? raw.preco_antigo ?? null,
+    ),
+    model_group: raw.model_group ?? raw.modelGroup ?? raw.grupo_modelo ?? null,
     sizes: raw.sizes ?? raw.numeracao ?? raw.tamanhos,
     colors: raw.colors ?? raw.cores,
     site_visible: raw.site_visible ?? raw.siteVisible ?? raw.publicado ?? true,
@@ -126,6 +133,7 @@ const productSchema = z.preprocess(
     backorder: z.boolean().default(true),
     launch: z.boolean().default(false),
     tag: z.string().max(40).nullish().default(null),
+    model_group: z.string().max(120).nullish().default(null),
 
     site_visible: z.boolean().default(true),
   }),
@@ -142,7 +150,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
         const { data, error } = await supabaseAdmin
           .from("products")
           .select(
-            "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, site_visible",
+            "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible",
           )
           .eq("site_visible", true)
           .order("created_at", { ascending: false });
