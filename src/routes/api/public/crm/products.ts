@@ -21,6 +21,18 @@ const toUrl = (v: unknown): string | null => {
   return null;
 };
 
+/** Aceita 199, "199.90", "R$ 1.299,90" e devolve número (ou null). */
+const toMoney = (v: unknown): number | null => {
+  if (v === null || v === undefined || v === "") return null;
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  if (typeof v !== "string") return null;
+  let s = v.replace(/[^\d,.-]/g, "");
+  if (s.includes(",") && s.includes(".")) s = s.replace(/\./g, "").replace(",", ".");
+  else if (s.includes(",")) s = s.replace(",", ".");
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+};
+
 /**
  * Normaliza o payload do CRM ANTES da validação.
  * O CRM envia a galeria em campos variados (images, fotos, gallery, photos,
@@ -58,16 +70,21 @@ const normalizeIncoming = (input: unknown) => {
     sku: raw.sku ?? raw.codigo ?? raw.code,
     name: raw.name ?? raw.nome,
     brand: raw.brand ?? raw.marca,
+    category: raw.category ?? raw.categoria ?? raw.tipo,
+    description: raw.description ?? raw.descricao ?? null,
     section: typeof (raw.section ?? raw.secao ?? raw.genero) === "string"
       ? String(raw.section ?? raw.secao ?? raw.genero).toLowerCase()
       : raw.section,
-    price: raw.price ?? raw.preco,
-    old_price: raw.old_price ?? raw.oldPrice ?? raw.preco_antigo ?? null,
-    site_visible: raw.site_visible ?? raw.siteVisible ?? true,
+    price: toMoney(raw.price ?? raw.preco),
+    old_price: toMoney(raw.old_price ?? raw.oldPrice ?? raw.preco_antigo ?? null),
+    sizes: raw.sizes ?? raw.numeracao ?? raw.tamanhos,
+    colors: raw.colors ?? raw.cores,
+    site_visible: raw.site_visible ?? raw.siteVisible ?? raw.publicado ?? true,
     img: main,
     images: Array.from(new Set(gallery)).slice(0, 20),
   };
 };
+
 
 const productSchema = z.preprocess(
   normalizeIncoming,
@@ -135,10 +152,17 @@ export const Route = createFileRoute("/api/public/crm/products")({
           return json({ ok: false, error: "Payload inválido", issues: parsed.error.issues }, 400);
         }
 
+        // Remove chaves nulas/indefinidas para não violar colunas NOT NULL com default.
+        const rows = parsed.data.map((item) =>
+          Object.fromEntries(
+            Object.entries(item).filter(([k, v]) => v !== undefined && !(v === null && k !== "old_price" && k !== "description" && k !== "tag")),
+          ),
+        );
+
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin
           .from("products")
-          .upsert(parsed.data, { onConflict: "sku" })
+          .upsert(rows as never, { onConflict: "sku" })
           .select("id, sku, name, section, site_visible");
 
         if (error) return json({ ok: false, error: error.message }, 500);

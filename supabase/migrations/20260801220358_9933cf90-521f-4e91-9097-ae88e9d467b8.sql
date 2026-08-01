@@ -1,0 +1,1 @@
+DELETE FROM public.products WHERE sku = 'MXR-TEST-PING';
