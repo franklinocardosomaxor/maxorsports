@@ -52,62 +52,141 @@ const toSection = (v: unknown): "masculino" | "feminino" | "infantil" | "ofertas
 
 
 /**
- * Normaliza o payload do CRM ANTES da validação.
- * O CRM envia a galeria em campos variados (images, fotos, gallery, photos,
- * imageUrls…) e às vezes como lista de objetos. Antes essas chaves eram
- * simplesmente descartadas — por isso o produto chegava sem imagem.
+ * Normalizador AUTO-ADAPTÁVEL.
+ *
+ * Em vez de uma lista fixa de nomes de campo (que quebrava sempre que o CRM
+ * renomeava algo), aqui cada campo do site é resolvido por PADRÃO de nome:
+ * a chave recebida é achatada (sem acentos, sem separadores, sem sufixos como
+ * _prod/_dec/_txt) e comparada com uma regex. Assim `marca`, `marca_prod`,
+ * `brandName`, `MARCA-PROD` etc. caem todos em `brand` — sem mexer no código.
  */
+
+/** "Marca_Prod" -> "marca" ; "valor_dec" -> "valor" ; "imageURLs" -> "imageurls" */
+const flatKey = (k: string) =>
+  k
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s_\-.]/g, "")
+    .toLowerCase()
+    .replace(/(prod|produto|dec|txt|str|int|num|field|campo|value)$/g, "");
+
+/** Achata objetos aninhados (ex.: { produto: {...} }, { data: {...} }) em 1 nível. */
+const flattenSource = (input: Record<string, unknown>): Record<string, unknown> => {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(input)) {
+    const isPlain = v && typeof v === "object" && !Array.isArray(v);
+    if (isPlain && /^(produto|product|item|data|attributes|fields|payload|record)$/.test(flatKey(k))) {
+      for (const [k2, v2] of Object.entries(v as Record<string, unknown>)) out[k2] = v2;
+    } else if (!(k in out)) {
+      out[k] = v;
+    }
+  }
+  return out;
+};
+
+/** Primeiro valor cuja chave casa com o padrão. */
+const pick = (raw: Record<string, unknown>, re: RegExp): unknown => {
+  for (const [k, v] of Object.entries(raw)) {
+    if (v === null || v === undefined || v === "") continue;
+    if (re.test(flatKey(k))) return v;
+  }
+  return undefined;
+};
+
+const PATTERNS = {
+  sku: /^(sku|codigo|code|idproduto|productid|ref|referencia|id)$/,
+  name: /^(name|nome|titulo|title|descricaocurta|modelo|model)$/,
+  brand: /^(brand|marca|fabricante|manufacturer)$/,
+  category: /^(category|categoria|tipo|type|linha|subcategoria)$/,
+  description: /^(description|descricao|detalhes|details|obs|observacao|resumo)$/,
+  section: /^(section|secao|genero|gender|aba|publico|departamento|sexo|tab)$/,
+  price: /^(price|preco|valor|precovenda|valorvenda|pricebrl|salepri?ce)$/,
+  oldPrice: /^(oldprice|precoantigo|valorantigo|precode|precooriginal|discountprice|comparepri?ce|precoriscado)$/,
+  modelGroup: /^(modelgroup|grupomodelo|grupo|agrupamento|familia|family|colorwaygroup|linhamodelo)$/,
+  sizes: /^(sizes|tamanhos|numeracao|numeros|grade|tamanho|size)$/,
+  colors: /^(colors|cores|cor|color|colorway|paleta)$/,
+  stock: /^(stock|estoque|quantidade|qtd|qty|saldo)$/,
+  backorder: /^(backorder|encomenda|sobencomenda|prevenda)$/,
+  launch: /^(launch|lancamento|novidade|isnew|new)$/,
+  tag: /^(tag|etiqueta|selo|badge|destaque)$/,
+  visible: /^(sitevisible|visivel|publicado|published|ativo|active|visible|exibirsite)$/,
+  gallery: /^(images?|imgs?|gallery|galeria|photos?|fotos?|imageurls?|pictures?|midias?|media|anexos?|arquivos?)$/,
+  main: /^(img|image|imagem|foto|imageurl|capa|cover|thumbnail|thumb|principal|fotoprincipal|imagemprincipal)$/,
+} as const;
+
+const toBool = (v: unknown, fallback: boolean): boolean => {
+  if (typeof v === "boolean") return v;
+  if (typeof v === "number") return v !== 0;
+  if (typeof v === "string") {
+    const s = v.trim().toLowerCase();
+    if (["true", "1", "sim", "s", "yes", "y", "ativo", "publicado"].includes(s)) return true;
+    if (["false", "0", "nao", "não", "n", "no", "inativo"].includes(s)) return false;
+  }
+  return fallback;
+};
+
+/** Aceita array, string separada por vírgula/;/| ou lista de objetos. */
+const toList = (v: unknown): string[] => {
+  if (v === null || v === undefined) return [];
+  const arr = Array.isArray(v) ? v : typeof v === "string" ? v.split(/[,;|]/) : [v];
+  return arr
+    .map((item) => {
+      if (typeof item === "string" || typeof item === "number") return String(item).trim();
+      const u = toUrl(item);
+      if (u) return u;
+      const o = item as Record<string, unknown> | null;
+      const label = o?.name ?? o?.nome ?? o?.label ?? o?.hex ?? o?.value ?? o?.tamanho ?? o?.size;
+      return typeof label === "string" || typeof label === "number" ? String(label).trim() : "";
+    })
+    .filter(Boolean);
+};
+
 const normalizeIncoming = (input: unknown) => {
   if (!input || typeof input !== "object") return input;
-  const raw = { ...(input as Record<string, unknown>) };
+  const raw = flattenSource(input as Record<string, unknown>);
 
-  const galleryKeys = [
-    "images", "imgs", "gallery", "galeria", "photos", "fotos",
-    "imageUrls", "image_urls", "pictures", "midias", "media",
-  ];
+  // Galeria: junta TODAS as chaves que pareçam imagem (galeria + principal).
   const gallery: string[] = [];
-  for (const key of galleryKeys) {
-    const v = raw[key];
-    if (Array.isArray(v)) for (const item of v) { const u = toUrl(item); if (u) gallery.push(u); }
+  for (const [k, v] of Object.entries(raw)) {
+    const fk = flatKey(k);
+    if (!PATTERNS.gallery.test(fk) && !PATTERNS.main.test(fk)) continue;
+    if (Array.isArray(v)) for (const it of v) { const u = toUrl(it); if (u) gallery.push(u); }
     else { const u = toUrl(v); if (u) gallery.push(u); }
   }
-
-  const mainKeys = ["img", "image", "imagem", "foto", "imageUrl", "image_url", "cover", "capa", "thumbnail"];
-  let main: string | null = null;
-  for (const key of mainKeys) {
-    const u = toUrl(raw[key]);
-    if (u) { main = u; break; }
-  }
+  const mainRaw = pick(raw, PATTERNS.main);
+  let main = toUrl(Array.isArray(mainRaw) ? mainRaw[0] : mainRaw);
   if (!main && gallery.length) main = gallery[0];
   if (main && !gallery.includes(main)) gallery.unshift(main);
 
-  for (const key of [...galleryKeys, ...mainKeys]) delete raw[key];
+  const sizes = toList(pick(raw, PATTERNS.sizes))
+    .map((s) => Number(String(s).replace(",", ".")))
+    .filter((n) => Number.isFinite(n));
+  const colors = toList(pick(raw, PATTERNS.colors));
 
-  // Aliases do Maxor CRM (Antigravity): id_produto, name_prod, marca_prod,
-  // categoria_prod, tipo_prod, valor_dec, discountPrice, siteVisible, modelGroup.
+  const str = (v: unknown) => (v === undefined || v === null ? undefined : String(v).trim() || undefined);
+
   return {
-    ...raw,
-    sku: raw.sku ?? raw.id_produto ?? raw.codigo ?? raw.code ?? raw.id,
-    name: raw.name ?? raw.name_prod ?? raw.nome,
-    brand: raw.brand ?? raw.marca_prod ?? raw.marca,
-    category: raw.category ?? raw.categoria_prod ?? raw.categoria ?? raw.tipo_prod ?? raw.tipo,
-    description: raw.description ?? raw.descricao ?? null,
-    section: toSection(
-      raw.section ?? raw.secao ?? raw.genero ?? raw.genero_prod ?? raw.aba ?? raw.tipo_prod,
-    ),
-
-    price: toMoney(raw.price ?? raw.valor_dec ?? raw.preco ?? raw.valor),
-    old_price: toMoney(
-      raw.old_price ?? raw.oldPrice ?? raw.discountPrice ?? raw.preco_antigo ?? null,
-    ),
-    model_group: raw.model_group ?? raw.modelGroup ?? raw.grupo_modelo ?? null,
-    sizes: raw.sizes ?? raw.numeracao ?? raw.tamanhos,
-    colors: raw.colors ?? raw.cores,
-    site_visible: raw.site_visible ?? raw.siteVisible ?? raw.publicado ?? true,
+    sku: str(pick(raw, PATTERNS.sku)),
+    name: str(pick(raw, PATTERNS.name)),
+    brand: str(pick(raw, PATTERNS.brand)) ?? "Maxor",
+    category: str(pick(raw, PATTERNS.category)) ?? "Casual",
+    description: str(pick(raw, PATTERNS.description)) ?? null,
+    section: toSection(pick(raw, PATTERNS.section)),
+    price: toMoney(pick(raw, PATTERNS.price)),
+    old_price: toMoney(pick(raw, PATTERNS.oldPrice)),
+    model_group: str(pick(raw, PATTERNS.modelGroup)) ?? null,
+    sizes: sizes.length ? sizes : undefined,
+    colors: colors.length ? colors : undefined,
+    stock: pick(raw, PATTERNS.stock),
+    backorder: toBool(pick(raw, PATTERNS.backorder), true),
+    launch: toBool(pick(raw, PATTERNS.launch), false),
+    tag: str(pick(raw, PATTERNS.tag)) ?? null,
+    site_visible: toBool(pick(raw, PATTERNS.visible), true),
     img: main,
     images: Array.from(new Set(gallery)).slice(0, 20),
   };
 };
+
 
 
 const productSchema = z.preprocess(
@@ -176,7 +255,21 @@ export const Route = createFileRoute("/api/public/crm/products")({
           return json({ ok: false, error: "JSON inválido" }, 400);
         }
 
-        const items = Array.isArray(payload) ? payload : [payload];
+        // Aceita: [ {...} ], { ...um produto }, ou envelopes tipo
+        // { products: [...] } / { produtos: [...] } / { data: { items: [...] } }.
+        const unwrap = (p: unknown): unknown[] => {
+          if (Array.isArray(p)) return p;
+          if (p && typeof p === "object") {
+            for (const [k, v] of Object.entries(p as Record<string, unknown>)) {
+              if (!/^(products?|produtos?|items?|itens|data|rows|records?|lista|list|catalog|catalogo)$/i.test(k)) continue;
+              if (Array.isArray(v) && v.some((i) => i && typeof i === "object")) return v;
+            }
+          }
+
+          return [p];
+        };
+        const items = unwrap(payload);
+
         const parsed = z.array(productSchema).max(200).safeParse(items);
         if (!parsed.success) {
           return json({ ok: false, error: "Payload inválido", issues: parsed.error.issues }, 400);
