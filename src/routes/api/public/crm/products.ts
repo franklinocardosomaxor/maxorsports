@@ -111,17 +111,22 @@ const productSchema = z.preprocess(
     brand: z.string().min(1).max(80).default("Maxor"),
     section: z.enum(["masculino", "feminino", "infantil", "ofertas"]).default("masculino"),
     category: z.string().min(1).max(80).default("Casual"),
-    description: z.string().max(2000).optional().nullable(),
+    description: z.string().max(2000).nullish().default(null),
     price: z.coerce.number().min(0).max(1_000_000),
-    old_price: z.coerce.number().min(0).max(1_000_000).optional().nullable(),
-    img: z.string().max(1000).optional().nullable(),
+    old_price: z.coerce.number().min(0).max(1_000_000).nullish().default(null),
+    img: z.string().max(1000).nullish().default(null),
     images: z.array(z.string().max(1000)).max(20).default([]),
-    colors: z.array(z.string().max(32)).max(30).optional(),
-    sizes: z.array(z.coerce.number().int().min(10).max(60)).max(40).optional(),
+    // Defaults obrigatórios: no envio em lote o PostgREST une as chaves de
+    // todas as linhas e preenche as ausentes com NULL (não com o DEFAULT da
+    // coluna) — sem isso um produto sem cor derruba o lote inteiro.
+    colors: z.array(z.string().max(32)).max(30).default(["#0F1720"]),
+    // min 15 para aceitar numeração infantil/baby.
+    sizes: z.array(z.coerce.number().int().min(15).max(60)).max(40).default([38, 39, 40, 41, 42, 43, 44]),
     stock: z.coerce.number().int().min(0).max(1_000_000).default(0),
     backorder: z.boolean().default(true),
     launch: z.boolean().default(false),
-    tag: z.string().max(40).optional().nullable(),
+    tag: z.string().max(40).nullish().default(null),
+
     site_visible: z.boolean().default(true),
   }),
 );
