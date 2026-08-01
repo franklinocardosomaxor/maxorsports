@@ -40,9 +40,18 @@ export const Route = createFileRoute("/marcas/$brand")({
 
 function BrandPage() {
   const { brand } = Route.useLoaderData();
-  const products = BRAND_PRODUCTS[brand.slug] ?? [];
+  // Re-renderiza quando o CRM sincroniza novos produtos (realtime).
+  useCatalogVersion();
+
+  // Produtos cadastrados no CRM para esta marca + vitrine base local.
+  const crm = getBrandProducts(brand.slug) as unknown as CatalogProduct[];
+  const local = BRAND_PRODUCTS[brand.slug] ?? [];
+  const seen = new Set(crm.map((p) => p.id));
+  const products = [...crm, ...local.filter((p) => !seen.has(p.id))];
+
   const categories = Array.from(new Set(products.map((p) => p.category)));
   const sizes = Array.from(new Set(products.flatMap((p) => p.sizes))).sort((a, b) => a - b);
+
 
   return (
     <CatalogPage
