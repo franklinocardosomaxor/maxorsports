@@ -255,7 +255,19 @@ export const Route = createFileRoute("/api/public/crm/products")({
           return json({ ok: false, error: "JSON inválido" }, 400);
         }
 
-        const items = Array.isArray(payload) ? payload : [payload];
+        // Aceita: [ {...} ], { ...um produto }, ou envelopes tipo
+        // { products: [...] } / { produtos: [...] } / { data: { items: [...] } }.
+        const unwrap = (p: unknown): unknown[] => {
+          if (Array.isArray(p)) return p;
+          if (p && typeof p === "object") {
+            for (const v of Object.values(p as Record<string, unknown>)) {
+              if (Array.isArray(v) && v.some((i) => i && typeof i === "object")) return v;
+            }
+          }
+          return [p];
+        };
+        const items = unwrap(payload);
+
         const parsed = z.array(productSchema).max(200).safeParse(items);
         if (!parsed.success) {
           return json({ ok: false, error: "Payload inválido", issues: parsed.error.issues }, 400);
