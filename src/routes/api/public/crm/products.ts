@@ -133,6 +133,7 @@ const productSchema = z.preprocess(
     backorder: z.boolean().default(true),
     launch: z.boolean().default(false),
     tag: z.string().max(40).nullish().default(null),
+    model_group: z.string().max(120).nullish().default(null),
 
     site_visible: z.boolean().default(true),
   }),
@@ -149,7 +150,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
         const { data, error } = await supabaseAdmin
           .from("products")
           .select(
-            "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, site_visible",
+            "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible",
           )
           .eq("site_visible", true)
           .order("created_at", { ascending: false });
