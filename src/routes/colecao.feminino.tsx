@@ -1,25 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CatalogPage } from "@/components/site/CatalogPage";
-import { COLECAO_FEMININA } from "@/components/site/colecao-data";
+import { CatalogPage, type CatalogProduct } from "@/components/site/CatalogPage";
+import { getSectionProducts } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/colecao/feminino")({
-  component: () => (
-    <CatalogPage
-      activeNav="Feminino"
-      breadcrumb={["Coleção", "Feminino"]}
-      theme={{
-        eyebrow: "Coleção Exclusiva",
-        title: "Maxor Feminino",
-        subtitle: "Seleção exclusiva da coleção feminina Maxor Sports — potência, estilo e atitude.",
-        headerGradient: "linear-gradient(120deg, #0F1720 0%, #103642 55%, #00BFC6 100%)",
-        accent: "cyan",
-      }}
-      products={COLECAO_FEMININA}
-      brands={["Adidas", "Nike", "New Balance", "Asics", "Puma"]}
-      categories={["Corrida", "Casual", "Trail", "Training"]}
-      sizes={[34, 35, 36, 37, 38, 39, 40]}
-    />
-  ),
+  component: ColecaoPage,
   head: () => ({
     meta: [
       { title: "Coleção Maxor Feminino — Maxor Sports" },
@@ -33,3 +18,25 @@ export const Route = createFileRoute("/colecao/feminino")({
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/colecao/feminino" }],
   }),
 });
+
+function ColecaoPage() {
+  useCatalogVersion();
+  const products = getSectionProducts("feminino") as unknown as CatalogProduct[];
+  return (
+    <CatalogPage
+      activeNav="Feminino"
+      breadcrumb={["Coleção", "Feminino"]}
+      theme={{
+        eyebrow: "Coleção Exclusiva",
+        title: "Maxor Feminino",
+        subtitle: "Seleção exclusiva da coleção feminina Maxor Sports — potência, estilo e atitude.",
+        headerGradient: "linear-gradient(120deg, #0F1720 0%, #103642 55%, #00BFC6 100%)",
+        accent: "cyan",
+      }}
+      products={products}
+      brands={["Adidas", "Nike", "New Balance", "Asics", "Puma"]}
+      categories={["Corrida", "Casual", "Trail", "Training"]}
+      sizes={[34, 35, 36, 37, 38, 39, 40]}
+    />
+  );
+}

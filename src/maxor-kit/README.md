@@ -26,7 +26,7 @@ import {
 | **Imagens** (`assets.ts`) | 17 logos de marca (SVG), 4 ícones de categoria (chuteiras, academia, futebol, diversas), monograma, capas masculino/feminino e o vídeo do hero (CDN). `MAXOR_ASSET_LIBRARY` lista tudo com `key/url/kind/label` — pronto para uma tela de biblioteca de mídia no CRM. |
 | **Efeitos** | `Aurora` (WebGL/ogl, cabeçalho), `SplashCursor` (fluido no cursor), `LogoLoop` (carrossel infinito com arraste, pausa no hover e scrollbar Cyan). |
 | **Componentes** | `Shell` (header Navy + MegaNav + newsletter + footer), `CatalogPage` (grid com filtros, breadcrumbs e favoritos), `ProductMiniCard`. |
-| **Dados** | `ALL_PRODUCTS`, `MASCULINO/FEMININO/INFANTIL`, `OFERTAS`, `PROMO_COMBOS`, `BRANDS`, `BRAND_PRODUCTS`, `ROUPAS`, `COLECAO_*`. |
+| **Dados** | `ALL_PRODUCTS` (vindo do CRM), `PROMO_COMBOS`, `BRANDS`, `ROUPAS`. Não existem catálogos locais. |
 | **Funcionalidades** | Sacola (`CartProvider`/`useCart`, localStorage), favoritos, perfil do comprador, leads/deals/atividades do CRM, busca por nome e por imagem (Gemini), importação CSV, e-mail transacional e WhatsApp. |
 
 ## Regras de uso no CRM
@@ -49,7 +49,7 @@ import {
 
 ## Substituindo os seeds por dados do CRM
 
-Os arrays estáticos (`catalog-data.ts`, `ofertas-data.ts`, `brands-data.ts`,
-`colecao-data.ts`) devem ser trocados por `createServerFn` que leem
+Fluxo único: CRM → `public.products` (`site_visible = true`) → `setCrmProducts()`
+→ vitrines. Os agrupamentos promocionais (`ofertas-data.ts`) devem virar `createServerFn` que leem
 `products` + `product_media`, **mantendo exatamente o shape de
 `CatalogProduct`**. Nenhum componente do kit precisa ser alterado.

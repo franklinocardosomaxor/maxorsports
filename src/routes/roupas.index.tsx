@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
-import { ROUPAS, ROUPA_PRODUCTS } from "@/components/site/roupas-data";
+import { ROUPAS } from "@/components/site/roupas-data";
+import { getCategoryProducts } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/roupas/")({
   component: RoupasIndex,
@@ -18,6 +20,7 @@ export const Route = createFileRoute("/roupas/")({
 });
 
 function RoupasIndex() {
+  useCatalogVersion();
   return (
     <Shell active="Roupas">
       <div className="border-b border-white/10 bg-navy">
@@ -46,7 +49,7 @@ function RoupasIndex() {
       <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
           {ROUPAS.map((r) => {
-            const count = ROUPA_PRODUCTS[r.slug]?.length ?? 0;
+            const count = getCategoryProducts(r.name).length;
             return (
               <Link
                 key={r.slug}

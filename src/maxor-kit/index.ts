@@ -37,25 +37,25 @@ export {
 } from "@/components/site/CatalogPage";
 
 /* ------------------------------------------------------- dados / catálogo */
-export { MASCULINO, FEMININO, INFANTIL } from "@/components/site/catalog-data";
-export { OFERTAS, PROMO_COMBOS, type PromoCombo } from "@/components/site/ofertas-data";
-export { COLECAO_MASCULINA, COLECAO_FEMININA } from "@/components/site/colecao-data";
+export { PROMO_COMBOS, type PromoCombo } from "@/components/site/ofertas-data";
 export {
   BRANDS,
-  BRAND_PRODUCTS,
   getBrand,
   type Brand,
   type BrandAccent,
 } from "@/components/site/brands-data";
 export {
   ROUPAS,
-  ROUPA_PRODUCTS,
   getRoupa,
   type RoupaCategory,
 } from "@/components/site/roupas-data";
 export {
   ALL_PRODUCTS,
-  LOCAL_PRODUCTS,
+  isPublished,
+  normalizeProduct,
+  getBrandProducts,
+  getCategoryProducts,
+  brandSlug,
   setCrmProducts,
   mergeCrmProducts,
   getSectionProducts,
@@ -67,19 +67,6 @@ export {
   type ProductWithSection,
 } from "@/lib/catalog";
 
-/* -------------------------------------------- catálogo público do CRM */
-export {
-  CRM_API_BASE_URL,
-  CRM_CONFIGURED,
-  CRM_CATALOG_URL,
-  LOCAL_CATALOG_TABS,
-  fetchCrmCatalog,
-  loadCatalogTabs,
-  normalizeProduct,
-  type CatalogTabKey,
-  type CatalogTabs,
-} from "@/lib/crm-catalog";
-export { useCrmCatalog } from "@/hooks/use-crm-catalog";
 export { useCrmSync, useCatalogVersion, CRM_API_URL, type CrmSyncStatus } from "@/hooks/use-crm-sync";
 export { CrmSyncBanner } from "@/components/site/CrmSyncBanner";
 

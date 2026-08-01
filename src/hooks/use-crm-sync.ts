@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getCatalogVersion, subscribeCatalog, mergeCrmProducts } from "@/lib/catalog";
-import { CRM_API_BASE_URL } from "@/lib/crm-catalog";
 import { fetchDbProducts } from "@/lib/crm-db-catalog";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,7 +22,8 @@ export const CRM_SYNC_ENABLED = true;
 const POLL_MS = 60_000;
 
 /** Mantido apenas por compatibilidade com o Maxor Kit. */
-export const CRM_API_URL = `${CRM_API_BASE_URL}/api/site/catalog`;
+/** Endpoint de ingestão/leitura do catálogo (mesma origem do site). */
+export const CRM_API_URL = "/api/public/crm/products";
 
 export type CrmSyncStatus = {
   loading: boolean;
@@ -50,7 +50,7 @@ export function useCrmSync(): CrmSyncStatus {
       setStatus({ loading: false, loaded: true, error: null });
     } catch (err) {
       if (!aliveRef.current) return;
-      console.warn("[Maxor] catálogo do CRM indisponível — usando dados locais.", err);
+      console.warn("[Maxor] catálogo do CRM indisponível.", err);
       setStatus((s) => ({ loading: false, loaded: s.loaded, error: null }));
     } finally {
       inFlightRef.current = false;

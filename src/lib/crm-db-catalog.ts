@@ -27,6 +27,7 @@ export type DbProduct = {
   launch: boolean;
   tag: string | null;
   model_group: string | null;
+  site_visible: boolean;
 };
 
 /** Busca os produtos publicados no banco compartilhado. */
@@ -34,7 +35,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group",
+      "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible",
     )
     .eq("site_visible", true)
     .order("created_at", { ascending: false });
@@ -61,6 +62,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
       description: row.description ?? undefined,
       stock: row.stock,
       backorder: row.backorder,
+      site_visible: row.site_visible,
     } satisfies Record<string, unknown>;
   });
 }
