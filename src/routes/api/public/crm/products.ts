@@ -21,6 +21,18 @@ const toUrl = (v: unknown): string | null => {
   return null;
 };
 
+/** Aceita 199, "199.90", "R$ 1.299,90" e devolve número (ou null). */
+const toMoney = (v: unknown): number | null => {
+  if (v === null || v === undefined || v === "") return null;
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  if (typeof v !== "string") return null;
+  let s = v.replace(/[^\d,.-]/g, "");
+  if (s.includes(",") && s.includes(".")) s = s.replace(/\./g, "").replace(",", ".");
+  else if (s.includes(",")) s = s.replace(",", ".");
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+};
+
 /**
  * Normaliza o payload do CRM ANTES da validação.
  * O CRM envia a galeria em campos variados (images, fotos, gallery, photos,
