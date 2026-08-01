@@ -23,17 +23,20 @@ export const Route = createFileRoute("/categorias")({
 });
 
 function CategoriasPage() {
-  useCatalogVersion();
+  // Muda a cada sync do CRM — precisa entrar nas deps, senão os memos
+  // congelam na primeira renderização e produtos novos não aparecem.
+  const catalogVersion = useCatalogVersion();
   const categories = useMemo(
     () => Array.from(new Set(ALL_PRODUCTS.map((p) => p.category))).sort(),
-    [],
+    [catalogVersion],
   );
   const [active, setActive] = useState<string>("Todas");
 
   const products = useMemo(
     () => (active === "Todas" ? ALL_PRODUCTS : ALL_PRODUCTS.filter((p) => p.category === active)),
-    [active],
+    [active, catalogVersion],
   );
+
 
   return (
     <Shell active="Categoria">
