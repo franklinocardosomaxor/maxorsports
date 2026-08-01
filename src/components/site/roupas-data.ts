@@ -1,7 +1,6 @@
 import academiaIcon from "@/assets/opt/roupas/academia.png";
 import futebolIcon from "@/assets/opt/roupas/futebol.png";
 import diversasIcon from "@/assets/opt/roupas/diversas.png";
-import type { CatalogProduct } from "./CatalogPage";
 
 export type RoupaCategory = {
   slug: string;
@@ -17,10 +16,5 @@ export const ROUPAS: RoupaCategory[] = [
   { slug: "diversas", name: "Diversas", tagline: "Casual, street e lifestyle", icon: diversasIcon, accent: "lime" },
 ];
 
-export const ROUPA_PRODUCTS: Record<string, CatalogProduct[]> = {
-  academia: [],
-  futebol: [],
-  diversas: [],
-};
 
 export const getRoupa = (slug: string) => ROUPAS.find((r) => r.slug === slug);

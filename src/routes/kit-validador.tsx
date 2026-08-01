@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ClientOnly } from "@tanstack/react-router";
 import * as React from "react";
-import { CrmCatalogStatus } from "@/components/site/CrmCatalogStatus";
 import {
   MAXOR_ASSET_LIBRARY,
   maxorColors,
@@ -13,7 +12,6 @@ import {
   ROUPAS,
   getVariants,
   brl,
-  productPlaceholder,
 } from "@/maxor-kit";
 
 const LogoLoopLazy = React.lazy(() =>
@@ -36,7 +34,6 @@ function KitValidador() {
     { label: "Linhas de roupa", ok: ROUPAS.length > 0, detail: `${ROUPAS.length} categorias` },
     { label: "Agrupamento de variantes", ok: typeof getVariants === "function", detail: "getVariants()" },
     { label: "Formatação BRL", ok: brl(199.9).includes("199"), detail: brl(199.9) },
-    { label: "Placeholder de produto", ok: productPlaceholder("teste", "Teste").startsWith("data:image/svg"), detail: "SVG data-URI" },
   ];
 
   const okCount = checks.filter((c) => c.ok).length;
@@ -188,7 +185,6 @@ function KitValidador() {
           </pre>
         </section>
 
-        <CrmCatalogStatus />
 
 
       </div>

@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
-import { BRANDS, BRAND_PRODUCTS } from "@/components/site/brands-data";
+import { BRANDS } from "@/components/site/brands-data";
+import { getBrandProducts } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/marcas/")({
   component: MarcasIndex,
@@ -47,7 +49,7 @@ function MarcasIndex() {
       <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {BRANDS.map((b) => {
-            const count = BRAND_PRODUCTS[b.slug]?.length ?? 0;
+            const count = getBrandProducts(b.slug).length;
             return (
               <Link
                 key={b.slug}

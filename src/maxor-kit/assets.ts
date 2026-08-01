@@ -39,7 +39,6 @@ import capaMasculino from "@/assets/cat-masculino.jpg";
 import capaFeminino from "@/assets/cat-feminino.jpg";
 import heroVideoAsset from "@/assets/atletas-correndo.mp4.asset.json";
 
-export { productPlaceholder } from "@/lib/product-media";
 
 /** Logos de marca (SVG monocromático, pensados para fundo Navy). */
 export const brandLogos = {

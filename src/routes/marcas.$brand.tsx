@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CatalogPage, type CatalogProduct } from "@/components/site/CatalogPage";
-import { BRAND_PRODUCTS, getBrand } from "@/components/site/brands-data";
+import { getBrand } from "@/components/site/brands-data";
 import { getBrandProducts } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
@@ -44,10 +44,7 @@ function BrandPage() {
   useCatalogVersion();
 
   // Produtos cadastrados no CRM para esta marca + vitrine base local.
-  const crm = getBrandProducts(brand.slug) as unknown as CatalogProduct[];
-  const local = BRAND_PRODUCTS[brand.slug] ?? [];
-  const seen = new Set(crm.map((p) => p.id));
-  const products = [...crm, ...local.filter((p) => !seen.has(p.id))];
+  const products = getBrandProducts(brand.slug) as unknown as CatalogProduct[];
 
   const categories = Array.from(new Set(products.map((p) => p.category)));
   const sizes = Array.from(new Set(products.flatMap((p) => p.sizes))).sort((a, b) => a - b);

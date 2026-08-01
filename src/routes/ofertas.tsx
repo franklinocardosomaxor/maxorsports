@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight, Plus, Minus, ImagePlus, Sparkles, Trash2 } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
 import { CatalogPage, type CatalogProduct } from "@/components/site/CatalogPage";
-import { OFERTAS, PROMO_COMBOS, type PromoCombo } from "@/components/site/ofertas-data";
+import { PROMO_COMBOS, type PromoCombo } from "@/components/site/ofertas-data";
 import { ALL_PRODUCTS, getSectionProducts } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
@@ -40,12 +40,10 @@ function OfertasPage() {
   // Ofertas = produtos marcados como "ofertas" no CRM + qualquer produto
   // com preço antigo maior que o atual + a vitrine base local.
   const products = useMemo(() => {
-    const crm = [
+    return [
       ...getSectionProducts("ofertas"),
       ...ALL_PRODUCTS.filter((p) => p.old && p.old > p.price && p.section !== "ofertas"),
     ] as unknown as CatalogProduct[];
-    const seen = new Set(crm.map((p) => p.id));
-    return [...crm, ...OFERTAS.filter((p) => !seen.has(p.id))];
   }, [catalogVersion]);
 
 
@@ -96,6 +94,12 @@ function OfertasPage() {
  * `promo_combos` no Supabase.
  */
 function ComboSection() {
+  const version = useCatalogVersion();
+  // Produtos disponíveis para o combo: sempre os publicados pelo CRM.
+  const catalog = useMemo(
+    () => ALL_PRODUCTS as unknown as CatalogProduct[],
+    [version],
+  );
   const seed = PROMO_COMBOS[0];
   const [iconUrl, setIconUrl] = useState<string>(seed?.iconUrl ?? "");
   const [title, setTitle] = useState<string>(seed?.title ?? "Novo combo promo");
@@ -103,7 +107,7 @@ function ComboSection() {
   const [items, setItems] = useState<CatalogProduct[]>(
     () =>
       seed?.productIds
-        .map((id) => OFERTAS.find((p) => p.id === id))
+        .map((id) => catalog.find((p) => p.id === id))
         .filter(Boolean) as CatalogProduct[],
   );
   const [overrideTotal, setOverrideTotal] = useState<string>("");
@@ -181,7 +185,7 @@ function ComboSection() {
               Clique no + pra adicionar ao combo.
             </p>
             <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3">
-              {OFERTAS.map((p) => {
+              {catalog.map((p) => {
                 const on = !!items.find((x) => x.id === p.id);
                 return (
                   <button

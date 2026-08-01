@@ -23,18 +23,9 @@ import { Shell } from "@/components/site/Shell";
 import { LogoLoop } from "@/components/site/LogoLoop";
 import { BRANDS } from "@/components/site/brands-data";
 
-import {
-  shoeBostonPink,
-  shoeTerrexSpeed,
-  shoeUltraboost5,
-  shoeUltraboost22,
-  shoeUb20Osaka,
-  shoeGazelleRed,
-  shoeSupernova,
-  shoeTerrexDaroga,
-  shoeAf1Grey,
-  shoeAf1Cpfm,
-} from "@/lib/product-media";
+import { useMemo } from "react";
+import { ALL_PRODUCTS } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import catFem from "@/assets/cat-feminino.jpg";
 import catMasc from "@/assets/cat-masculino.jpg";
 
@@ -70,38 +61,35 @@ const NAV = [
   "Ofertas",
 ];
 
-const CATEGORIES = [
-  { label: "Corrida", img: shoeSupernova },
-  { label: "Basquete", img: shoeAf1Cpfm },
-  { label: "Casual", img: shoeGazelleRed },
-  { label: "Training", img: shoeUltraboost5 },
-  { label: "Trail", img: shoeTerrexDaroga },
-  { label: "Lifestyle", img: shoeAf1Grey },
-];
-
-const PRODUCTS: Product[] = [
-  { id: "m-boston-13", name: "Adizero Boston 13", price: 899.9, old: 1199.9, tag: "Novo", img: shoeBostonPink, colors: ["#f5e6d8", "#ff4d8a", "#c0c0c0"] },
-  { id: "m-terrex-speed", name: "Terrex Agravic Speed 2", price: 949.9, old: 1249.9, tag: "-24%", img: shoeTerrexSpeed, colors: ["#f7f2e6", "#111111", "#ff5a2b"] },
-  { id: "m-ub5-gtx", name: "Ultraboost 5 GTX", price: 1099.9, old: 1399.9, tag: "Top", img: shoeUltraboost5, colors: ["#0a0a0a", "#3a4bff"] },
-  { id: "m-af1-cpfm", name: "Air Force 1 x CPFM", price: 1299.9, old: 1599.9, tag: "Drop", img: shoeAf1Cpfm, colors: ["#0a0a0a", "#ffffff"] },
-];
-
-const OFFERS: Product[] = [
-  { id: "o-ub22", name: "Ultraboost 22 Grey", price: 699.9, old: 999.9, tag: "-30%", img: shoeUltraboost22 },
-  { id: "o-ub20-osaka", name: "Ultraboost 20 Osaka", price: 649.9, old: 949.9, tag: "-31%", img: shoeUb20Osaka },
-  { id: "o-supernova", name: "Supernova Rise 3M", price: 579.9, old: 819.9, tag: "-29%", img: shoeSupernova },
-  { id: "o-gazelle", name: "Gazelle Indoor Red", price: 549.9, old: 799.9, tag: "-31%", img: shoeGazelleRed },
-];
-
 function Home() {
+  // Tudo abaixo vem do CRM (products.site_visible = true). Sem CRM, sem vitrine.
+  const version = useCatalogVersion();
+  const { categories, launches, offers } = useMemo(() => {
+    const cats: { label: string; img: string }[] = [];
+    for (const p of ALL_PRODUCTS) {
+      if (!p.category || cats.some((c) => c.label === p.category)) continue;
+      cats.push({ label: p.category, img: p.img });
+      if (cats.length === 6) break;
+    }
+    return {
+      categories: cats,
+      launches: ALL_PRODUCTS.filter((p) => p.launch || p.tag).slice(0, 4),
+      offers: ALL_PRODUCTS.filter((p) => p.old && p.old > p.price).slice(0, 4),
+    };
+  }, [version]);
+
   return (
     <Shell>
       <Hero />
       <BenefitsStrip />
-      <CategoryCircles />
-      <ProductCarousel title="Lançamentos" subtitle="A curadoria mais fresca da Maxor" items={PRODUCTS} to="/lancamentos" />
+      <CategoryCircles categories={categories} />
+      {launches.length > 0 && (
+        <ProductCarousel title="Lançamentos" subtitle="A curadoria mais fresca da Maxor" items={launches} to="/lancamentos" />
+      )}
       <BrandBanner />
-      <ProductCarousel title="Ofertas da semana" subtitle="Preços com desconto para levar hoje" items={OFFERS} accent to="/ofertas" />
+      {offers.length > 0 && (
+        <ProductCarousel title="Ofertas da semana" subtitle="Preços com desconto para levar hoje" items={offers} accent to="/ofertas" />
+      )}
 
       <CategoryBanners />
       <BrandStrip />
@@ -283,12 +271,13 @@ function BenefitsStrip() {
   );
 }
 
-function CategoryCircles() {
+function CategoryCircles({ categories }: { categories: { label: string; img: string }[] }) {
+  if (categories.length === 0) return null;
   return (
     <section className="mx-auto max-w-7xl px-4 py-12">
       <SectionHeader title="Compre por categoria" subtitle="Escolha seu esporte e vá além" to="/categorias" />
       <div className="mt-8 grid grid-cols-3 gap-6 md:grid-cols-6">
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <Link key={c.label} to="/categorias" className="group flex flex-col items-center gap-3">
             <div className="relative aspect-square w-full overflow-hidden rounded-full border border-border bg-secondary transition group-hover:border-[color:var(--cyan-brand)]">
               <img src={c.img} alt={c.label} loading="lazy" className="h-full w-full scale-[1.15] object-contain object-center transition duration-500 group-hover:scale-[1.25]" />

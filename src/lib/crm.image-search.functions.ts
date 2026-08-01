@@ -4,7 +4,7 @@
  * Busca de produtos por NOME e por IMAGEM.
  *
  * Estratégia:
- *  - `searchByName`: filtra o catálogo (mock atual em `catalog-data`) por
+ *  - `searchByName`: filtra o catálogo publicado no CRM (`public.products`) por
  *    nome/marca/categoria. Quando existir a tabela `products` no CRM,
  *    trocamos o `pool` por uma consulta ao Supabase (auth público via
  *    publishable key + policy TO anon SELECT em colunas seguras).
@@ -19,18 +19,37 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { CatalogProduct } from "@/components/site/CatalogPage";
-import { MASCULINO, FEMININO, INFANTIL } from "@/components/site/catalog-data";
-import { OFERTAS } from "@/components/site/ofertas-data";
 
 export type ProductHit = CatalogProduct & { score: number };
 
-function pool(): CatalogProduct[] {
-  // dedup por id — o mesmo modelo aparece em masc/fem/infantil/ofertas.
-  const map = new Map<string, CatalogProduct>();
-  for (const p of [...MASCULINO, ...FEMININO, ...INFANTIL, ...OFERTAS]) {
-    if (!map.has(p.id)) map.set(p.id, p);
-  }
-  return Array.from(map.values());
+/**
+ * Pool de busca = catálogo publicado no CRM (`public.products` com
+ * `site_visible = true`). Não existe fallback local.
+ */
+async function pool(): Promise<CatalogProduct[]> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("products")
+    .select("id, sku, name, brand, category, price, old_price, img, images, colors, sizes, tag")
+    .eq("site_visible", true);
+
+  return (data ?? []).map((row) => {
+    const r = row as Record<string, unknown>;
+    const images = Array.isArray(r.images) ? (r.images as unknown[]).map(String) : [];
+    return {
+      id: String(r.sku || r.id),
+      name: String(r.name ?? ""),
+      brand: String(r.brand ?? "Maxor"),
+      category: String(r.category ?? "Casual"),
+      price: Number(r.price ?? 0),
+      old: r.old_price != null ? Number(r.old_price) : undefined,
+      tag: r.tag ? String(r.tag) : undefined,
+      img: String(r.img ?? images[0] ?? ""),
+      images: images.length ? images : undefined,
+      colors: Array.isArray(r.colors) ? (r.colors as unknown[]).map(String) : ["#0F1720"],
+      sizes: Array.isArray(r.sizes) ? (r.sizes as unknown[]).map(Number) : [],
+    } as CatalogProduct;
+  }).filter((p) => p.id && p.img);
 }
 
 function tokenize(s: string) {
@@ -52,9 +71,9 @@ function scoreProduct(p: CatalogProduct, terms: string[]) {
   return s;
 }
 
-function rank(terms: string[], limit = 12): ProductHit[] {
+async function rank(terms: string[], limit = 12): Promise<ProductHit[]> {
   if (!terms.length) return [];
-  return pool()
+  return (await pool())
     .map((p) => ({ ...p, score: scoreProduct(p, terms) }))
     .filter((p) => p.score > 0)
     .sort((a, b) => b.score - a.score)
@@ -69,7 +88,7 @@ export const searchByName = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const terms = tokenize(data.query);
-    const results = rank(terms);
+    const results = await rank(terms);
     return { query: data.query, count: results.length, results };
   });
 
@@ -151,7 +170,7 @@ export const searchByImage = createServerFn({ method: "POST" })
         ...(vision.keywords ?? []),
       ].join(" "),
     );
-    const results = rank(terms);
+    const results = await rank(terms);
 
     return {
       vision,

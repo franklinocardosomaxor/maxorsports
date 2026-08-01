@@ -1,6 +1,9 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CatalogPage } from "@/components/site/CatalogPage";
-import { ROUPA_PRODUCTS, getRoupa } from "@/components/site/roupas-data";
+import { getRoupa } from "@/components/site/roupas-data";
+import { getCategoryProducts } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
+import type { CatalogProduct } from "@/components/site/CatalogPage";
 
 const ACCENT_GRADIENT: Record<string, string> = {
   cyan: "linear-gradient(120deg, #0F1720 0%, #103642 55%, #00BFC6 100%)",
@@ -37,7 +40,8 @@ export const Route = createFileRoute("/roupas/$category")({
 
 function RoupaCategoryPage() {
   const { roupa } = Route.useLoaderData();
-  const products = ROUPA_PRODUCTS[roupa.slug] ?? [];
+  useCatalogVersion();
+  const products = getCategoryProducts(roupa.name) as unknown as CatalogProduct[];
   const categories = Array.from(new Set(products.map((p) => p.category)));
   const brands = Array.from(new Set(products.map((p) => p.brand)));
   const sizes = Array.from(new Set(products.flatMap((p) => p.sizes))).sort((a, b) => a - b);
