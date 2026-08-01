@@ -34,6 +34,24 @@ const toMoney = (v: unknown): number | null => {
 };
 
 /**
+
+ * Aceita "Masculino", "MASC", "unissex", "kids", "menina", "promoção"…
+ * e devolve sempre uma das 4 seções válidas do site.
+ * Antes, qualquer variação fora da lista derrubava o lote inteiro com 400.
+ */
+const toSection = (v: unknown): "masculino" | "feminino" | "infantil" | "ofertas" => {
+  const s = String(v ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  if (/fem|mulher|menina|woman|women|ela/.test(s)) return "feminino";
+  if (/inf|kid|crian|baby|junior|menino/.test(s)) return "infantil";
+  if (/ofer|promo|sale|outlet|desconto/.test(s)) return "ofertas";
+  return "masculino";
+};
+
+
+/**
  * Normaliza o payload do CRM ANTES da validação.
  * O CRM envia a galeria em campos variados (images, fotos, gallery, photos,
  * imageUrls…) e às vezes como lista de objetos. Antes essas chaves eram
@@ -72,9 +90,8 @@ const normalizeIncoming = (input: unknown) => {
     brand: raw.brand ?? raw.marca,
     category: raw.category ?? raw.categoria ?? raw.tipo,
     description: raw.description ?? raw.descricao ?? null,
-    section: typeof (raw.section ?? raw.secao ?? raw.genero) === "string"
-      ? String(raw.section ?? raw.secao ?? raw.genero).toLowerCase()
-      : raw.section,
+    section: toSection(raw.section ?? raw.secao ?? raw.genero ?? raw.aba),
+
     price: toMoney(raw.price ?? raw.preco),
     old_price: toMoney(raw.old_price ?? raw.oldPrice ?? raw.preco_antigo ?? null),
     sizes: raw.sizes ?? raw.numeracao ?? raw.tamanhos,
@@ -94,17 +111,22 @@ const productSchema = z.preprocess(
     brand: z.string().min(1).max(80).default("Maxor"),
     section: z.enum(["masculino", "feminino", "infantil", "ofertas"]).default("masculino"),
     category: z.string().min(1).max(80).default("Casual"),
-    description: z.string().max(2000).optional().nullable(),
+    description: z.string().max(2000).nullish().default(null),
     price: z.coerce.number().min(0).max(1_000_000),
-    old_price: z.coerce.number().min(0).max(1_000_000).optional().nullable(),
-    img: z.string().max(1000).optional().nullable(),
+    old_price: z.coerce.number().min(0).max(1_000_000).nullish().default(null),
+    img: z.string().max(1000).nullish().default(null),
     images: z.array(z.string().max(1000)).max(20).default([]),
-    colors: z.array(z.string().max(32)).max(30).optional(),
-    sizes: z.array(z.coerce.number().int().min(10).max(60)).max(40).optional(),
+    // Defaults obrigatórios: no envio em lote o PostgREST une as chaves de
+    // todas as linhas e preenche as ausentes com NULL (não com o DEFAULT da
+    // coluna) — sem isso um produto sem cor derruba o lote inteiro.
+    colors: z.array(z.string().max(32)).max(30).default(["#0F1720"]),
+    // min 15 para aceitar numeração infantil/baby.
+    sizes: z.array(z.coerce.number().int().min(15).max(60)).max(40).default([38, 39, 40, 41, 42, 43, 44]),
     stock: z.coerce.number().int().min(0).max(1_000_000).default(0),
     backorder: z.boolean().default(true),
     launch: z.boolean().default(false),
-    tag: z.string().max(40).optional().nullable(),
+    tag: z.string().max(40).nullish().default(null),
+
     site_visible: z.boolean().default(true),
   }),
 );
@@ -152,12 +174,13 @@ export const Route = createFileRoute("/api/public/crm/products")({
           return json({ ok: false, error: "Payload inválido", issues: parsed.error.issues }, 400);
         }
 
-        // Remove chaves nulas/indefinidas para não violar colunas NOT NULL com default.
+        // Todas as linhas saem do schema com EXATAMENTE as mesmas chaves
+        // (colunas nullable ficam null). Isso é obrigatório no upsert em lote:
+        // o PostgREST une as chaves do lote e preenche as faltantes com NULL.
         const rows = parsed.data.map((item) =>
-          Object.fromEntries(
-            Object.entries(item).filter(([k, v]) => v !== undefined && !(v === null && k !== "old_price" && k !== "description" && k !== "tag")),
-          ),
+          Object.fromEntries(Object.entries(item).filter(([, v]) => v !== undefined)),
         );
+
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin

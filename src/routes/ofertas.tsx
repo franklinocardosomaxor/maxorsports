@@ -5,6 +5,9 @@ import { ChevronRight, Plus, Minus, ImagePlus, Sparkles, Trash2 } from "lucide-r
 import { Shell } from "@/components/site/Shell";
 import { CatalogPage, type CatalogProduct } from "@/components/site/CatalogPage";
 import { OFERTAS, PROMO_COMBOS, type PromoCombo } from "@/components/site/ofertas-data";
+import { ALL_PRODUCTS, getSectionProducts } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
+
 
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -31,6 +34,34 @@ export const Route = createFileRoute("/ofertas")({
 });
 
 function OfertasPage() {
+  // Muda a cada sincronização do CRM (realtime) e refaz os memos abaixo.
+  const catalogVersion = useCatalogVersion();
+
+  // Ofertas = produtos marcados como "ofertas" no CRM + qualquer produto
+  // com preço antigo maior que o atual + a vitrine base local.
+  const products = useMemo(() => {
+    const crm = [
+      ...getSectionProducts("ofertas"),
+      ...ALL_PRODUCTS.filter((p) => p.old && p.old > p.price && p.section !== "ofertas"),
+    ] as unknown as CatalogProduct[];
+    const seen = new Set(crm.map((p) => p.id));
+    return [...crm, ...OFERTAS.filter((p) => !seen.has(p.id))];
+  }, [catalogVersion]);
+
+
+  const brands = useMemo(
+    () => Array.from(new Set(products.map((p) => p.brand))).sort(),
+    [products],
+  );
+  const categories = useMemo(
+    () => Array.from(new Set(products.map((p) => p.category))).sort(),
+    [products],
+  );
+  const sizes = useMemo(
+    () => Array.from(new Set(products.flatMap((p) => p.sizes))).sort((a, b) => a - b),
+    [products],
+  );
+
   return (
     <div>
       {/* Catálogo padrão (mesmo layout de masculino/feminino/infantil) */}
@@ -46,11 +77,12 @@ function OfertasPage() {
             "linear-gradient(120deg, #0F1720 0%, #3a2b12 55%, #C7F500 100%)",
           accent: "lime",
         }}
-        products={OFERTAS}
-        brands={["Adidas", "Nike", "New Balance", "Asics", "Puma"]}
-        categories={["Corrida", "Casual", "Trail", "Training"]}
-        sizes={[38, 39, 40, 41, 42, 43, 44, 45]}
+        products={products}
+        brands={brands}
+        categories={categories}
+        sizes={sizes.length > 0 ? sizes : [38, 39, 40, 41, 42, 43, 44, 45]}
       />
+
       {/* Seção adicional: builder de combos promocionais */}
       <ComboSection />
     </div>

@@ -24,7 +24,8 @@ export const Route = createFileRoute("/catalogo")({
 });
 
 function CatalogoPage() {
-  useCatalogVersion();
+  // Muda a cada sync do CRM — precisa entrar nas deps do memo.
+  const catalogVersion = useCatalogVersion();
   const groups = useMemo(() => {
     const map = new Map<string, typeof ALL_PRODUCTS>();
     for (const p of ALL_PRODUCTS) {
@@ -33,7 +34,8 @@ function CatalogoPage() {
       map.set(p.brand, list);
     }
     return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, []);
+  }, [catalogVersion]);
+
 
   const logoFor = (brand: string) =>
     BRANDS.find((b) => b.name.toLowerCase() === brand.toLowerCase())?.logo;
