@@ -31,7 +31,23 @@ const toMoney = (v: unknown): number | null => {
   else if (s.includes(",")) s = s.replace(",", ".");
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
+
+/**
+ * Aceita "Masculino", "MASC", "unissex", "kids", "menina", "promoção"…
+ * e devolve sempre uma das 4 seções válidas do site.
+ * Antes, qualquer variação fora da lista derrubava o lote inteiro com 400.
+ */
+const toSection = (v: unknown): "masculino" | "feminino" | "infantil" | "ofertas" => {
+  const s = String(v ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  if (/fem|mulher|menina|woman|women|ela/.test(s)) return "feminino";
+  if (/inf|kid|crian|baby|junior|menino/.test(s)) return "infantil";
+  if (/ofer|promo|sale|outlet|desconto/.test(s)) return "ofertas";
+  return "masculino";
 };
+
 
 /**
  * Normaliza o payload do CRM ANTES da validação.
