@@ -152,10 +152,17 @@ export const Route = createFileRoute("/api/public/crm/products")({
           return json({ ok: false, error: "Payload inválido", issues: parsed.error.issues }, 400);
         }
 
+        // Remove chaves nulas/indefinidas para não violar colunas NOT NULL com default.
+        const rows = parsed.data.map((item) =>
+          Object.fromEntries(
+            Object.entries(item).filter(([k, v]) => v !== undefined && !(v === null && k !== "old_price" && k !== "description" && k !== "tag")),
+          ),
+        );
+
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin
           .from("products")
-          .upsert(parsed.data, { onConflict: "sku" })
+          .upsert(rows as never, { onConflict: "sku" })
           .select("id, sku, name, section, site_visible");
 
         if (error) return json({ ok: false, error: error.message }, 500);
