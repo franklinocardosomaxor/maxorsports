@@ -34,8 +34,8 @@ export const Route = createFileRoute("/ofertas")({
 });
 
 function OfertasPage() {
-  // Re-renderiza quando o CRM sincroniza (realtime).
-  useCatalogVersion();
+  // Muda a cada sincronização do CRM (realtime) e refaz os memos abaixo.
+  const catalogVersion = useCatalogVersion();
 
   // Ofertas = produtos marcados como "ofertas" no CRM + qualquer produto
   // com preço antigo maior que o atual + a vitrine base local.
@@ -46,7 +46,8 @@ function OfertasPage() {
     ] as unknown as CatalogProduct[];
     const seen = new Set(crm.map((p) => p.id));
     return [...crm, ...OFERTAS.filter((p) => !seen.has(p.id))];
-  }, []);
+  }, [catalogVersion]);
+
 
   const brands = useMemo(
     () => Array.from(new Set(products.map((p) => p.brand))).sort(),
