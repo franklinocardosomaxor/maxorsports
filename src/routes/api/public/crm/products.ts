@@ -174,12 +174,13 @@ export const Route = createFileRoute("/api/public/crm/products")({
           return json({ ok: false, error: "Payload inválido", issues: parsed.error.issues }, 400);
         }
 
-        // Remove chaves nulas/indefinidas para não violar colunas NOT NULL com default.
+        // Todas as linhas saem do schema com EXATAMENTE as mesmas chaves
+        // (colunas nullable ficam null). Isso é obrigatório no upsert em lote:
+        // o PostgREST une as chaves do lote e preenche as faltantes com NULL.
         const rows = parsed.data.map((item) =>
-          Object.fromEntries(
-            Object.entries(item).filter(([k, v]) => v !== undefined && !(v === null && k !== "old_price" && k !== "description" && k !== "tag")),
-          ),
+          Object.fromEntries(Object.entries(item).filter(([, v]) => v !== undefined)),
         );
+
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { data, error } = await supabaseAdmin
