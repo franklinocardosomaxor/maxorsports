@@ -145,3 +145,18 @@ export const brl = (n: number) =>
 export function getSectionProducts(section: ProductWithSection["section"]) {
   return ALL_PRODUCTS.filter((p) => p.section === section);
 }
+
+/** Converte o nome da marca em slug ("New Balance" -> "new-balance"). */
+export const brandSlug = (s: string) =>
+  String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+/** Produtos de uma marca (inclui os cadastrados no CRM). */
+export function getBrandProducts(slug: string) {
+  return ALL_PRODUCTS.filter((p) => brandSlug(p.brand) === slug);
+}
+

@@ -1,6 +1,9 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { CatalogPage } from "@/components/site/CatalogPage";
+import { CatalogPage, type CatalogProduct } from "@/components/site/CatalogPage";
 import { BRAND_PRODUCTS, getBrand } from "@/components/site/brands-data";
+import { getBrandProducts } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
+
 
 const ACCENT_GRADIENT: Record<string, string> = {
   cyan: "linear-gradient(120deg, #0F1720 0%, #103642 55%, #00BFC6 100%)",
