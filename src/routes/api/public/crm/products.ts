@@ -260,10 +260,12 @@ export const Route = createFileRoute("/api/public/crm/products")({
         const unwrap = (p: unknown): unknown[] => {
           if (Array.isArray(p)) return p;
           if (p && typeof p === "object") {
-            for (const v of Object.values(p as Record<string, unknown>)) {
+            for (const [k, v] of Object.entries(p as Record<string, unknown>)) {
+              if (!/^(products?|produtos?|items?|itens|data|rows|records?|lista|list|catalog|catalogo)$/i.test(k)) continue;
               if (Array.isArray(v) && v.some((i) => i && typeof i === "object")) return v;
             }
           }
+
           return [p];
         };
         const items = unwrap(payload);
