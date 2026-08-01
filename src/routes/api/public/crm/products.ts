@@ -58,16 +58,21 @@ const normalizeIncoming = (input: unknown) => {
     sku: raw.sku ?? raw.codigo ?? raw.code,
     name: raw.name ?? raw.nome,
     brand: raw.brand ?? raw.marca,
+    category: raw.category ?? raw.categoria ?? raw.tipo,
+    description: raw.description ?? raw.descricao ?? null,
     section: typeof (raw.section ?? raw.secao ?? raw.genero) === "string"
       ? String(raw.section ?? raw.secao ?? raw.genero).toLowerCase()
       : raw.section,
-    price: raw.price ?? raw.preco,
-    old_price: raw.old_price ?? raw.oldPrice ?? raw.preco_antigo ?? null,
-    site_visible: raw.site_visible ?? raw.siteVisible ?? true,
+    price: toMoney(raw.price ?? raw.preco),
+    old_price: toMoney(raw.old_price ?? raw.oldPrice ?? raw.preco_antigo ?? null),
+    sizes: raw.sizes ?? raw.numeracao ?? raw.tamanhos,
+    colors: raw.colors ?? raw.cores,
+    site_visible: raw.site_visible ?? raw.siteVisible ?? raw.publicado ?? true,
     img: main,
     images: Array.from(new Set(gallery)).slice(0, 20),
   };
 };
+
 
 const productSchema = z.preprocess(
   normalizeIncoming,
