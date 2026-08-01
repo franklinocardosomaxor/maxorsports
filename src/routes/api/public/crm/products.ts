@@ -31,8 +31,10 @@ const toMoney = (v: unknown): number | null => {
   else if (s.includes(",")) s = s.replace(",", ".");
   const n = Number(s);
   return Number.isFinite(n) ? n : null;
+};
 
 /**
+
  * Aceita "Masculino", "MASC", "unissex", "kids", "menina", "promoção"…
  * e devolve sempre uma das 4 seções válidas do site.
  * Antes, qualquer variação fora da lista derrubava o lote inteiro com 400.
