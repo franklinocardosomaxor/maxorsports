@@ -72,9 +72,8 @@ const normalizeIncoming = (input: unknown) => {
     brand: raw.brand ?? raw.marca,
     category: raw.category ?? raw.categoria ?? raw.tipo,
     description: raw.description ?? raw.descricao ?? null,
-    section: typeof (raw.section ?? raw.secao ?? raw.genero) === "string"
-      ? String(raw.section ?? raw.secao ?? raw.genero).toLowerCase()
-      : raw.section,
+    section: toSection(raw.section ?? raw.secao ?? raw.genero ?? raw.aba),
+
     price: toMoney(raw.price ?? raw.preco),
     old_price: toMoney(raw.old_price ?? raw.oldPrice ?? raw.preco_antigo ?? null),
     sizes: raw.sizes ?? raw.numeracao ?? raw.tamanhos,
