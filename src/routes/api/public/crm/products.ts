@@ -200,7 +200,7 @@ const productSchema = z.preprocess(
     description: z.string().max(2000).nullish().default(null),
     price: z.coerce.number().min(0).max(1_000_000),
     old_price: z.coerce.number().min(0).max(1_000_000).nullish().default(null),
-    img: z.string().max(1000).nullish().default(null),
+    img: z.string().max(5000000).nullish().default(null),
     images: z.array(z.string().max(1000)).max(20).default([]),
     // Defaults obrigatórios: no envio em lote o PostgREST une as chaves de
     // todas as linhas e preenche as ausentes com NULL (não com o DEFAULT da
