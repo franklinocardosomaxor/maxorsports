@@ -224,19 +224,51 @@ const json = (body: unknown, status = 200) =>
 export const Route = createFileRoute("/api/public/crm/products")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data, error } = await supabaseAdmin
+        const url = new URL(request.url);
+        const diag = url.searchParams.has("diagnostico") || url.searchParams.has("debug");
+
+        const query = supabaseAdmin
           .from("products")
           .select(
             "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible",
           )
-          .eq("site_visible", true)
           .order("created_at", { ascending: false });
 
+        const { data, error } = diag ? await query : await query.eq("site_visible", true);
         if (error) return json({ ok: false, error: error.message }, 500);
+
+        if (diag) {
+          const { isUnreachableUrl } = await import("@/lib/crm-images.server");
+          const rows = (data ?? []) as Record<string, unknown>[];
+          const report = rows.map((r) => {
+            const img = String(r.img ?? "");
+            const motivos: string[] = [];
+            if (r.site_visible !== true) motivos.push("site_visible não é true");
+            if (!img) motivos.push("sem imagem");
+            else if (isUnreachableUrl(img))
+              motivos.push(`imagem inalcançável pela nuvem (${img}) — envie base64 ou URL https pública`);
+            return {
+              sku: r.sku,
+              name: r.name,
+              site_visible: r.site_visible,
+              img,
+              exibido_no_site: motivos.length === 0,
+              motivos,
+            };
+          });
+          return json({
+            ok: true,
+            total_no_banco: report.length,
+            exibidos_no_site: report.filter((r) => r.exibido_no_site).length,
+            produtos: report,
+          });
+        }
+
         return json({ ok: true, total: data?.length ?? 0, products: data ?? [] });
       },
+
 
       POST: async ({ request }) => {
         const provided = request.headers.get("x-maxor-key") ?? "";
