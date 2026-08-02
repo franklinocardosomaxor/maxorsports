@@ -57,17 +57,38 @@ export async function resolveCrmImage(
       const ext = EXT_BY_MIME[mime] ?? "jpg";
       const path = `${sku}/${index}-${Date.now()}.${ext}`;
 
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      const { error } = await supabaseAdmin.storage
-        .from("product-images")
-        .upload(path, bytes, { contentType: mime, upsert: true });
-      if (error) return null;
+      // Upload direto na API de Storage: o cliente gerado remove o header
+      // Authorization quando a chave é do formato novo (sb_secret_), e o
+      // Storage exige esse header — por isso o upload via SDK falhava.
+      const baseUrl = process.env.SUPABASE_URL;
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (!baseUrl || !serviceKey) return null;
+
+      const res = await fetch(
+        `${baseUrl}/storage/v1/object/product-images/${path}?upsert=true`,
+        {
+          method: "POST",
+          headers: {
+            apikey: serviceKey,
+            authorization: `Bearer ${serviceKey}`,
+            "content-type": mime,
+            "x-upsert": "true",
+          },
+          body: bytes as unknown as BodyInit,
+        },
+      );
+      if (!res.ok) {
+        console.error("[crm-images] upload falhou", res.status, await res.text());
+        return null;
+      }
 
       return `/api/public/crm/image/${path}`;
-    } catch {
+    } catch (err) {
+      console.error("[crm-images] erro ao processar imagem", err);
       return null;
     }
   }
+
 
   // 2) caminho relativo já servido pelo proxy do site
   if (raw.startsWith("/api/public/crm/image/")) return raw;
