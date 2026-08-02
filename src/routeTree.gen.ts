@@ -35,6 +35,7 @@ import { Route as AdminCrmRouteImport } from './routes/admin.crm'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
 import { Route as ApiPublicCrmProductsRouteImport } from './routes/api/public/crm/products'
+import { Route as ApiPublicCrmImageSplatRouteImport } from './routes/api/public/crm/image.$'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -167,6 +168,11 @@ const ApiPublicCrmProductsRoute = ApiPublicCrmProductsRouteImport.update({
   path: '/api/public/crm/products',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCrmImageSplatRoute = ApiPublicCrmImageSplatRouteImport.update({
+  id: '/api/public/crm/image/$',
+  path: '/api/public/crm/image/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
+  '/api/public/crm/image/$': typeof ApiPublicCrmImageSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -223,6 +230,7 @@ export interface FileRoutesByTo {
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
+  '/api/public/crm/image/$': typeof ApiPublicCrmImageSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -252,6 +260,7 @@ export interface FileRoutesById {
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
+  '/api/public/crm/image/$': typeof ApiPublicCrmImageSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -282,6 +291,7 @@ export interface FileRouteTypes {
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
+    | '/api/public/crm/image/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
+    | '/api/public/crm/image/$'
   id:
     | '__root__'
     | '/'
@@ -338,6 +349,7 @@ export interface FileRouteTypes {
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
+    | '/api/public/crm/image/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -367,6 +379,7 @@ export interface RootRouteChildren {
   ApiPublicCrmProductsRoute: typeof ApiPublicCrmProductsRoute
   ApiPublicWebhooksStripeRoute: typeof ApiPublicWebhooksStripeRoute
   ApiPublicWebhooksWhatsappRoute: typeof ApiPublicWebhooksWhatsappRoute
+  ApiPublicCrmImageSplatRoute: typeof ApiPublicCrmImageSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -553,6 +566,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCrmProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/crm/image/$': {
+      id: '/api/public/crm/image/$'
+      path: '/api/public/crm/image/$'
+      fullPath: '/api/public/crm/image/$'
+      preLoaderRoute: typeof ApiPublicCrmImageSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -583,6 +603,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicCrmProductsRoute: ApiPublicCrmProductsRoute,
   ApiPublicWebhooksStripeRoute: ApiPublicWebhooksStripeRoute,
   ApiPublicWebhooksWhatsappRoute: ApiPublicWebhooksWhatsappRoute,
+  ApiPublicCrmImageSplatRoute: ApiPublicCrmImageSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
