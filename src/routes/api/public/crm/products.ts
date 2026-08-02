@@ -283,9 +283,14 @@ export const Route = createFileRoute("/api/public/crm/products")({
           parsed.data.map(async (item) => {
             // Imagens: base64 -> Storage; URL pública -> mantida;
             // URL local do CRM (127.0.0.1/localhost) -> descartada.
-            const source = [item.img, ...item.images].filter(
-              (v): v is string => typeof v === "string" && v.length > 0,
+            const source = Array.from(
+              new Set(
+                [item.img, ...item.images].filter(
+                  (v): v is string => typeof v === "string" && v.length > 0,
+                ),
+              ),
             );
+
             const images = await resolveCrmImages(source, item.sku);
             const row = { ...item, images, img: images[0] ?? null };
             return Object.fromEntries(Object.entries(row).filter(([, v]) => v !== undefined));
