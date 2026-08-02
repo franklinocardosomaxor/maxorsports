@@ -110,8 +110,8 @@ const PATTERNS = {
   launch: /^(launch|lancamento|novidade|isnew|new)$/,
   tag: /^(tag|etiqueta|selo|badge|destaque)$/,
   visible: /^(sitevisible|visivel|publicado|published|ativo|active|visible|exibirsite)$/,
-  gallery: /^(images?|imgs?|gallery|galeria|photos?|fotos?|imageurls?|pictures?|midias?|media|anexos?|arquivos?)$/,
-  main: /^(img|image|imagem|foto|imageurl|capa|cover|thumbnail|thumb|principal|fotoprincipal|imagemprincipal)$/,
+  gallery: /^(images?|imagens|imgs?|gallery|galeria|galerias|photos?|fotos?|imageurls?|urlsimagens?|pictures?|midias?|media|anexos?|arquivos?)$/,
+  main: /^(img|image|imagem|foto|imageurl|urlimagem|capa|cover|thumbnail|thumb|principal|fotoprincipal|imagemprincipal)$/,
 } as const;
 
 const toBool = (v: unknown, fallback: boolean): boolean => {
@@ -201,7 +201,7 @@ const productSchema = z.preprocess(
     price: z.coerce.number().min(0).max(1_000_000),
     old_price: z.coerce.number().min(0).max(1_000_000).nullish().default(null),
     img: z.string().max(5000000).nullish().default(null),
-    images: z.array(z.string().max(1000)).max(20).default([]),
+    images: z.array(z.string().max(5_000_000)).max(20).default([]),
     // Defaults obrigatórios: no envio em lote o PostgREST une as chaves de
     // todas as linhas e preenche as ausentes com NULL (não com o DEFAULT da
     // coluna) — sem isso um produto sem cor derruba o lote inteiro.

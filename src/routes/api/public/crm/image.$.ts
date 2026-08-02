@@ -16,16 +16,24 @@ export const Route = createFileRoute("/api/public/crm/image/$")({
         const path = String((params as { _splat?: string })._splat ?? "").replace(/^\/+/, "");
         if (!path || path.includes("..")) return new Response("Not found", { status: 404 });
 
-        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const { data, error } = await supabaseAdmin.storage.from("product-images").download(path);
-        if (error || !data) return new Response("Not found", { status: 404 });
+        // Leitura direta na API de Storage (o cliente gerado remove o header
+        // Authorization com chaves sb_secret_, que o Storage exige).
+        const baseUrl = process.env.SUPABASE_URL;
+        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        if (!baseUrl || !serviceKey) return new Response("Not found", { status: 404 });
 
-        return new Response(await data.arrayBuffer(), {
+        const res = await fetch(`${baseUrl}/storage/v1/object/product-images/${path}`, {
+          headers: { apikey: serviceKey, authorization: `Bearer ${serviceKey}` },
+        });
+        if (!res.ok) return new Response("Not found", { status: 404 });
+
+        return new Response(await res.arrayBuffer(), {
           headers: {
-            "content-type": data.type || "image/jpeg",
+            "content-type": res.headers.get("content-type") || "image/jpeg",
             "cache-control": "public, max-age=31536000, immutable",
           },
         });
+
       },
     },
   },
