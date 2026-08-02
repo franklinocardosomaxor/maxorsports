@@ -478,7 +478,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_crm_member: { Args: { _user_id: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       app_role: "admin" | "manager" | "sales" | "viewer" | "super_admin"
