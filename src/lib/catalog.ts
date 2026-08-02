@@ -56,12 +56,31 @@ export function isPublished(raw: Record<string, unknown>): boolean {
   return ["true", "1", "sim", "yes"].includes(String(v).trim().toLowerCase());
 }
 
+/**
+ * Imagem utilizável pelo navegador do cliente: https público ou o proxy do
+ * próprio site. Links locais do CRM (127.0.0.1/localhost/rede interna) nunca
+ * carregam para o cliente final, então o produto é tratado como sem foto.
+ */
+export function isUsableImage(u: unknown): u is string {
+  const s = String(u ?? "").trim();
+  if (!s) return false;
+  if (s.startsWith("/api/public/crm/image/")) return true;
+  if (!/^https?:\/\//i.test(s)) return false;
+  return !/^(https?:)?\/\/(127\.0\.0\.1|localhost|0\.0\.0\.0|\[::1\]|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:|\/|$)/i.test(
+    s,
+  );
+}
+
 /** Converte uma linha de `public.products` no formato usado pelo site. */
 export function normalizeProduct(raw: Record<string, unknown>): ProductWithSection {
-  const images = Array.isArray(raw.images)
-    ? (raw.images as unknown[]).map(String).filter(Boolean)
-    : [];
-  const img = String(raw.img ?? images[0] ?? "");
+  const images = (Array.isArray(raw.images) ? (raw.images as unknown[]) : [])
+    .map(String)
+    .filter(isUsableImage);
+  const mainRaw = raw.img ?? images[0];
+  const img = isUsableImage(mainRaw) ? String(mainRaw) : (images[0] ?? "");
+
+  const oldValue = raw.old_price ?? raw.old;
+  const group = raw.model_group ?? raw.modelGroup ?? raw.modelId;
 
   return {
     id: String(raw.id ?? raw.sku ?? ""),
@@ -69,7 +88,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     brand: String(raw.brand ?? "Maxor"),
     category: String(raw.category ?? "Casual"),
     price: num(raw.price),
-    old: raw.old !== undefined && raw.old !== null ? num(raw.old) : undefined,
+    old: oldValue !== undefined && oldValue !== null ? num(oldValue) : undefined,
     tag: raw.tag ? String(raw.tag) : undefined,
     img,
     images: images.length > 0 ? images : undefined,
@@ -77,20 +96,21 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     sizes: Array.isArray(raw.sizes) ? (raw.sizes as unknown[]).map((s) => num(s)) : [],
     launch: Boolean(raw.launch),
     section: inferSection(raw),
-    modelId: raw.modelId ? String(raw.modelId) : undefined,
+    modelId: group ? String(group) : undefined,
   } as ProductWithSection;
 }
 
 /**
  * Substitui o catálogo do site pelos produtos publicados no CRM.
- * Só entram linhas com `site_visible = true` E com imagem cadastrada no CRM.
+ * Só entram linhas com `site_visible = true` E com imagem que o navegador
+ * do cliente consegue carregar.
  */
 export function setCrmProducts(products: unknown[] | null | undefined): number {
   const next: ProductWithSection[] = (Array.isArray(products) ? products : [])
     .map((p) => p as Record<string, unknown>)
     .filter(isPublished)
     .map(normalizeProduct)
-    .filter((p) => p.id && p.img);
+    .filter((p) => p.id && isUsableImage(p.img));
 
   ALL_PRODUCTS.length = 0;
   ALL_PRODUCTS.push(...next);
@@ -98,6 +118,7 @@ export function setCrmProducts(products: unknown[] | null | undefined): number {
   listeners.forEach((fn) => fn());
   return ALL_PRODUCTS.length;
 }
+
 
 /** Alias mantido por compatibilidade — o fluxo é sempre substituição total. */
 export const mergeCrmProducts = setCrmProducts;

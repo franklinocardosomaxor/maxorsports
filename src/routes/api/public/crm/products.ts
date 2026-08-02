@@ -278,9 +278,25 @@ export const Route = createFileRoute("/api/public/crm/products")({
         // Todas as linhas saem do schema com EXATAMENTE as mesmas chaves
         // (colunas nullable ficam null). Isso é obrigatório no upsert em lote:
         // o PostgREST une as chaves do lote e preenche as faltantes com NULL.
-        const rows = parsed.data.map((item) =>
-          Object.fromEntries(Object.entries(item).filter(([, v]) => v !== undefined)),
+        const { resolveCrmImages } = await import("@/lib/crm-images.server");
+        const rows = await Promise.all(
+          parsed.data.map(async (item) => {
+            // Imagens: base64 -> Storage; URL pública -> mantida;
+            // URL local do CRM (127.0.0.1/localhost) -> descartada.
+            const source = Array.from(
+              new Set(
+                [item.img, ...item.images].filter(
+                  (v): v is string => typeof v === "string" && v.length > 0,
+                ),
+              ),
+            );
+
+            const images = await resolveCrmImages(source, item.sku);
+            const row = { ...item, images, img: images[0] ?? null };
+            return Object.fromEntries(Object.entries(row).filter(([, v]) => v !== undefined));
+          }),
         );
+
 
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
