@@ -110,8 +110,8 @@ const PATTERNS = {
   launch: /^(launch|lancamento|novidade|isnew|new)$/,
   tag: /^(tag|etiqueta|selo|badge|destaque)$/,
   visible: /^(sitevisible|visivel|publicado|published|ativo|active|visible|exibirsite)$/,
-  gallery: /^(images?|imgs?|gallery|galeria|photos?|fotos?|imageurls?|pictures?|midias?|media|anexos?|arquivos?)$/,
-  main: /^(img|image|imagem|foto|imageurl|capa|cover|thumbnail|thumb|principal|fotoprincipal|imagemprincipal)$/,
+  gallery: /^(images?|imagens|imgs?|gallery|galeria|galerias|photos?|fotos?|imageurls?|urlsimagens?|pictures?|midias?|media|anexos?|arquivos?)$/,
+  main: /^(img|image|imagem|foto|imageurl|urlimagem|capa|cover|thumbnail|thumb|principal|fotoprincipal|imagemprincipal)$/,
 } as const;
 
 const toBool = (v: unknown, fallback: boolean): boolean => {
