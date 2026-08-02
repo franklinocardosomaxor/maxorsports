@@ -1,0 +1,1 @@
+DELETE FROM public.products WHERE sku NOT IN ('MXR-8235','MXR-3779');
