@@ -1,0 +1,1 @@
+DELETE FROM public.products WHERE sku = 'TESTE-DIAG-1';
