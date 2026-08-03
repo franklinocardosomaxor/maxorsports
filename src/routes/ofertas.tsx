@@ -36,8 +36,7 @@ function OfertasPage() {
     const seen = new Set<string>();
     const out: CatalogProduct[] = [];
     for (const p of ALL_PRODUCTS) {
-      const isOffer =
-        p.selo === "oferta" || p.section === "ofertas" || (!!p.old && p.old > p.price);
+      const isOffer = p.selo === "oferta";
       if (!isOffer || seen.has(p.id)) continue;
       seen.add(p.id);
       out.push(p as unknown as CatalogProduct);

@@ -76,11 +76,16 @@ const slug = (s: unknown) =>
 export function normalizeSelo(raw: unknown): Selo | null {
   const s = slug(raw);
   if (!s || s === "nenhum" || s === "sem selo" || s === "none") return null;
+  
+  // Mapeamento estrito para os selos de vitrine
   if (s.includes("destaq")) return "destaque";
   if (s.includes("lanc") || s.includes("novo") || s.includes("drop")) return "lancamento";
   if (s.includes("ofert") || s.includes("promo") || s.includes("especial")) return "oferta";
   if (s.includes("vend") || s.includes("best") || s.includes("popul") || s.includes("campea")) return "mais-vendido";
+  
+  // "Normal" ou "Vitrine" são aceitos para o catálogo geral, mas NÃO entram em carrosséis de destaque
   if (s.includes("normal") || s.includes("padrao") || s.includes("vitrine")) return "normal";
+  
   return null;
 }
 
@@ -158,7 +163,9 @@ export function setCrmProducts(products: unknown[] | null | undefined): number {
     .filter((p) => {
       const isPub = isPublished(p);
       const selo = normalizeSelo(p.tag ?? p.selo);
-      // Se não estiver publicado OU for selo 'nenhum', descarta imediatamente.
+      // GATING ESTREITO v1.5: site_visible True E o selo DEVE ser um dos destaques ativos 
+      // (Destaque, Lançamento, Oferta, Mais Vendido ou Normal/Vitrine).
+      // "Nenhum Selo" no CRM chega como null no normalizeSelo e bloqueia a exibição.
       return isPub && selo !== null;
     })
     .map(normalizeProduct)

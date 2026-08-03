@@ -73,10 +73,10 @@ function Home() {
     }
     return {
       categories: cats,
-      launches: ALL_PRODUCTS.filter((p) => p.selo === "lancamento" && p.site_visible).slice(0, 4),
-      offers: ALL_PRODUCTS.filter((p) => (p.selo === "oferta" || (p.old && p.old > p.price)) && p.site_visible).slice(0, 4),
-      bestSellers: ALL_PRODUCTS.filter((p) => p.selo === "mais-vendido" && p.site_visible).slice(0, 4),
-      highlights: ALL_PRODUCTS.filter((p) => p.selo === "destaque" && p.site_visible).slice(0, 4),
+      launches: ALL_PRODUCTS.filter((p) => p.selo === "lancamento").slice(0, 4),
+      offers: ALL_PRODUCTS.filter((p) => p.selo === "oferta").slice(0, 4),
+      bestSellers: ALL_PRODUCTS.filter((p) => p.selo === "mais-vendido").slice(0, 4),
+      highlights: ALL_PRODUCTS.filter((p) => p.selo === "destaque").slice(0, 4),
     };
   }, [version]);
 
