@@ -64,7 +64,7 @@ const NAV = [
 function Home() {
   // Tudo abaixo vem do CRM (products.site_visible = true). Sem CRM, sem vitrine.
   const version = useCatalogVersion();
-  const { categories, launches, offers } = useMemo(() => {
+  const { categories, launches, offers, bestSellers, highlights } = useMemo(() => {
     const cats: { label: string; img: string }[] = [];
     for (const p of ALL_PRODUCTS) {
       if (!p.category || cats.some((c) => c.label === p.category)) continue;
@@ -75,6 +75,8 @@ function Home() {
       categories: cats,
       launches: ALL_PRODUCTS.filter((p) => p.selo === "lancamento").slice(0, 4),
       offers: ALL_PRODUCTS.filter((p) => p.selo === "oferta" || (p.old && p.old > p.price)).slice(0, 4),
+      bestSellers: ALL_PRODUCTS.filter((p) => p.selo === "mais-vendido").slice(0, 4),
+      highlights: ALL_PRODUCTS.filter((p) => p.selo === "destaque").slice(0, 4),
     };
   }, [version]);
 
@@ -86,7 +88,13 @@ function Home() {
       {launches.length > 0 && (
         <ProductCarousel title="Lançamentos" subtitle="A curadoria mais fresca da Maxor" items={launches} to="/lancamentos" />
       )}
+      {highlights.length > 0 && (
+        <ProductCarousel title="Destaques" subtitle="Modelos selecionados pela curadoria" items={highlights} accent to="/destaques" />
+      )}
       <BrandBanner />
+      {bestSellers.length > 0 && (
+        <ProductCarousel title="Mais Vendidos" subtitle="Os preferidos da galera" items={bestSellers} to="/mais-vendidos" />
+      )}
       {offers.length > 0 && (
         <ProductCarousel title="Ofertas da semana" subtitle="Preços com desconto para levar hoje" items={offers} accent to="/ofertas" />
       )}
@@ -299,7 +307,7 @@ function SectionHeader({
   title: string;
   subtitle?: string;
   cta?: string;
-  to?: "/categorias" | "/lancamentos" | "/ofertas" | "/catalogo";
+  to?: "/categorias" | "/lancamentos" | "/ofertas" | "/catalogo" | "/mais-vendidos" | "/destaques";
 }) {
   return (
     <div className="flex items-end justify-between gap-6">
@@ -337,7 +345,7 @@ function ProductCarousel({
   subtitle?: string;
   items: Product[];
   accent?: boolean;
-  to?: "/categorias" | "/lancamentos" | "/ofertas" | "/catalogo";
+  to?: "/categorias" | "/lancamentos" | "/ofertas" | "/catalogo" | "/mais-vendidos" | "/destaques";
 }) {
   return (
     <section className={`${accent ? "bg-navy text-offwhite" : ""}`}>
