@@ -1,71 +1,69 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { ALL_PRODUCTS, getCatalogVersion, Selo, SELO_LABEL } from "@/lib/catalog";
 import { useMemo } from "react";
-import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
-import { ALL_PRODUCTS } from "@/lib/catalog";
-import { useCatalogVersion } from "@/hooks/use-crm-sync";
+import { ChevronRight, Grid2X2 } from "lucide-react";
+
+// Ordenação visual dos selos
+const SELOS_ORDER: Selo[] = ["destaque", "lancamento", "oferta", "mais-vendido", "normal"];
 
 export const Route = createFileRoute("/destaques")({
   component: DestaquesPage,
-  head: () => ({
-    meta: [
-      { title: "Destaques — Maxor Sports" },
-      { name: "description", content: "Modelos selecionados a dedo pela curadoria Maxor Sports." },
-      { property: "og:title", content: "Destaques — Maxor Sports" },
-      { property: "og:description", content: "O melhor da Maxor Sports selecionado para você." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/destaques" }],
-  }),
 });
 
 function DestaquesPage() {
-  const catalogVersion = useCatalogVersion();
+  const version = getCatalogVersion();
 
-  const products = useMemo(() => {
-    return ALL_PRODUCTS.filter((p) => p.selo === "destaque");
-  }, [catalogVersion]);
+  // Filtra apenas produtos que são 'destaque' e agrupa por selo (para manter a lógica de separação)
+  // Ou, conforme solicitado: "incluir os produtos que tem tag de destaque separado pelo seu destaque"
+  // Interpretando: Mostrar a página de Destaques onde os itens com selo 'destaque' são o foco,
+  // ou talvez ele queira que a seção "Destaques" do menu mostre os produtos agrupados.
+  const highlights = useMemo(() => {
+    return ALL_PRODUCTS.filter(p => p.selo === 'destaque');
+  }, [version]);
+
+  const totalCount = highlights.length;
 
   return (
-    <Shell active="Destaques">
-      <div className="border-b border-white/10 bg-navy">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[color:var(--mint-brand)]">
-          <Link to="/" className="hover:brightness-110 text-muted-foreground">Home</Link>
-          <ChevronRight className="h-3 w-3 text-muted-foreground" />
-          <span className="text-offwhite">Destaques</span>
-        </div>
-      </div>
+    <div className="min-h-screen bg-navy pt-24 pb-20">
+      <div className="container mx-auto px-4">
+        {/* Breadcrumb */}
+        <nav className="mb-8 flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-widest">
+          <Link to="/" className="hover:text-foreground transition">Home</Link>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-foreground font-bold">Destaques</span>
+        </nav>
 
-      <section
-        className="relative overflow-hidden border-b border-border"
-        style={{ backgroundImage: "linear-gradient(120deg, #0F1720 0%, #153a30 55%, #7EEBC1 100%)" }}
-      >
-        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:py-16">
-          <p className="text-xs font-black uppercase tracking-[0.35em] text-[color:var(--mint-brand)]">Curadoria Elite</p>
-          <h1 className="mt-2 font-display text-4xl font-black uppercase tracking-tight text-offwhite sm:text-5xl md:text-6xl">
-            Destaques
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm text-offwhite/80 sm:text-base">
-            O que há de melhor em tecnologia e design no mundo esportivo.
-          </p>
-        </div>
-      </section>
+        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="font-display text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">
+              Nossos <span className="text-[color:var(--cyan-brand)]">Destaques</span>
+            </h1>
+            <p className="mt-2 text-muted-foreground max-w-xl">
+              Seleção exclusiva dos modelos mais icônicos e desejados do momento.
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS EM DESTAQUE</span>
+          </div>
+        </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-10">
-        {products.length === 0 ? (
-          <div className="py-20 text-center text-muted-foreground">
-            Buscando destaques no CRM...
+        {totalCount === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
+              <Grid2X2 className="h-10 w-10 text-white/20" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Nenhum destaque no momento</h3>
+            <p className="text-muted-foreground">Sincronizando as melhores escolhas do CRM.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-            {products.map((p) => (
-              <ProductMiniCard key={`${p.section}-${p.id}`} product={p} />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            {highlights.map((product) => (
+              <ProductMiniCard key={product.id} product={product} />
             ))}
           </div>
         )}
       </div>
-    </Shell>
+    </div>
   );
 }
