@@ -163,7 +163,9 @@ export function setCrmProducts(products: unknown[] | null | undefined): number {
     .filter((p) => {
       const isPub = isPublished(p);
       const selo = normalizeSelo(p.tag ?? p.selo);
-      // Se não estiver publicado OU for selo 'nenhum', descarta imediatamente.
+      // GATING ESTREITO v1.5: site_visible True E o selo DEVE ser um dos destaques ativos 
+      // (Destaque, Lançamento, Oferta, Mais Vendido ou Normal/Vitrine).
+      // "Nenhum Selo" no CRM chega como null no normalizeSelo e bloqueia a exibição.
       return isPub && selo !== null;
     })
     .map(normalizeProduct)
