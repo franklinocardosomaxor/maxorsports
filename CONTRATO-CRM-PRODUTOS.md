@@ -74,3 +74,16 @@ Retorna todos os produtos do banco e o motivo exato de cada um estar oculto.
 { "ok": true, "received": 2, "upserted": 2, "items": [{ "sku": "...", "site_visible": true }] }
 ```
 Erros: `401` chave inválida · `400` payload inválido (retorna quais campos falharam).
+
+## Selo (`tag`) — obrigatório para exibir (v1.4)
+O produto só aparece no site se **`site_visible = true`** E tiver um selo válido:
+
+| Selo enviado | Efeito no site |
+|---|---|
+| `Destaque` | aparece nas vitrines e recebe badge "Destaque" |
+| `Lançamento` | aparece em `/lancamentos` e no carrossel da home |
+| `Oferta` | aparece em `/ofertas` |
+| `Normal` | aparece nas listagens, **sem badge** |
+| vazio / "nenhum" | **não é exibido** |
+
+`site_visible` agora tem padrão **false**: se o campo não vier no payload, o produto fica oculto.
