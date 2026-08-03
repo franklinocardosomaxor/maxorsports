@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
   Search, User, Heart, ShoppingBag, Zap, Camera, X, Loader2,
-  Instagram, Facebook, Youtube, Phone, Mail, Truck,
+  Instagram, Facebook, Youtube, Phone, Mail, Truck, ChevronDown,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
