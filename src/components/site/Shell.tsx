@@ -72,7 +72,6 @@ function AccountLink() {
 
 }
 
-import { BRANDS } from "./brands-data";
 
 const NAV = [
   { label: "Masculino", href: "/masculino" },
