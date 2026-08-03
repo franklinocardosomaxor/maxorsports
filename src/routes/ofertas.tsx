@@ -40,10 +40,16 @@ function OfertasPage() {
   // Ofertas = produtos marcados como "ofertas" no CRM + qualquer produto
   // com preço antigo maior que o atual + a vitrine base local.
   const products = useMemo(() => {
-    return [
-      ...getSectionProducts("ofertas"),
-      ...ALL_PRODUCTS.filter((p) => p.old && p.old > p.price && p.section !== "ofertas"),
-    ] as unknown as CatalogProduct[];
+    const seen = new Set<string>();
+    const out: CatalogProduct[] = [];
+    for (const p of ALL_PRODUCTS) {
+      const isOffer =
+        p.selo === "oferta" || p.section === "ofertas" || (!!p.old && p.old > p.price);
+      if (!isOffer || seen.has(p.id)) continue;
+      seen.add(p.id);
+      out.push(p as unknown as CatalogProduct);
+    }
+    return out;
   }, [catalogVersion]);
 
 
@@ -81,8 +87,6 @@ function OfertasPage() {
         sizes={sizes.length > 0 ? sizes : [38, 39, 40, 41, 42, 43, 44, 45]}
       />
 
-      {/* Seção adicional: builder de combos promocionais */}
-      <ComboSection />
     </div>
   );
 }
