@@ -13,6 +13,7 @@ import logoMizuno from "@/assets/brands/mizuno.svg";
 import logoFila from "@/assets/brands/fila.svg";
 import logoCrocs from "@/assets/brands/crocs.svg";
 import logoVans from "@/assets/brands/vans.svg";
+import logoConverse from "@/assets/brands/converse.svg";
 import logoTimberland from "@/assets/brands/timberland.svg";
 import logoGucci from "@/assets/brands/gucci.svg";
 import logoPrada from "@/assets/brands/prada.svg";
