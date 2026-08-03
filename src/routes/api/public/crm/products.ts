@@ -216,7 +216,7 @@ const productSchema = z.preprocess(
     tag: z.string().max(40).nullish().default(null),
     model_group: z.string().max(120).nullish().default(null),
 
-    site_visible: z.boolean().default(true),
+    site_visible: z.boolean().default(false),
   }),
 );
 
