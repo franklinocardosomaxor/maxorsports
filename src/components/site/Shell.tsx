@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
   Search, User, Heart, ShoppingBag, Zap, Camera, X, Loader2,
-  Instagram, Facebook, Youtube, Phone, Mail, Truck,
+  Instagram, Facebook, Youtube, Phone, Mail, Truck, ChevronDown,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
@@ -14,6 +14,7 @@ import {
 import { recordNewsletterSignup } from "@/lib/crm.contacts.functions";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { BRANDS } from "./brands-data";
 
 const Aurora = lazy(() => import("./Aurora"));
 
@@ -71,15 +72,30 @@ function AccountLink() {
 
 }
 
+
 const NAV = [
   { label: "Masculino", href: "/masculino" },
   { label: "Feminino", href: "/feminino" },
   { label: "Infantil", href: "/infantil" },
-  { label: "Destaques", href: "/destaques" },
+  { 
+    label: "Tênis", 
+    href: "/catalogo",
+    items: BRANDS.map(b => ({ label: b.name, href: `/marcas/${b.slug}` }))
+  },
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Mais Vendidos", href: "/mais-vendidos" },
   { label: "Ofertas", href: "/ofertas" },
-  { label: "Veja mais", href: "/catalogo" },
+  { 
+    label: "Veja mais", 
+    href: "/catalogo",
+    items: [
+      { label: "Destaques", href: "/destaques" },
+      { label: "Lançamentos", href: "/lancamentos" },
+      { label: "Ofertas", href: "/ofertas" },
+      { label: "Mais Vendidos", href: "/mais-vendidos" },
+      { label: "Catálogo Geral", href: "/catalogo" },
+    ]
+  },
 ];
 
 
@@ -412,30 +428,88 @@ function CartButton() {
 }
 
 function MegaNav({ active }: { active?: string }) {
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (label: string) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setOpenMenu(label);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setOpenMenu(null);
+    }, 150);
+  };
+
   return (
-    <nav className="border-b border-white/10 bg-navy text-offwhite">
+    <nav className="relative border-b border-white/10 bg-navy text-offwhite" onMouseLeave={handleMouseLeave}>
       <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4">
         {NAV.map((item) => {
           const isActive = active === item.label;
           const isOffer = item.label === "Ofertas";
+          const hasItems = "items" in item && item.items && item.items.length > 0;
+
           return (
-            <a
+            <div
               key={item.label}
-              href={item.href}
-              className={`whitespace-nowrap px-4 py-3 text-sm font-display font-semibold uppercase tracking-wider transition ${
-                isActive
-                  ? "text-[color:var(--cyan-brand)] border-b-2 border-[color:var(--cyan-brand)]"
-                  : "text-offwhite/80 hover:text-[color:var(--cyan-brand)]"
-              } ${isOffer ? "text-[color:var(--lime-brand)] font-bold" : ""}`}
+              className="relative group"
+              onMouseEnter={() => hasItems && handleMouseEnter(item.label)}
             >
-              {item.label}
-            </a>
+              <a
+                href={item.href}
+                className={`flex items-center gap-1.5 whitespace-nowrap px-4 py-4 text-sm font-display font-semibold uppercase tracking-wider transition ${
+                  isActive
+                    ? "text-[color:var(--cyan-brand)]"
+                    : "text-offwhite/80 hover:text-[color:var(--cyan-brand)]"
+                } ${isOffer ? "text-[color:var(--lime-brand)] font-bold" : ""}`}
+              >
+                {item.label}
+                {hasItems && <ChevronDown className={`h-3 w-3 transition-transform ${openMenu === item.label ? "rotate-180" : ""}`} />}
+              </a>
+              
+              {isActive && (
+                <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-[color:var(--cyan-brand)]" />
+              )}
+            </div>
           );
         })}
       </div>
+
+      {/* DROPDOWN CONTENT */}
+      {NAV.map((item) => {
+        if (!("items" in item) || !item.items) return null;
+        const isOpen = openMenu === item.label;
+
+        return (
+          <div
+            key={`dropdown-${item.label}`}
+            onMouseEnter={() => handleMouseEnter(item.label)}
+            className={`absolute left-0 right-0 z-50 border-b border-white/10 bg-navy/95 backdrop-blur-xl transition-all duration-300 ${
+              isOpen ? "visible opacity-100 translate-y-0" : "invisible opacity-0 -translate-y-2"
+            }`}
+          >
+            <div className="mx-auto max-w-7xl px-8 py-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-8 gap-y-4">
+                {item.items.map((sub) => (
+                  <a
+                    key={sub.label}
+                    href={sub.href}
+                    className="text-xs font-semibold uppercase tracking-wider text-offwhite/60 hover:text-[color:var(--cyan-brand)] transition"
+                  >
+                    {sub.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </nav>
   );
 }
+
+
 
 function Newsletter() {
   const signup = useServerFn(recordNewsletterSignup);
