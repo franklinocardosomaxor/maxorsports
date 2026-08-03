@@ -40,24 +40,19 @@ export const BRANDS: Brand[] = [
   { slug: "asics",         name: "ASICS",         mark: "AS", logo: logoAsics,         tagline: "Sound mind, sound body", bg: "#ffffff", accent: "cyan" },
   { slug: "converse",      name: "Converse",      mark: "CV", logo: logoConverse,      tagline: "Chuck Taylor legacy",    bg: "#ffffff", accent: "cyan" },
   { slug: "vans",          name: "Vans",          mark: "VN", logo: logoVans,          tagline: "Off the wall",           bg: "#ffffff", accent: "cyan" },
-  { slug: "asics",         name: "ASICS",         mark: "AS", logo: logoAsics,         tagline: "Sound mind, sound body", bg: "#ffffff", accent: "cyan" },
   { slug: "jordan",        name: "Jordan",        mark: "23", logo: logoJordan,        tagline: "Flight",                 bg: "#ffffff", accent: "lime" },
   { slug: "hoka",          name: "HOKA",          mark: "HK", logo: logoHoka,          tagline: "Time to fly",            bg: "#ffffff", accent: "cyan" },
   { slug: "on",            name: "On",            mark: "◯",  logo: logoOn,            tagline: "Swiss engineering",      bg: "#ffffff", accent: "cyan" },
   { slug: "salomon",       name: "Salomon",       mark: "SL", logo: logoSalomon,       tagline: "Time to play",           bg: "#ffffff", accent: "cyan" },
   { slug: "mizuno",        name: "Mizuno",        mark: "MZ", logo: logoMizuno,        tagline: "Reach beyond",           bg: "#ffffff", accent: "cyan" },
-  { slug: "hoka",          name: "HOKA",          mark: "HK", logo: logoHoka,          tagline: "Time to fly",            bg: "#ffffff", accent: "cyan" },
-  { slug: "on",            name: "On",            mark: "◯",  logo: logoOn,            tagline: "Swiss engineering",      bg: "#ffffff", accent: "cyan" },
   { slug: "fila",          name: "Fila",          mark: "FL", logo: logoFila,          tagline: "Since 1911",             bg: "#ffffff", accent: "cyan" },
   { slug: "crocs",         name: "Crocs",         mark: "◇",  logo: logoCrocs,         tagline: "Come as you are",        bg: "#ffffff", accent: "lime" },
-  { slug: "vans",          name: "Vans",          mark: "VN", logo: logoVans,          tagline: "Off the wall",           bg: "#ffffff", accent: "cyan" },
   { slug: "timberland",    name: "Timberland",    mark: "TB", logo: logoTimberland,    tagline: "Best then. Better now.", bg: "#ffffff", accent: "cyan" },
   { slug: "gucci",         name: "Gucci",         mark: "GG", logo: logoGucci,         tagline: "Milano since 1921",      bg: "#ffffff", accent: "lime" },
   { slug: "prada",         name: "Prada",         mark: "PR", logo: logoPrada,         tagline: "Milano",                 bg: "#ffffff", accent: "cyan" },
   { slug: "louis-vuitton", name: "Louis Vuitton", mark: "LV", logo: logoLouisVuitton,  tagline: "Paris maison",           bg: "#ffffff", accent: "cyan" },
   { slug: "chuteiras",     name: "Chuteiras",     mark: "CH", logo: logoChuteiras, tagline: "A melhor seleção para o seu jogo", bg: "#ffffff", accent: "lime" },
 ];
-
 
 export function getBrand(slug: string): Brand | undefined {
   return BRANDS.find((b) => b.slug === slug);
