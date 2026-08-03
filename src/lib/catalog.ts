@@ -56,6 +56,36 @@ export function isPublished(raw: Record<string, unknown>): boolean {
   return ["true", "1", "sim", "yes"].includes(String(v).trim().toLowerCase());
 }
 
+/** Selos aceitos pelo site. Produto sem selo NÃO é exibido. */
+export type Selo = "destaque" | "lancamento" | "oferta" | "normal";
+
+const slug = (s: unknown) =>
+  String(s ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+
+/** Normaliza a tag vinda do CRM para um selo conhecido (ou `null`). */
+export function normalizeSelo(raw: unknown): Selo | null {
+  const s = slug(raw);
+  if (!s || s === "nenhum" || s === "sem selo" || s === "none") return null;
+  if (s.includes("destaq")) return "destaque";
+  if (s.includes("lanc") || s.includes("novo") || s.includes("drop")) return "lancamento";
+  if (s.includes("ofert") || s.includes("promo")) return "oferta";
+  if (s.includes("normal") || s.includes("padrao")) return "normal";
+  return null;
+}
+
+/** Rótulo exibido no card (o selo "normal" não mostra badge). */
+export const SELO_LABEL: Record<Selo, string | null> = {
+  destaque: "Destaque",
+  lancamento: "Lançamento",
+  oferta: "Oferta",
+  normal: null,
+};
+
+
 /**
  * Imagem utilizável pelo navegador do cliente: https público ou o proxy do
  * próprio site. Links locais do CRM (127.0.0.1/localhost/rede interna) nunca
