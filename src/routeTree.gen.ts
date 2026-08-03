@@ -13,11 +13,13 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as OfertasRouteImport } from './routes/ofertas'
 import { Route as MinhaContaRouteImport } from './routes/minha-conta'
 import { Route as MasculinoRouteImport } from './routes/masculino'
+import { Route as MaisVendidosRouteImport } from './routes/mais-vendidos'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LancamentosRouteImport } from './routes/lancamentos'
 import { Route as KitValidadorRouteImport } from './routes/kit-validador'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
+import { Route as DestaquesRouteImport } from './routes/destaques'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
@@ -57,6 +59,11 @@ const MasculinoRoute = MasculinoRouteImport.update({
   path: '/masculino',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MaisVendidosRoute = MaisVendidosRouteImport.update({
+  id: '/mais-vendidos',
+  path: '/mais-vendidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -80,6 +87,11 @@ const InfantilRoute = InfantilRouteImport.update({
 const FemininoRoute = FemininoRouteImport.update({
   id: '/feminino',
   path: '/feminino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DestaquesRoute = DestaquesRouteImport.update({
+  id: '/destaques',
+  path: '/destaques',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -179,11 +191,13 @@ export interface FileRoutesByFullPath {
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
+  '/destaques': typeof DestaquesRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/kit-validador': typeof KitValidadorRoute
   '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
+  '/mais-vendidos': typeof MaisVendidosRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
@@ -208,11 +222,13 @@ export interface FileRoutesByTo {
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
+  '/destaques': typeof DestaquesRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/kit-validador': typeof KitValidadorRoute
   '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
+  '/mais-vendidos': typeof MaisVendidosRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
@@ -238,11 +254,13 @@ export interface FileRoutesById {
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
+  '/destaques': typeof DestaquesRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/kit-validador': typeof KitValidadorRoute
   '/lancamentos': typeof LancamentosRoute
   '/login': typeof LoginRoute
+  '/mais-vendidos': typeof MaisVendidosRoute
   '/masculino': typeof MasculinoRoute
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
@@ -269,11 +287,13 @@ export interface FileRouteTypes {
     | '/catalogo'
     | '/categorias'
     | '/checkout'
+    | '/destaques'
     | '/feminino'
     | '/infantil'
     | '/kit-validador'
     | '/lancamentos'
     | '/login'
+    | '/mais-vendidos'
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
@@ -298,11 +318,13 @@ export interface FileRouteTypes {
     | '/catalogo'
     | '/categorias'
     | '/checkout'
+    | '/destaques'
     | '/feminino'
     | '/infantil'
     | '/kit-validador'
     | '/lancamentos'
     | '/login'
+    | '/mais-vendidos'
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
@@ -327,11 +349,13 @@ export interface FileRouteTypes {
     | '/catalogo'
     | '/categorias'
     | '/checkout'
+    | '/destaques'
     | '/feminino'
     | '/infantil'
     | '/kit-validador'
     | '/lancamentos'
     | '/login'
+    | '/mais-vendidos'
     | '/masculino'
     | '/minha-conta'
     | '/ofertas'
@@ -357,11 +381,13 @@ export interface RootRouteChildren {
   CatalogoRoute: typeof CatalogoRoute
   CategoriasRoute: typeof CategoriasRoute
   CheckoutRoute: typeof CheckoutRoute
+  DestaquesRoute: typeof DestaquesRoute
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
   KitValidadorRoute: typeof KitValidadorRoute
   LancamentosRoute: typeof LancamentosRoute
   LoginRoute: typeof LoginRoute
+  MaisVendidosRoute: typeof MaisVendidosRoute
   MasculinoRoute: typeof MasculinoRoute
   MinhaContaRoute: typeof MinhaContaRoute
   OfertasRoute: typeof OfertasRoute
@@ -412,6 +438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MasculinoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mais-vendidos': {
+      id: '/mais-vendidos'
+      path: '/mais-vendidos'
+      fullPath: '/mais-vendidos'
+      preLoaderRoute: typeof MaisVendidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -445,6 +478,13 @@ declare module '@tanstack/react-router' {
       path: '/feminino'
       fullPath: '/feminino'
       preLoaderRoute: typeof FemininoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/destaques': {
+      id: '/destaques'
+      path: '/destaques'
+      fullPath: '/destaques'
+      preLoaderRoute: typeof DestaquesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -581,11 +621,13 @@ const rootRouteChildren: RootRouteChildren = {
   CatalogoRoute: CatalogoRoute,
   CategoriasRoute: CategoriasRoute,
   CheckoutRoute: CheckoutRoute,
+  DestaquesRoute: DestaquesRoute,
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
   KitValidadorRoute: KitValidadorRoute,
   LancamentosRoute: LancamentosRoute,
   LoginRoute: LoginRoute,
+  MaisVendidosRoute: MaisVendidosRoute,
   MasculinoRoute: MasculinoRoute,
   MinhaContaRoute: MinhaContaRoute,
   OfertasRoute: OfertasRoute,
