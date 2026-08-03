@@ -12,8 +12,8 @@ import type { CatalogProduct } from "@/components/site/CatalogPage";
 export type ProductWithSection = CatalogProduct & {
   section: "masculino" | "feminino" | "infantil" | "ofertas";
   modelId?: string;
-  /** Selo normalizado vindo do CRM (destaque | lancamento | oferta | normal). */
-  selo?: "destaque" | "lancamento" | "oferta" | "normal";
+  /** Selo normalizado vindo do CRM (destaque | lancamento | oferta | mais-vendido | normal). */
+  selo?: Selo;
 };
 
 /**
@@ -59,7 +59,7 @@ export function isPublished(raw: Record<string, unknown>): boolean {
 }
 
 /** Selos aceitos pelo site. Produto sem selo NÃO é exibido. */
-export type Selo = "destaque" | "lancamento" | "oferta" | "normal";
+export type Selo = "destaque" | "lancamento" | "oferta" | "mais-vendido" | "normal";
 
 const slug = (s: unknown) =>
   String(s ?? "")
@@ -75,15 +75,17 @@ export function normalizeSelo(raw: unknown): Selo | null {
   if (s.includes("destaq")) return "destaque";
   if (s.includes("lanc") || s.includes("novo") || s.includes("drop")) return "lancamento";
   if (s.includes("ofert") || s.includes("promo")) return "oferta";
+  if (s.includes("vend") || s.includes("best") || s.includes("popul")) return "mais-vendido";
   if (s.includes("normal") || s.includes("padrao")) return "normal";
   return null;
 }
 
-/** Rótulo exibido no card (o selo "normal" não mostra badge). */
+/** Rótulo exibido no card (selos que não mostram badge devem retornar null aqui). */
 export const SELO_LABEL: Record<Selo, string | null> = {
   destaque: "Destaque",
   lancamento: "Lançamento",
   oferta: "Oferta",
+  "mais-vendido": "Mais Vendido",
   normal: null,
 };
 

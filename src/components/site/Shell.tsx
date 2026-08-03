@@ -75,11 +75,11 @@ const NAV = [
   { label: "Masculino", href: "/masculino" },
   { label: "Feminino", href: "/feminino" },
   { label: "Infantil", href: "/infantil" },
-  { label: "Categoria", href: "/categorias" },
+  { label: "Destaques", href: "/destaques" },
   { label: "Lançamentos", href: "/lancamentos" },
-  { label: "Marcas", href: "/marcas" },
-  { label: "Roupas", href: "/roupas" },
+  { label: "Mais Vendidos", href: "/mais-vendidos" },
   { label: "Ofertas", href: "/ofertas" },
+  { label: "Veja mais", href: "/catalogo" },
 ];
 
 
