@@ -14,6 +14,7 @@ import {
 import { recordNewsletterSignup } from "@/lib/crm.contacts.functions";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { BRANDS } from "./brands-data";
 
 const Aurora = lazy(() => import("./Aurora"));
 
