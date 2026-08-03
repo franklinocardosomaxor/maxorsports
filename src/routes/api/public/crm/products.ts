@@ -184,7 +184,11 @@ const normalizeIncoming = (input: unknown) => {
     launch: toBool(pick(raw, PATTERNS.launch), false),
     tag: str(pick(raw, PATTERNS.tag)) ?? null,
     // site_visible deve ser rigorosamente respeitado do CRM.
-    site_visible: toBool(pick(raw, PATTERNS.visible), false),
+    // Se o nome ou SKU contiver "TESTE", forçamos a invisibilidade por segurança.
+    site_visible: toBool(pick(raw, PATTERNS.visible), false) && 
+                 !str(pick(raw, PATTERNS.name))?.toUpperCase().includes("TESTE") &&
+                 !str(pick(raw, PATTERNS.sku))?.toUpperCase().includes("TESTE"),
+
     img: main,
     images: Array.from(new Set(gallery)).slice(0, 20),
   };
