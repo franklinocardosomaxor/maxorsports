@@ -12,6 +12,8 @@ import type { CatalogProduct } from "@/components/site/CatalogPage";
 export type ProductWithSection = CatalogProduct & {
   section: "masculino" | "feminino" | "infantil" | "ofertas";
   modelId?: string;
+  /** Selo normalizado vindo do CRM (destaque | lancamento | oferta | normal). */
+  selo?: "destaque" | "lancamento" | "oferta" | "normal";
 };
 
 /**
