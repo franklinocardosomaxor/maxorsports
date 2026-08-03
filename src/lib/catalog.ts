@@ -152,9 +152,14 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
 export function setCrmProducts(products: unknown[] | null | undefined): number {
   const next: ProductWithSection[] = (Array.isArray(products) ? products : [])
     .map((p) => p as Record<string, unknown>)
-    .filter(isPublished)
+    .filter((p) => {
+      const isPub = isPublished(p);
+      const selo = normalizeSelo(p.tag ?? p.selo);
+      // Se não estiver publicado OU for selo 'nenhum', descarta imediatamente.
+      return isPub && selo !== null;
+    })
     .map(normalizeProduct)
-    .filter((p) => p.id && p.selo && isUsableImage(p.img));
+    .filter((p) => p.id && isUsableImage(p.img));
 
 
   ALL_PRODUCTS.length = 0;
