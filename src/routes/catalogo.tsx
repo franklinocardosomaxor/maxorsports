@@ -1,97 +1,109 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
-import { useMemo } from "react";
-import { Shell } from "@/components/site/Shell";
+import { ALL_PRODUCTS, getCatalogVersion, brl, brandSlug, Selo, SELO_LABEL } from "@/lib/catalog";
+import { useMemo, useState, useEffect } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
-import { ALL_PRODUCTS } from "@/lib/catalog";
-import { useCatalogVersion } from "@/hooks/use-crm-sync";
-import { BRANDS } from "@/components/site/brands-data";
+import { ChevronRight, Grid2X2, LayoutList } from "lucide-react";
+
+const SELOS_ORDER: Selo[] = ["destaque", "lancamento", "oferta", "mais-vendido", "normal"];
 
 export const Route = createFileRoute("/catalogo")({
-  component: CatalogoPage,
-  head: () => ({
-    meta: [
-      { title: "Catálogo completo — Maxor Sports" },
-      { name: "description", content: "Catálogo completo Maxor Sports com todos os tênis separados por marca." },
-      { property: "og:title", content: "Catálogo completo — Maxor Sports" },
-      { property: "og:description", content: "Todos os tênis da Maxor Sports organizados por marca." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-          { property: "og:url", content: "https://maxorsports.lovable.app/catalogo" },
-],
-    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/catalogo" }],
-  }),
+  component: CatalogoSeloPage,
 });
 
-function CatalogoPage() {
-  // Muda a cada sync do CRM — precisa entrar nas deps do memo.
-  const catalogVersion = useCatalogVersion();
-  const groups = useMemo(() => {
-    const map = new Map<string, typeof ALL_PRODUCTS>();
-    for (const p of ALL_PRODUCTS) {
-      const list = map.get(p.brand) ?? [];
-      list.push(p);
-      map.set(p.brand, list);
-    }
-    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [catalogVersion]);
+function CatalogoSeloPage() {
+  const version = getCatalogVersion();
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
+  // Agrupa produtos por selo
+  const groupedProducts = useMemo(() => {
+    const groups: Record<Selo, typeof ALL_PRODUCTS> = {
+      destaque: [],
+      lancamento: [],
+      oferta: [],
+      "mais-vendido": [],
+      normal: [],
+    };
 
-  const logoFor = (brand: string) =>
-    BRANDS.find((b) => b.name.toLowerCase() === brand.toLowerCase())?.logo;
+    ALL_PRODUCTS.forEach((p) => {
+      if (p.selo && groups[p.selo]) {
+        groups[p.selo].push(p);
+      }
+    });
+
+    return groups;
+  }, [version]);
+
+  const totalCount = ALL_PRODUCTS.length;
 
   return (
-    <Shell>
-      <div className="border-b border-white/10 bg-navy">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[color:var(--lime-brand)]">
-          <Link to="/" className="hover:brightness-110">Home</Link>
-          <ChevronRight className="h-3 w-3 text-[color:var(--lime-brand)]/60" />
-          <span className="text-offwhite">Catálogo</span>
-        </div>
-      </div>
+    <div className="min-h-screen bg-navy pt-24 pb-20">
+      <div className="container mx-auto px-4">
+        {/* Breadcrumb */}
+        <nav className="mb-8 flex items-center gap-2 text-xs text-muted-foreground uppercase tracking-widest">
+          <Link to="/" className="hover:text-foreground transition">Home</Link>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-foreground font-bold">Catálogo Completo</span>
+        </nav>
 
-      <section
-        className="relative overflow-hidden border-b border-border"
-        style={{ backgroundImage: "linear-gradient(120deg, #0F1720 0%, #103642 55%, #7EEBC1 100%)" }}
-      >
-        <div className="relative mx-auto max-w-7xl px-4 py-12 sm:py-16">
-          <p className="text-xs font-black uppercase tracking-[0.35em] text-[color:var(--cyan-brand)]">Maxor Sports</p>
-          <h1 className="mt-2 font-display text-4xl font-black uppercase tracking-tight text-offwhite sm:text-5xl md:text-6xl">
-            Catálogo completo
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm text-offwhite/80 sm:text-base">
-            Todos os modelos organizados por marca — do performance ao lifestyle.
-          </p>
-        </div>
-      </section>
+        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="font-display text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">
+              Explorar <span className="text-[color:var(--cyan-brand)]">Catálogo</span>
+            </h1>
+            <p className="mt-2 text-muted-foreground max-w-xl">
+              Confira todos os nossos produtos divididos por categorias de destaque e novidades.
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS</span>
+          </div>
+        </header>
 
-      <div className="mx-auto max-w-7xl space-y-14 px-4 py-10">
-        {groups.map(([brand, items]) => {
-          const logo = logoFor(brand);
-          return (
-            <section key={brand}>
-              <div className="flex items-end justify-between gap-6">
-                <div className="flex items-center gap-3">
-                  {logo && (
-                    <div className="grid h-12 w-20 place-items-center rounded-xl bg-[color:var(--cream)] p-2">
-                      <img src={logo} alt={brand} className="max-h-full max-w-full object-contain" />
+        {totalCount === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
+              <Grid2X2 className="h-10 w-10 text-white/20" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Nenhum produto encontrado</h3>
+            <p className="text-muted-foreground">O catálogo está sendo sincronizado com o CRM.</p>
+          </div>
+        ) : (
+          <div className="space-y-20">
+            {SELOS_ORDER.map((selo) => {
+              const products = groupedProducts[selo];
+              if (products.length === 0) return null;
+
+              const label = SELO_LABEL[selo] || "Geral";
+              const accentColor = selo === 'oferta' ? 'var(--cyan-brand)' : 
+                                 selo === 'lancamento' ? 'var(--lime-brand)' : 
+                                 selo === 'destaque' ? 'var(--mint-brand)' : 
+                                 'var(--offwhite-brand)';
+
+              return (
+                <section key={selo} id={selo} className="scroll-mt-32">
+                  <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-8 w-1.5 rounded-full" style={{ backgroundColor: accentColor }}></div>
+                      <h2 className="font-display text-2xl md:text-3xl font-bold uppercase italic tracking-tight text-white">
+                        {label}
+                      </h2>
                     </div>
-                  )}
-                  <div>
-                    <h2 className="font-display text-2xl font-bold uppercase tracking-wide">{brand}</h2>
-                    <p className="text-xs text-muted-foreground">{items.length} modelos</p>
+                    <span className="text-xs font-bold text-white/30 uppercase tracking-widest">
+                      {products.length} itens
+                    </span>
                   </div>
-                </div>
-              </div>
-              <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-                {items.map((p) => (
-                  <ProductMiniCard key={`${p.section}-${p.id}`} product={p} />
-                ))}
-              </div>
-            </section>
-          );
-        })}
+
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                    {products.map((product) => (
+                      <ProductMiniCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </Shell>
+    </div>
   );
 }
