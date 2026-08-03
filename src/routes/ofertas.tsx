@@ -1,16 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { ChevronRight, Plus, Minus, ImagePlus, Sparkles, Trash2 } from "lucide-react";
-import { Shell } from "@/components/site/Shell";
+import { useMemo } from "react";
 import { CatalogPage, type CatalogProduct } from "@/components/site/CatalogPage";
-import { PROMO_COMBOS, type PromoCombo } from "@/components/site/ofertas-data";
-import { ALL_PRODUCTS, getSectionProducts } from "@/lib/catalog";
+import { ALL_PRODUCTS } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
-
-const brl = (n: number) =>
-  n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 export const Route = createFileRoute("/ofertas")({
   component: OfertasPage,
@@ -90,10 +83,3 @@ function OfertasPage() {
     </div>
   );
 }
-
-// Silence unused-import lint.
-void Shell;
-void ChevronRight;
-void Link;
-void PROMO_COMBOS;
-void getSectionProducts;
