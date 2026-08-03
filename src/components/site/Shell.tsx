@@ -509,7 +509,7 @@ function MegaNav({ active }: { active?: string }) {
   );
 }
 
-import { ChevronDown } from "lucide-react";
+
 
 function Newsletter() {
   const signup = useServerFn(recordNewsletterSignup);
