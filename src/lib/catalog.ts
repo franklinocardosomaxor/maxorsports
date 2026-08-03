@@ -75,6 +75,8 @@ const slug = (s: unknown) =>
 /** Normaliza a tag vinda do CRM para um selo conhecido (ou `null`). */
 export function normalizeSelo(raw: unknown): Selo | null {
   const s = slug(raw);
+  
+  // Se o campo for nulo, vazio ou explicitamente "nenhum", bloqueia.
   if (!s || s === "nenhum" || s === "sem selo" || s === "none") return null;
   
   // Mapeamento estrito para os selos de vitrine
@@ -83,9 +85,11 @@ export function normalizeSelo(raw: unknown): Selo | null {
   if (s.includes("ofert") || s.includes("promo") || s.includes("especial")) return "oferta";
   if (s.includes("vend") || s.includes("best") || s.includes("popul") || s.includes("campea")) return "mais-vendido";
   
-  // "Normal" ou "Vitrine" são aceitos para o catálogo geral, mas NÃO entram em carrosséis de destaque
+  // "Normal" ou "Vitrine" aparecem no catálogo geral, mas NÃO em vitrines de destaque da Home
   if (s.includes("normal") || s.includes("padrao") || s.includes("vitrine")) return "normal";
   
+  // Se veio qualquer outra coisa (ex: "Air Zoom Alphafly") mas NÃO é um dos selos acima,
+  // tratamos como "Nenhum" por segurança. O CRM deve enviar selos canônicos.
   return null;
 }
 
