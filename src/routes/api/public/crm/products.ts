@@ -9,6 +9,7 @@
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { normalizeSelo } from "@/lib/catalog";
 
 /** Extrai a URL de uma foto vinda do CRM (string ou objeto {url|src|href|path}). */
 const toUrl = (v: unknown): string | null => {
@@ -257,6 +258,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
               site_visible: r.site_visible,
               img,
               exibido_no_site: motivos.length === 0,
+              selo_normalizado: normalizeSelo(r.tag),
               motivos,
             };
           });
