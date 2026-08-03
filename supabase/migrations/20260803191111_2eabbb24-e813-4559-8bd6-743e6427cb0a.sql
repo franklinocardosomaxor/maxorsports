@@ -1,0 +1,3 @@
+UPDATE public.products 
+SET site_visible = false, tag = 'Nenhum' 
+WHERE sku = 'MXR-5724';
