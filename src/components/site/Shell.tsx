@@ -85,17 +85,6 @@ const NAV = [
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Mais Vendidos", href: "/mais-vendidos" },
   { label: "Ofertas", href: "/ofertas" },
-  { 
-    label: "Veja mais", 
-    href: "/catalogo",
-    items: [
-      { label: "Destaques", href: "/destaques" },
-      { label: "Lançamentos", href: "/lancamentos" },
-      { label: "Ofertas", href: "/ofertas" },
-      { label: "Mais Vendidos", href: "/mais-vendidos" },
-      { label: "Catálogo Geral", href: "/catalogo" },
-    ]
-  },
 ];
 
 
