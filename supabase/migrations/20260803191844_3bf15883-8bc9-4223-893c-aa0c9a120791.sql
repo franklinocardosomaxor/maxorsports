@@ -1,0 +1,1 @@
+UPDATE public.products SET site_visible = false WHERE site_visible = true AND (img IS NULL OR name = 'Modelo X');

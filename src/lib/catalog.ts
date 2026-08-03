@@ -88,8 +88,8 @@ export function normalizeSelo(raw: unknown): Selo | null {
   // "Normal" ou "Vitrine" aparecem no catálogo geral, mas NÃO em vitrines de destaque da Home
   if (s.includes("normal") || s.includes("padrao") || s.includes("vitrine")) return "normal";
   
-  // Se veio qualquer outra coisa (ex: "Air Zoom Alphafly") mas NÃO é um dos selos acima,
-  // tratamos como "Nenhum" por segurança. O CRM deve enviar selos canônicos.
+  // Se o CRM enviar um valor que não é um selo reconhecido, bloqueia a exibição.
+  // Isso impede que textos descritivos no campo Tag forcem a exibição do produto.
   return null;
 }
 
