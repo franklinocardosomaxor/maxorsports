@@ -125,6 +125,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     category: String(raw.category ?? "Casual"),
     price: num(raw.price),
     old: oldValue !== undefined && oldValue !== null ? num(oldValue) : undefined,
+    // Tag visual para o badge do card: selos mapeados para null não exibem badge
     tag: selo ? (SELO_LABEL[selo] ?? undefined) : undefined,
     selo: selo ?? undefined,
     img,
@@ -134,6 +135,8 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     launch: selo === "lancamento",
     section: inferSection(raw),
     modelId: group ? String(group) : undefined,
+    // Armazena o selo original para depuração
+    raw_tag: String(raw.tag ?? raw.selo ?? ""),
   } as ProductWithSection;
 }
 

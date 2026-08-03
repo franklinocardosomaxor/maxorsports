@@ -80,7 +80,7 @@ function CatalogoSeloPage() {
                                  'var(--offwhite-brand)';
 
               return (
-                <section key={selo} id={selo} className="scroll-mt-32">
+                <section key={selo} id={selo} className="scroll-mt-32 mb-12 last:mb-0">
                   <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
                     <div className="flex items-center gap-4">
                       <div className="h-8 w-1.5 rounded-full" style={{ backgroundColor: accentColor }}></div>
