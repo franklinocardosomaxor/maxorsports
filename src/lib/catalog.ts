@@ -12,8 +12,10 @@ import type { CatalogProduct } from "@/components/site/CatalogPage";
 export type ProductWithSection = CatalogProduct & {
   section: "masculino" | "feminino" | "infantil" | "ofertas";
   modelId?: string;
-  /** Selo normalizado vindo do CRM (destaque | lancamento | oferta | mais-vendido | normal). */
+  /** Selo normalizado vindo do CRM. */
   selo?: Selo;
+  /** Tag original do CRM (para depuração e fallbacks). */
+  raw_tag?: string;
 };
 
 /**
@@ -74,9 +76,9 @@ export function normalizeSelo(raw: unknown): Selo | null {
   if (!s || s === "nenhum" || s === "sem selo" || s === "none") return null;
   if (s.includes("destaq")) return "destaque";
   if (s.includes("lanc") || s.includes("novo") || s.includes("drop")) return "lancamento";
-  if (s.includes("ofert") || s.includes("promo")) return "oferta";
-  if (s.includes("vend") || s.includes("best") || s.includes("popul")) return "mais-vendido";
-  if (s.includes("normal") || s.includes("padrao")) return "normal";
+  if (s.includes("ofert") || s.includes("promo") || s.includes("especial")) return "oferta";
+  if (s.includes("vend") || s.includes("best") || s.includes("popul") || s.includes("campea")) return "mais-vendido";
+  if (s.includes("normal") || s.includes("padrao") || s.includes("vitrine")) return "normal";
   return null;
 }
 
@@ -125,6 +127,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     category: String(raw.category ?? "Casual"),
     price: num(raw.price),
     old: oldValue !== undefined && oldValue !== null ? num(oldValue) : undefined,
+    // Tag visual para o badge do card: selos mapeados para null não exibem badge
     tag: selo ? (SELO_LABEL[selo] ?? undefined) : undefined,
     selo: selo ?? undefined,
     img,
@@ -134,6 +137,8 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     launch: selo === "lancamento",
     section: inferSection(raw),
     modelId: group ? String(group) : undefined,
+    // Armazena o selo original para depuração
+    raw_tag: String(raw.tag ?? raw.selo ?? ""),
   } as ProductWithSection;
 }
 

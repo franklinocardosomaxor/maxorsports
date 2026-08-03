@@ -9,6 +9,7 @@
  */
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
+import { normalizeSelo } from "@/lib/catalog";
 
 /** Extrai a URL de uma foto vinda do CRM (string ou objeto {url|src|href|path}). */
 const toUrl = (v: unknown): string | null => {
@@ -115,12 +116,13 @@ const PATTERNS = {
 } as const;
 
 const toBool = (v: unknown, fallback: boolean): boolean => {
+  if (v === null || v === undefined) return fallback;
   if (typeof v === "boolean") return v;
   if (typeof v === "number") return v !== 0;
   if (typeof v === "string") {
     const s = v.trim().toLowerCase();
     if (["true", "1", "sim", "s", "yes", "y", "ativo", "publicado"].includes(s)) return true;
-    if (["false", "0", "nao", "não", "n", "no", "inativo"].includes(s)) return false;
+    if (["false", "0", "nao", "não", "n", "no", "inativo", "oculto"].includes(s)) return false;
   }
   return fallback;
 };
@@ -181,8 +183,7 @@ const normalizeIncoming = (input: unknown) => {
     backorder: toBool(pick(raw, PATTERNS.backorder), true),
     launch: toBool(pick(raw, PATTERNS.launch), false),
     tag: str(pick(raw, PATTERNS.tag)) ?? null,
-    // Padrão FECHADO: se o CRM não disser explicitamente que é para exibir,
-    // o produto fica oculto.
+    // site_visible deve ser rigorosamente respeitado do CRM.
     site_visible: toBool(pick(raw, PATTERNS.visible), false),
     img: main,
     images: Array.from(new Set(gallery)).slice(0, 20),
@@ -257,6 +258,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
               site_visible: r.site_visible,
               img,
               exibido_no_site: motivos.length === 0,
+              selo_normalizado: normalizeSelo(r.tag),
               motivos,
             };
           });

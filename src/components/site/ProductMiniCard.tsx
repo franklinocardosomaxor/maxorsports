@@ -12,7 +12,7 @@ export function ProductMiniCard({ product }: { product: ProductWithSection }) {
     >
       <div className="relative aspect-square overflow-hidden bg-navy">
         {product.tag && (
-          <span className="absolute left-3 top-3 z-10 rounded-full bg-[color:var(--lime-brand)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-navy">
+          <span className="absolute left-3 top-3 z-10 rounded-full bg-[color:var(--lime-brand)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-navy shadow-lg shadow-black/20">
             {product.tag}
           </span>
         )}
