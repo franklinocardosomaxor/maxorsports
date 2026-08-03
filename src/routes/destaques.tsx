@@ -4,9 +4,6 @@ import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ChevronRight, Grid2X2 } from "lucide-react";
 
-// Ordenação visual dos selos
-const SELOS_ORDER: Selo[] = ["destaque", "lancamento", "oferta", "mais-vendido", "normal"];
-
 export const Route = createFileRoute("/destaques")({
   component: DestaquesPage,
 });
@@ -14,15 +11,23 @@ export const Route = createFileRoute("/destaques")({
 function DestaquesPage() {
   const version = getCatalogVersion();
 
-  // Filtra apenas produtos que são 'destaque' e agrupa por selo (para manter a lógica de separação)
-  // Ou, conforme solicitado: "incluir os produtos que tem tag de destaque separado pelo seu destaque"
-  // Interpretando: Mostrar a página de Destaques onde os itens com selo 'destaque' são o foco,
-  // ou talvez ele queira que a seção "Destaques" do menu mostre os produtos agrupados.
-  const highlights = useMemo(() => {
-    return ALL_PRODUCTS.filter(p => p.selo === 'destaque');
+  // Agrupa os produtos que possuem o selo 'destaque' pela sua tag original (ex: "Destaque", "Novidade", etc.)
+  // para permitir a visualização "separada pelo seu destaque"
+  const groupedHighlights = useMemo(() => {
+    const highlights = ALL_PRODUCTS.filter(p => p.selo === 'destaque');
+    const groups: Record<string, typeof ALL_PRODUCTS> = {};
+    
+    highlights.forEach(p => {
+      const tag = p.tag || "Destaques";
+      if (!groups[tag]) groups[tag] = [];
+      groups[tag].push(p);
+    });
+    
+    return groups;
   }, [version]);
 
-  const totalCount = highlights.length;
+  const groupNames = Object.keys(groupedHighlights).sort();
+  const totalCount = ALL_PRODUCTS.filter(p => p.selo === 'destaque').length;
 
   return (
     <div className="min-h-screen bg-navy pt-24 pb-20">
@@ -40,11 +45,11 @@ function DestaquesPage() {
               Nossos <span className="text-[color:var(--cyan-brand)]">Destaques</span>
             </h1>
             <p className="mt-2 text-muted-foreground max-w-xl">
-              Seleção exclusiva dos modelos mais icônicos e desejados do momento.
+              Seleção exclusiva dos modelos mais icônicos e desejados do momento, organizados por categoria.
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS EM DESTAQUE</span>
+            <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS</span>
           </div>
         </header>
 
@@ -57,9 +62,21 @@ function DestaquesPage() {
             <p className="text-muted-foreground">Sincronizando as melhores escolhas do CRM.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-            {highlights.map((product) => (
-              <ProductMiniCard key={product.id} product={product} />
+          <div className="space-y-16">
+            {groupNames.map((groupName) => (
+              <section key={groupName}>
+                <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-4">
+                  <div className="h-8 w-1.5 rounded-full bg-[color:var(--mint-brand)]"></div>
+                  <h2 className="font-display text-2xl md:text-3xl font-bold uppercase italic tracking-tight text-white">
+                    {groupName}
+                  </h2>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                  {groupedHighlights[groupName].map((product) => (
+                    <ProductMiniCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         )}
