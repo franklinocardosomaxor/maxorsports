@@ -83,7 +83,7 @@ export function normalizeSelo(raw: unknown): Selo | null {
   if (s.includes("destaq")) return "destaque";
   if (s.includes("lanc") || s.includes("novo") || s.includes("drop")) return "lancamento";
   if (s.includes("ofert") || s.includes("promo") || s.includes("especial")) return "oferta";
-  if (s.includes("vend") || s.includes("best") || s.includes("popul") || s.includes("campea")) return "mais-vendido";
+  if (s.includes("vend") || s.includes("best") || s.includes("popul") || s.includes("campea") || s.includes("querid")) return "mais-vendido";
   
   // "Normal" ou "Vitrine" aparecem no catálogo geral, mas NÃO em vitrines de destaque da Home
   if (s.includes("normal") || s.includes("padrao") || s.includes("vitrine")) return "normal";
