@@ -71,15 +71,31 @@ function AccountLink() {
 
 }
 
+import { BRANDS } from "./brands-data";
+
 const NAV = [
   { label: "Masculino", href: "/masculino" },
   { label: "Feminino", href: "/feminino" },
   { label: "Infantil", href: "/infantil" },
+  { 
+    label: "Tênis", 
+    href: "/catalogo",
+    items: BRANDS.map(b => ({ label: b.name, href: `/marcas/${b.slug}` }))
+  },
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Mais Vendidos", href: "/mais-vendidos" },
   { label: "Ofertas", href: "/ofertas" },
-  { label: "Destaques", href: "/destaques" },
-  { label: "Veja mais", href: "/catalogo" },
+  { 
+    label: "Veja mais", 
+    href: "/catalogo",
+    items: [
+      { label: "Destaques", href: "/destaques" },
+      { label: "Lançamentos", href: "/lancamentos" },
+      { label: "Ofertas", href: "/ofertas" },
+      { label: "Mais Vendidos", href: "/mais-vendidos" },
+      { label: "Catálogo Geral", href: "/catalogo" },
+    ]
+  },
 ];
 
 
