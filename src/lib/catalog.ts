@@ -16,6 +16,8 @@ export type ProductWithSection = CatalogProduct & {
   selo?: Selo;
   /** Tag original do CRM (para depuração e fallbacks). */
   raw_tag?: string;
+  /** Status de visibilidade vindo do CRM. */
+  site_visible?: boolean;
 };
 
 /**
@@ -139,6 +141,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     modelId: group ? String(group) : undefined,
     // Armazena o selo original para depuração
     raw_tag: String(raw.tag ?? raw.selo ?? ""),
+    site_visible: isPublished(raw),
   } as ProductWithSection;
 }
 
