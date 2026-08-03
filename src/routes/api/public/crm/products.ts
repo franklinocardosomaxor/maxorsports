@@ -181,7 +181,9 @@ const normalizeIncoming = (input: unknown) => {
     backorder: toBool(pick(raw, PATTERNS.backorder), true),
     launch: toBool(pick(raw, PATTERNS.launch), false),
     tag: str(pick(raw, PATTERNS.tag)) ?? null,
-    site_visible: toBool(pick(raw, PATTERNS.visible), true),
+    // Padrão FECHADO: se o CRM não disser explicitamente que é para exibir,
+    // o produto fica oculto.
+    site_visible: toBool(pick(raw, PATTERNS.visible), false),
     img: main,
     images: Array.from(new Set(gallery)).slice(0, 20),
   };
