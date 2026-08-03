@@ -80,10 +80,11 @@ O produto só aparece no site se **`site_visible = true`** E tiver um selo váli
 
 | Selo enviado | Efeito no site |
 |---|---|
-| `Destaque` | aparece nas vitrines e recebe badge "Destaque" |
+| `Destaque` | aparece em `/destaques`, vitrines e recebe badge "Destaque" |
 | `Lançamento` | aparece em `/lancamentos` e no carrossel da home |
-| `Oferta` | aparece em `/ofertas` |
-| `Normal` | aparece nas listagens, **sem badge** |
+| `Mais Vendido` | aparece em `/mais-vendidos` e recebe badge "Mais Vendido" |
+| `Oferta` | aparece em `/ofertas` e recebe badge "Oferta" |
+| `Normal` | aparece nas listagens e em `/catalogo`, **sem badge** |
 | vazio / "nenhum" | **não é exibido** |
 
 `site_visible` agora tem padrão **false**: se o campo não vier no payload, o produto fica oculto.
