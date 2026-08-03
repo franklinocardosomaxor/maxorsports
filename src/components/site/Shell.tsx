@@ -75,10 +75,10 @@ const NAV = [
   { label: "Masculino", href: "/masculino" },
   { label: "Feminino", href: "/feminino" },
   { label: "Infantil", href: "/infantil" },
-  { label: "Destaques", href: "/destaques" },
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Mais Vendidos", href: "/mais-vendidos" },
   { label: "Ofertas", href: "/ofertas" },
+  { label: "Destaques", href: "/destaques" },
   { label: "Veja mais", href: "/catalogo" },
 ];
 
