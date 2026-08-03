@@ -73,8 +73,8 @@ function Home() {
     }
     return {
       categories: cats,
-      launches: ALL_PRODUCTS.filter((p) => p.launch || p.tag).slice(0, 4),
-      offers: ALL_PRODUCTS.filter((p) => p.old && p.old > p.price).slice(0, 4),
+      launches: ALL_PRODUCTS.filter((p) => p.selo === "lancamento").slice(0, 4),
+      offers: ALL_PRODUCTS.filter((p) => p.selo === "oferta" || (p.old && p.old > p.price)).slice(0, 4),
     };
   }, [version]);
 

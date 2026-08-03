@@ -26,9 +26,7 @@ function LancamentosPage() {
   const catalogVersion = useCatalogVersion();
 
   const products = useMemo(() => {
-    return ALL_PRODUCTS.filter(
-      (p) => p.launch || p.tag === "Novo" || p.tag === "Drop" || p.tag === "Top",
-    );
+    return ALL_PRODUCTS.filter((p) => p.selo === "lancamento");
   }, [catalogVersion]);
 
 
