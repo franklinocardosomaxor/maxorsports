@@ -119,6 +119,19 @@ export function isUsableImage(u: unknown): u is string {
     s,
   );
 }
+/** Converte vários formatos para boolean. */
+export const toBool = (v: unknown, fallback = false): boolean => {
+  if (v === null || v === undefined) return fallback;
+  if (typeof v === "boolean") return v;
+  if (typeof v === "number") return v !== 0;
+  if (typeof v === "string") {
+    const s = v.trim().toLowerCase();
+    if (["true", "1", "sim", "s", "yes", "y", "ativo", "publicado"].includes(s)) return true;
+    if (["false", "0", "nao", "não", "n", "no", "inativo", "oculto"].includes(s)) return false;
+  }
+  return fallback;
+};
+
 
 /** Converte uma linha de `public.products` no formato usado pelo site. */
 export function normalizeProduct(raw: Record<string, unknown>): ProductWithSection {
