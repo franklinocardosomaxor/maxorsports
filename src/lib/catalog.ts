@@ -29,6 +29,7 @@ export type ProductWithSection = CatalogProduct & {
  */
 export const ALL_PRODUCTS: ProductWithSection[] = [];
 
+
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
@@ -191,13 +192,17 @@ export function setCrmProducts(products: unknown[] | null | undefined): number {
     .map(normalizeProduct)
     .filter((p) => p.id && isUsableImage(p.img));
 
-  // Substituição total e imediata para evitar produtos fantasmas (stale state)
+  // Substituição total e imediata para evitar produtos fantasmas (stale state).
+  // Se o banco estiver zerado no CRM, `next` será vazio e o site refletirá isso.
   ALL_PRODUCTS.length = 0;
-  ALL_PRODUCTS.push(...next);
+  if (next.length > 0) {
+    ALL_PRODUCTS.push(...next);
+  }
   
   version += 1;
   listeners.forEach((fn) => fn());
   return ALL_PRODUCTS.length;
+
 }
 
 
