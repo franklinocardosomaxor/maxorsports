@@ -46,6 +46,7 @@ export function useCrmSync(): CrmSyncStatus {
     try {
       const rows = await fetchDbProducts();
       if (!aliveRef.current) return;
+      // setCrmProducts garante a limpeza do estado anterior e aplicação das regras de gating
       mergeCrmProducts(rows);
       setStatus({ loading: false, loaded: true, error: null });
     } catch (err) {

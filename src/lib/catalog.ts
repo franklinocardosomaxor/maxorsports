@@ -167,17 +167,18 @@ export function setCrmProducts(products: unknown[] | null | undefined): number {
     .filter((p) => {
       const isPub = isPublished(p);
       const selo = normalizeSelo(p.tag ?? p.selo);
-      // GATING ESTREITO v1.5: site_visible True E o selo DEVE ser um dos destaques ativos 
-      // (Destaque, Lançamento, Oferta, Mais Vendido ou Normal/Vitrine).
-      // "Nenhum Selo" no CRM chega como null no normalizeSelo e bloqueia a exibição.
-      return isPub && selo !== null;
+      
+      // GATING ESTREITO v1.6: site_visible DEVE ser true e o selo deve ser válido.
+      // Se o CRM mandou o produto mas site_visible é false (ou não enviado), ele NÃO entra no site.
+      return isPub === true && selo !== null;
     })
     .map(normalizeProduct)
     .filter((p) => p.id && isUsableImage(p.img));
 
-
+  // Substituição total e imediata para evitar produtos fantasmas (stale state)
   ALL_PRODUCTS.length = 0;
   ALL_PRODUCTS.push(...next);
+  
   version += 1;
   listeners.forEach((fn) => fn());
   return ALL_PRODUCTS.length;
