@@ -32,13 +32,14 @@ export type DbProduct = {
 
 /** Busca os produtos publicados no banco compartilhado. */
 export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
+  // Busca apenas produtos com visibilidade ativa e ordenados pelos mais recentes
   const { data, error } = await supabase
     .from("products")
     .select(
       "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible",
     )
     .eq("site_visible", true)
-    .order("created_at", { ascending: false });
+    .order("updated_at", { ascending: false });
 
   if (error) throw new Error(error.message);
 
