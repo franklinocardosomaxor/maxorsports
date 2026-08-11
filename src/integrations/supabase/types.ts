@@ -317,6 +317,7 @@ export type Database = {
         Row: {
           backorder: boolean
           brand: string
+          brand_visible: boolean | null
           category: string
           colors: string[]
           created_at: string
@@ -341,6 +342,7 @@ export type Database = {
         Insert: {
           backorder?: boolean
           brand?: string
+          brand_visible?: boolean | null
           category?: string
           colors?: string[]
           created_at?: string
@@ -365,6 +367,7 @@ export type Database = {
         Update: {
           backorder?: boolean
           brand?: string
+          brand_visible?: boolean | null
           category?: string
           colors?: string[]
           created_at?: string
