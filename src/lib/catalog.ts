@@ -246,6 +246,19 @@ export function getBrandProducts(slug: string) {
   return ALL_PRODUCTS.filter((p) => brandSlug(p.brand) === slug && p.brand_visible !== false);
 }
 
+/**
+ * Slugs de marcas que possuem ao menos um produto com `brand_visible = true`.
+ * Usado pelo carrossel de marcas da Home para refletir o CRM em tempo real.
+ */
+export function getVisibleBrandSlugs(): string[] {
+  return Array.from(
+    new Set(
+      ALL_PRODUCTS.filter((p) => p.brand_visible !== false).map((p) => brandSlug(p.brand)),
+    ),
+  );
+}
+
+
 /** Produtos de uma categoria de roupa/linha (ex.: "Academia"). */
 export function getCategoryProducts(category: string) {
   const key = brandSlug(category);
