@@ -18,6 +18,8 @@ export type ProductWithSection = CatalogProduct & {
   raw_tag?: string;
   /** Status de visibilidade vindo do CRM. */
   site_visible?: boolean;
+  /** Status de visibilidade na página de marcas. */
+  brand_visible?: boolean;
 };
 
 /**
@@ -151,6 +153,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     // Armazena o selo original para depuração
     raw_tag: String(raw.tag ?? raw.selo ?? ""),
     site_visible: isPublished(raw),
+    brand_visible: toBool(raw.brand_visible ?? raw.brandVisible, true),
   } as ProductWithSection;
 }
 
@@ -227,7 +230,7 @@ export const brandSlug = (s: string) =>
 
 /** Produtos de uma marca (sempre vindos do CRM). */
 export function getBrandProducts(slug: string) {
-  return ALL_PRODUCTS.filter((p) => brandSlug(p.brand) === slug);
+  return ALL_PRODUCTS.filter((p) => brandSlug(p.brand) === slug && p.brand_visible !== false);
 }
 
 /** Produtos de uma categoria de roupa/linha (ex.: "Academia"). */

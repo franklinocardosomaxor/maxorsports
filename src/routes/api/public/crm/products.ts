@@ -111,6 +111,7 @@ const PATTERNS = {
   launch: /^(launch|lancamento|novidade|isnew|new)$/,
   tag: /^(tag|etiqueta|selo|badge|destaque)$/,
   visible: /^(sitevisible|visivel|publicado|published|ativo|active|visible|exibirsite)$/,
+  brandVisible: /^(brandvisible|exibir|exibirmarca|marcaativa|marcavislvel)$/,
   gallery: /^(images?|imagens|imgs?|gallery|galeria|galerias|photos?|fotos?|imageurls?|urlsimagens?|pictures?|midias?|media|anexos?|arquivos?)$/,
   main: /^(img|image|imagem|foto|imageurl|urlimagem|capa|cover|thumbnail|thumb|principal|fotoprincipal|imagemprincipal)$/,
 } as const;
@@ -188,6 +189,7 @@ const normalizeIncoming = (input: unknown) => {
     site_visible: toBool(pick(raw, PATTERNS.visible), false) && 
                  !str(pick(raw, PATTERNS.name))?.toUpperCase().includes("TESTE") &&
                  !str(pick(raw, PATTERNS.sku))?.toUpperCase().includes("TESTE"),
+    brand_visible: toBool(pick(raw, PATTERNS.brandVisible), true),
 
     img: main,
     images: Array.from(new Set(gallery)).slice(0, 20),
@@ -222,6 +224,7 @@ const productSchema = z.preprocess(
     model_group: z.string().max(120).nullish().default(null),
 
     site_visible: z.boolean().default(false),
+    brand_visible: z.boolean().default(true),
   }),
 );
 
@@ -239,7 +242,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
         const query = supabaseAdmin
           .from("products")
           .select(
-            "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible",
+            "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible, brand_visible",
           )
           .order("created_at", { ascending: false });
 
@@ -260,6 +263,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
               sku: r.sku,
               name: r.name,
               site_visible: r.site_visible,
+              brand_visible: r.brand_visible,
               img,
               exibido_no_site: motivos.length === 0,
               selo_normalizado: normalizeSelo(r.tag),
