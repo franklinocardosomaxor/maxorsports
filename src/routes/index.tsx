@@ -24,7 +24,7 @@ import { LogoLoop } from "@/components/site/LogoLoop";
 import { BRANDS } from "@/components/site/brands-data";
 
 import { useMemo } from "react";
-import { ALL_PRODUCTS } from "@/lib/catalog";
+import { ALL_PRODUCTS, getVisibleBrandSlugs } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import catFem from "@/assets/cat-feminino.jpg";
 import catMasc from "@/assets/cat-masculino.jpg";
@@ -468,12 +468,17 @@ function CategoryBanners() {
 }
 
 function BrandStrip() {
-  const logos = BRANDS.filter((b) => b.logo).map((b) => ({
+  // Re-renderiza quando o CRM sincroniza (realtime) para refletir brand_visible.
+  useCatalogVersion();
+  const visible = getVisibleBrandSlugs();
+  const source = visible.length > 0 ? BRANDS.filter((b) => visible.includes(b.slug)) : BRANDS;
+  const logos = source.filter((b) => b.logo).map((b) => ({
     src: b.logo!,
     alt: b.name,
     title: b.name,
     href: `/marcas/${b.slug}`,
   }));
+
   return (
     <section className="border-y border-border bg-secondary/60">
       <div className="mx-auto max-w-7xl px-4 py-8">
