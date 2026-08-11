@@ -24,7 +24,7 @@ import { LogoLoop } from "@/components/site/LogoLoop";
 import { BRANDS } from "@/components/site/brands-data";
 
 import { useMemo } from "react";
-import { ALL_PRODUCTS } from "@/lib/catalog";
+import { ALL_PRODUCTS, getVisibleBrandSlugs } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import catFem from "@/assets/cat-feminino.jpg";
 import catMasc from "@/assets/cat-masculino.jpg";
