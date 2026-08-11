@@ -29,6 +29,7 @@ export type ProductWithSection = CatalogProduct & {
  */
 export const ALL_PRODUCTS: ProductWithSection[] = [];
 
+
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
