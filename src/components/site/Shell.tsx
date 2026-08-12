@@ -445,17 +445,30 @@ function MegaNav({ active }: { active?: string }) {
               className="relative group"
               onMouseEnter={() => hasItems && handleMouseEnter(item.label)}
             >
-              <a
-                href={item.href}
-                className={`flex items-center gap-1.5 whitespace-nowrap px-4 py-4 text-sm font-display font-semibold uppercase tracking-wider transition ${
-                  isActive
-                    ? "text-[color:var(--cyan-brand)]"
-                    : "text-offwhite/80 hover:text-[color:var(--cyan-brand)]"
-                } ${isOffer ? "text-[color:var(--lime-brand)] font-bold" : ""}`}
-              >
-                {item.label}
-                {hasItems && <ChevronDown className={`h-3 w-3 transition-transform ${openMenu === item.label ? "rotate-180" : ""}`} />}
-              </a>
+              {hasItems ? (
+                <button
+                  type="button"
+                  className={`flex items-center gap-1.5 whitespace-nowrap px-4 py-4 text-sm font-display font-semibold uppercase tracking-wider transition ${
+                    isActive
+                      ? "text-[color:var(--cyan-brand)]"
+                      : "text-offwhite/80 hover:text-[color:var(--cyan-brand)]"
+                  } ${isOffer ? "text-[color:var(--lime-brand)] font-bold" : ""}`}
+                >
+                  {item.label}
+                  <ChevronDown className={`h-3 w-3 transition-transform ${openMenu === item.label ? "rotate-180" : ""}`} />
+                </button>
+              ) : (
+                <a
+                  href={item.href}
+                  className={`flex items-center gap-1.5 whitespace-nowrap px-4 py-4 text-sm font-display font-semibold uppercase tracking-wider transition ${
+                    isActive
+                      ? "text-[color:var(--cyan-brand)]"
+                      : "text-offwhite/80 hover:text-[color:var(--cyan-brand)]"
+                  } ${isOffer ? "text-[color:var(--lime-brand)] font-bold" : ""}`}
+                >
+                  {item.label}
+                </a>
+              )}
               
               {isActive && (
                 <div className="absolute bottom-0 left-4 right-4 h-0.5 bg-[color:var(--cyan-brand)]" />

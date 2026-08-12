@@ -46,16 +46,18 @@ function CatalogoSeloPage() {
         </nav>
 
         <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <h1 className="font-display text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">
-              Explorar <span className="text-[color:var(--cyan-brand)]">Catálogo</span>
-            </h1>
-            <p className="mt-2 text-muted-foreground max-w-xl">
-              Confira todos os nossos produtos divididos por categorias de destaque e novidades.
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS</span>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <h1 className="font-display text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">
+                Explorar <span className="text-[color:var(--cyan-brand)]">Catálogo</span>
+              </h1>
+              <p className="mt-2 text-muted-foreground max-w-xl">
+                Confira todos os nossos produtos divididos por categorias de destaque e novidades. Utilize os filtros para encontrar o modelo ideal por marca, gênero ou faixa de preço.
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS</span>
+            </div>
           </div>
         </header>
 
