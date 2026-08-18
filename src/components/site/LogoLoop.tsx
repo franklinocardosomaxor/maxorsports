@@ -389,7 +389,9 @@ export const LogoLoop = memo(function LogoLoop({
           onPointerDown={() => setIsDragging(true)}
           onPointerUp={() => setIsDragging(false)}
           className="logoloop__scrollbar"
+          style={{ ["--logoloop-thumb" as string]: `url(${sneakerThumb})` }}
         />
+
       )}
     </div>
   );
