@@ -95,6 +95,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "1QakVOtZU4MeleAgzk6HjKEFCVGmKBYtU6uA46MgPKI" },
       { title: "Maxor Sports — Tênis e artigos esportivos" },
       { name: "description", content: "Curadoria Maxor Sports: tênis, roupas e acessórios esportivos com performance, estilo e personalidade." },
       { name: "author", content: "Maxor Sports" },
