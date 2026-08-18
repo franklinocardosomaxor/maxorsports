@@ -11,6 +11,8 @@ import {
 } from "react";
 import { useRouter } from "@tanstack/react-router";
 import "./LogoLoop.css";
+import sneakerThumb from "@/assets/sneaker-thumb.png";
+
 import type React from "react";
 
 const ANIMATION_CONFIG = { SMOOTH_TAU: 0.25, MIN_COPIES: 2, COPY_HEADROOM: 2 };
