@@ -11,6 +11,8 @@ import {
 } from "react";
 import { useRouter } from "@tanstack/react-router";
 import "./LogoLoop.css";
+import sneakerThumb from "@/assets/sneaker-thumb.png";
+
 import type React from "react";
 
 const ANIMATION_CONFIG = { SMOOTH_TAU: 0.25, MIN_COPIES: 2, COPY_HEADROOM: 2 };
@@ -387,7 +389,9 @@ export const LogoLoop = memo(function LogoLoop({
           onPointerDown={() => setIsDragging(true)}
           onPointerUp={() => setIsDragging(false)}
           className="logoloop__scrollbar"
+          style={{ ["--logoloop-thumb" as string]: `url(${sneakerThumb})` }}
         />
+
       )}
     </div>
   );
