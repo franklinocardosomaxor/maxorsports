@@ -31,6 +31,9 @@ import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as RoupasCategoryRouteImport } from './routes/roupas.$category'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
+import { Route as MaxorcrmFase3RouteImport } from './routes/maxorcrm/fase-3'
+import { Route as MaxorcrmFase2RouteImport } from './routes/maxorcrm/fase-2'
+import { Route as MaxorcrmFase1RouteImport } from './routes/maxorcrm/fase-1'
 import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
 import { Route as ColecaoMasculinoRouteImport } from './routes/colecao.masculino'
 import { Route as ColecaoFemininoRouteImport } from './routes/colecao.feminino'
@@ -151,6 +154,21 @@ const ProdutoIdRoute = ProdutoIdRouteImport.update({
   path: '/produto/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MaxorcrmFase3Route = MaxorcrmFase3RouteImport.update({
+  id: '/fase-3',
+  path: '/fase-3',
+  getParentRoute: () => MaxorcrmRouteRoute,
+} as any)
+const MaxorcrmFase2Route = MaxorcrmFase2RouteImport.update({
+  id: '/fase-2',
+  path: '/fase-2',
+  getParentRoute: () => MaxorcrmRouteRoute,
+} as any)
+const MaxorcrmFase1Route = MaxorcrmFase1RouteImport.update({
+  id: '/fase-1',
+  path: '/fase-1',
+  getParentRoute: () => MaxorcrmRouteRoute,
+} as any)
 const MarcasBrandRoute = MarcasBrandRouteImport.update({
   id: '/marcas/$brand',
   path: '/marcas/$brand',
@@ -220,6 +238,9 @@ export interface FileRoutesByFullPath {
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
+  '/maxorcrm/fase-1': typeof MaxorcrmFase1Route
+  '/maxorcrm/fase-2': typeof MaxorcrmFase2Route
+  '/maxorcrm/fase-3': typeof MaxorcrmFase3Route
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/admin/': typeof AdminIndexRoute
@@ -252,6 +273,9 @@ export interface FileRoutesByTo {
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
+  '/maxorcrm/fase-1': typeof MaxorcrmFase1Route
+  '/maxorcrm/fase-2': typeof MaxorcrmFase2Route
+  '/maxorcrm/fase-3': typeof MaxorcrmFase3Route
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/admin': typeof AdminIndexRoute
@@ -286,6 +310,9 @@ export interface FileRoutesById {
   '/colecao/feminino': typeof ColecaoFemininoRoute
   '/colecao/masculino': typeof ColecaoMasculinoRoute
   '/marcas/$brand': typeof MarcasBrandRoute
+  '/maxorcrm/fase-1': typeof MaxorcrmFase1Route
+  '/maxorcrm/fase-2': typeof MaxorcrmFase2Route
+  '/maxorcrm/fase-3': typeof MaxorcrmFase3Route
   '/produto/$id': typeof ProdutoIdRoute
   '/roupas/$category': typeof RoupasCategoryRoute
   '/admin/': typeof AdminIndexRoute
@@ -321,6 +348,9 @@ export interface FileRouteTypes {
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
+    | '/maxorcrm/fase-1'
+    | '/maxorcrm/fase-2'
+    | '/maxorcrm/fase-3'
     | '/produto/$id'
     | '/roupas/$category'
     | '/admin/'
@@ -353,6 +383,9 @@ export interface FileRouteTypes {
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
+    | '/maxorcrm/fase-1'
+    | '/maxorcrm/fase-2'
+    | '/maxorcrm/fase-3'
     | '/produto/$id'
     | '/roupas/$category'
     | '/admin'
@@ -386,6 +419,9 @@ export interface FileRouteTypes {
     | '/colecao/feminino'
     | '/colecao/masculino'
     | '/marcas/$brand'
+    | '/maxorcrm/fase-1'
+    | '/maxorcrm/fase-2'
+    | '/maxorcrm/fase-3'
     | '/produto/$id'
     | '/roupas/$category'
     | '/admin/'
@@ -587,6 +623,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutoIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/maxorcrm/fase-3': {
+      id: '/maxorcrm/fase-3'
+      path: '/fase-3'
+      fullPath: '/maxorcrm/fase-3'
+      preLoaderRoute: typeof MaxorcrmFase3RouteImport
+      parentRoute: typeof MaxorcrmRouteRoute
+    }
+    '/maxorcrm/fase-2': {
+      id: '/maxorcrm/fase-2'
+      path: '/fase-2'
+      fullPath: '/maxorcrm/fase-2'
+      preLoaderRoute: typeof MaxorcrmFase2RouteImport
+      parentRoute: typeof MaxorcrmRouteRoute
+    }
+    '/maxorcrm/fase-1': {
+      id: '/maxorcrm/fase-1'
+      path: '/fase-1'
+      fullPath: '/maxorcrm/fase-1'
+      preLoaderRoute: typeof MaxorcrmFase1RouteImport
+      parentRoute: typeof MaxorcrmRouteRoute
+    }
     '/marcas/$brand': {
       id: '/marcas/$brand'
       path: '/marcas/$brand'
@@ -654,10 +711,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface MaxorcrmRouteRouteChildren {
+  MaxorcrmFase1Route: typeof MaxorcrmFase1Route
+  MaxorcrmFase2Route: typeof MaxorcrmFase2Route
+  MaxorcrmFase3Route: typeof MaxorcrmFase3Route
   MaxorcrmIndexRoute: typeof MaxorcrmIndexRoute
 }
 
 const MaxorcrmRouteRouteChildren: MaxorcrmRouteRouteChildren = {
+  MaxorcrmFase1Route: MaxorcrmFase1Route,
+  MaxorcrmFase2Route: MaxorcrmFase2Route,
+  MaxorcrmFase3Route: MaxorcrmFase3Route,
   MaxorcrmIndexRoute: MaxorcrmIndexRoute,
 }
 
