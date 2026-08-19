@@ -85,6 +85,7 @@ const NAV = [
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Mais Vendidos", href: "/mais-vendidos" },
   { label: "Ofertas", href: "/ofertas" },
+  { label: "Maxor CRM", href: "/maxorcrm" },
 ];
 
 
