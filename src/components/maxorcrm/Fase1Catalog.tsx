@@ -211,7 +211,7 @@ export function Fase1Catalog() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <h1 className="text-xl font-black uppercase text-offwhite flex items-center gap-2">
-            <Package className="text-[color:var(--cyan-brand)]" size={24} /> Fase 1 · Catálogo
+            <Package className="text-[color:var(--cyan-brand)]" size={24} /> Estoque · Catálogo de Produtos
         </h1>
         <button
           onClick={() => handleOpenModal()}
