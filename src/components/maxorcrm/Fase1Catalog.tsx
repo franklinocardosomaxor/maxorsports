@@ -171,7 +171,11 @@ export function Fase1Catalog() {
       badge_text: finalTag,
       status: finalSiteVisible ? 'published' : 'hidden',
       descricao: form.descricao,
-      imagens: form.imagens
+      description: form.descricao,
+      imagens: form.imagens,
+      foto_principal: mainImage,
+      img: mainImage,
+      images: form.imagens.map((i: any) => i.url_imagem).filter(Boolean)
     };
 
     let error = null;
