@@ -321,6 +321,7 @@ export type Database = {
           brand_visible: boolean | null
           categoria_prod: string | null
           category: string
+          color_variant: string | null
           colors: string[]
           cost_supplier: number
           created_at: string
@@ -367,6 +368,7 @@ export type Database = {
           brand_visible?: boolean | null
           categoria_prod?: string | null
           category?: string
+          color_variant?: string | null
           colors?: string[]
           cost_supplier?: number
           created_at?: string
@@ -413,6 +415,7 @@ export type Database = {
           brand_visible?: boolean | null
           categoria_prod?: string | null
           category?: string
+          color_variant?: string | null
           colors?: string[]
           cost_supplier?: number
           created_at?: string
