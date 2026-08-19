@@ -316,78 +316,150 @@ export type Database = {
       products: {
         Row: {
           backorder: boolean
+          badge_text: string | null
           brand: string
           brand_visible: boolean | null
+          categoria_prod: string | null
           category: string
+          color_variant: string | null
           colors: string[]
+          cost_supplier: number
           created_at: string
+          descricao: string | null
           description: string | null
+          discount_price: number
+          foto_principal: string | null
+          gender: string | null
+          genero: string | null
           id: string
+          id_produto: string | null
+          imagens: Json
           images: string[]
           img: string | null
           launch: boolean
+          marca_prod: string | null
+          margin_percent: number
           model_group: string | null
           name: string
+          name_prod: string | null
+          num_cal_max: number
+          num_cal_min: number
           old_price: number | null
           org_id: string | null
           price: number
+          qtde_est: number
           section: string
+          shipping_cost: number
           site_visible: boolean
           sizes: number[]
           sku: string | null
+          slug: string | null
+          status: string
           stock: number
           tag: string | null
+          tipo_prod: string | null
+          type: string | null
           updated_at: string
+          valor_dec: number
+          vender_sem_estoque: boolean
         }
         Insert: {
           backorder?: boolean
+          badge_text?: string | null
           brand?: string
           brand_visible?: boolean | null
+          categoria_prod?: string | null
           category?: string
+          color_variant?: string | null
           colors?: string[]
+          cost_supplier?: number
           created_at?: string
+          descricao?: string | null
           description?: string | null
+          discount_price?: number
+          foto_principal?: string | null
+          gender?: string | null
+          genero?: string | null
           id?: string
+          id_produto?: string | null
+          imagens?: Json
           images?: string[]
           img?: string | null
           launch?: boolean
+          marca_prod?: string | null
+          margin_percent?: number
           model_group?: string | null
           name: string
+          name_prod?: string | null
+          num_cal_max?: number
+          num_cal_min?: number
           old_price?: number | null
           org_id?: string | null
           price?: number
+          qtde_est?: number
           section?: string
+          shipping_cost?: number
           site_visible?: boolean
           sizes?: number[]
           sku?: string | null
+          slug?: string | null
+          status?: string
           stock?: number
           tag?: string | null
+          tipo_prod?: string | null
+          type?: string | null
           updated_at?: string
+          valor_dec?: number
+          vender_sem_estoque?: boolean
         }
         Update: {
           backorder?: boolean
+          badge_text?: string | null
           brand?: string
           brand_visible?: boolean | null
+          categoria_prod?: string | null
           category?: string
+          color_variant?: string | null
           colors?: string[]
+          cost_supplier?: number
           created_at?: string
+          descricao?: string | null
           description?: string | null
+          discount_price?: number
+          foto_principal?: string | null
+          gender?: string | null
+          genero?: string | null
           id?: string
+          id_produto?: string | null
+          imagens?: Json
           images?: string[]
           img?: string | null
           launch?: boolean
+          marca_prod?: string | null
+          margin_percent?: number
           model_group?: string | null
           name?: string
+          name_prod?: string | null
+          num_cal_max?: number
+          num_cal_min?: number
           old_price?: number | null
           org_id?: string | null
           price?: number
+          qtde_est?: number
           section?: string
+          shipping_cost?: number
           site_visible?: boolean
           sizes?: number[]
           sku?: string | null
+          slug?: string | null
+          status?: string
           stock?: number
           tag?: string | null
+          tipo_prod?: string | null
+          type?: string | null
           updated_at?: string
+          valor_dec?: number
+          vender_sem_estoque?: boolean
         }
         Relationships: [
           {

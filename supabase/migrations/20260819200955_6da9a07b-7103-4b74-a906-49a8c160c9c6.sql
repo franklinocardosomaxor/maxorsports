@@ -1,0 +1,9 @@
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS gender TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS type TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS brand TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS category TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS stock INTEGER;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS price NUMERIC;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS old_price NUMERIC;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;
