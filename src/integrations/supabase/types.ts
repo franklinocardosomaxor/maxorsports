@@ -329,6 +329,7 @@ export type Database = {
           description: string | null
           discount_price: number
           foto_principal: string | null
+          gender: string | null
           genero: string | null
           id: string
           id_produto: string | null
@@ -357,6 +358,7 @@ export type Database = {
           stock: number
           tag: string | null
           tipo_prod: string | null
+          type: string | null
           updated_at: string
           valor_dec: number
           vender_sem_estoque: boolean
@@ -376,6 +378,7 @@ export type Database = {
           description?: string | null
           discount_price?: number
           foto_principal?: string | null
+          gender?: string | null
           genero?: string | null
           id?: string
           id_produto?: string | null
@@ -404,6 +407,7 @@ export type Database = {
           stock?: number
           tag?: string | null
           tipo_prod?: string | null
+          type?: string | null
           updated_at?: string
           valor_dec?: number
           vender_sem_estoque?: boolean
@@ -423,6 +427,7 @@ export type Database = {
           description?: string | null
           discount_price?: number
           foto_principal?: string | null
+          gender?: string | null
           genero?: string | null
           id?: string
           id_produto?: string | null
@@ -451,6 +456,7 @@ export type Database = {
           stock?: number
           tag?: string | null
           tipo_prod?: string | null
+          type?: string | null
           updated_at?: string
           valor_dec?: number
           vender_sem_estoque?: boolean
