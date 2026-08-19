@@ -23,8 +23,10 @@ import { Route as DestaquesRouteImport } from './routes/destaques'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
+import { Route as MaxorcrmRouteRouteImport } from './routes/maxorcrm/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoupasIndexRouteImport } from './routes/roupas.index'
+import { Route as MaxorcrmIndexRouteImport } from './routes/maxorcrm/index'
 import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as RoupasCategoryRouteImport } from './routes/roupas.$category'
@@ -109,6 +111,11 @@ const CatalogoRoute = CatalogoRouteImport.update({
   path: '/catalogo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MaxorcrmRouteRoute = MaxorcrmRouteRouteImport.update({
+  id: '/maxorcrm',
+  path: '/maxorcrm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -118,6 +125,11 @@ const RoupasIndexRoute = RoupasIndexRouteImport.update({
   id: '/roupas/',
   path: '/roupas/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const MaxorcrmIndexRoute = MaxorcrmIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MaxorcrmRouteRoute,
 } as any)
 const MarcasIndexRoute = MarcasIndexRouteImport.update({
   id: '/marcas/',
@@ -188,6 +200,7 @@ const ApiPublicCrmImageSplatRoute = ApiPublicCrmImageSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/maxorcrm': typeof MaxorcrmRouteRouteWithChildren
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
@@ -211,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/roupas/$category': typeof RoupasCategoryRoute
   '/admin/': typeof AdminIndexRoute
   '/marcas/': typeof MarcasIndexRoute
+  '/maxorcrm/': typeof MaxorcrmIndexRoute
   '/roupas/': typeof RoupasIndexRoute
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
@@ -242,6 +256,7 @@ export interface FileRoutesByTo {
   '/roupas/$category': typeof RoupasCategoryRoute
   '/admin': typeof AdminIndexRoute
   '/marcas': typeof MarcasIndexRoute
+  '/maxorcrm': typeof MaxorcrmIndexRoute
   '/roupas': typeof RoupasIndexRoute
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
@@ -251,6 +266,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/maxorcrm': typeof MaxorcrmRouteRouteWithChildren
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
@@ -274,6 +290,7 @@ export interface FileRoutesById {
   '/roupas/$category': typeof RoupasCategoryRoute
   '/admin/': typeof AdminIndexRoute
   '/marcas/': typeof MarcasIndexRoute
+  '/maxorcrm/': typeof MaxorcrmIndexRoute
   '/roupas/': typeof RoupasIndexRoute
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
@@ -284,6 +301,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/maxorcrm'
     | '/catalogo'
     | '/categorias'
     | '/checkout'
@@ -307,6 +325,7 @@ export interface FileRouteTypes {
     | '/roupas/$category'
     | '/admin/'
     | '/marcas/'
+    | '/maxorcrm/'
     | '/roupas/'
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
@@ -338,6 +357,7 @@ export interface FileRouteTypes {
     | '/roupas/$category'
     | '/admin'
     | '/marcas'
+    | '/maxorcrm'
     | '/roupas'
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
@@ -346,6 +366,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/maxorcrm'
     | '/catalogo'
     | '/categorias'
     | '/checkout'
@@ -369,6 +390,7 @@ export interface FileRouteTypes {
     | '/roupas/$category'
     | '/admin/'
     | '/marcas/'
+    | '/maxorcrm/'
     | '/roupas/'
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
@@ -378,6 +400,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MaxorcrmRouteRoute: typeof MaxorcrmRouteRouteWithChildren
   CatalogoRoute: typeof CatalogoRoute
   CategoriasRoute: typeof CategoriasRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -508,6 +531,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/maxorcrm': {
+      id: '/maxorcrm'
+      path: '/maxorcrm'
+      fullPath: '/maxorcrm'
+      preLoaderRoute: typeof MaxorcrmRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -521,6 +551,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/roupas/'
       preLoaderRoute: typeof RoupasIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/maxorcrm/': {
+      id: '/maxorcrm/'
+      path: '/'
+      fullPath: '/maxorcrm/'
+      preLoaderRoute: typeof MaxorcrmIndexRouteImport
+      parentRoute: typeof MaxorcrmRouteRoute
     }
     '/marcas/': {
       id: '/marcas/'
@@ -616,8 +653,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface MaxorcrmRouteRouteChildren {
+  MaxorcrmIndexRoute: typeof MaxorcrmIndexRoute
+}
+
+const MaxorcrmRouteRouteChildren: MaxorcrmRouteRouteChildren = {
+  MaxorcrmIndexRoute: MaxorcrmIndexRoute,
+}
+
+const MaxorcrmRouteRouteWithChildren = MaxorcrmRouteRoute._addFileChildren(
+  MaxorcrmRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MaxorcrmRouteRoute: MaxorcrmRouteRouteWithChildren,
   CatalogoRoute: CatalogoRoute,
   CategoriasRoute: CategoriasRoute,
   CheckoutRoute: CheckoutRoute,
