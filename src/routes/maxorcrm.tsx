@@ -10,9 +10,9 @@ export const MAXORCRM_ALLOWED = [
 ];
 
 export const FASES = [
-  { to: "/maxorcrm/fase-1", label: "Fase 1 · Catálogo", icon: Boxes },
-  { to: "/maxorcrm/fase-2", label: "Fase 2 · Comercial", icon: Kanban },
-  { to: "/maxorcrm/fase-3", label: "Fase 3 · Operação", icon: Plug },
+  { to: "/maxorcrm/fase-1", label: "Estoque (Catálogo)", icon: Boxes },
+  { to: "/maxorcrm/fase-2", label: "Vendas (Comercial)", icon: Kanban },
+  { to: "/maxorcrm/fase-3", label: "Financeiro (Operação)", icon: Plug },
 ] as const;
 
 export const Route = createFileRoute("/maxorcrm")({

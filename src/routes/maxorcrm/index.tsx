@@ -48,22 +48,22 @@ function Overview() {
     {
       to: "/maxorcrm/fase-1" as const,
       icon: Boxes,
-      title: "Fase 1 · Catálogo",
-      desc: "Produtos vindos do CRM, visibilidade no site, selos e imagens.",
+      title: "Estoque (Fase 1)",
+      desc: "Cadastre produtos reais: SKU, nome, marca, custo/frete/margem, fotos e selos (Destaque/Lançamento).",
       stat: counts && `${counts.publicados}/${counts.produtos} publicados`,
     },
     {
       to: "/maxorcrm/fase-2" as const,
       icon: Kanban,
-      title: "Fase 2 · Comercial",
-      desc: "Contatos, negócios e o pipeline por estágio.",
+      title: "Vendas (Fase 2)",
+      desc: "Gestão comercial, contatos, negócios e pipeline de vendas.",
       stat: counts && `${counts.contatos} contatos · ${counts.negocios} negócios`,
     },
     {
       to: "/maxorcrm/fase-3" as const,
       icon: Plug,
-      title: "Fase 3 · Operação",
-      desc: "Atividades, integrações e sincronização em tempo real.",
+      title: "Financeiro (Fase 3)",
+      desc: "Operação financeira, fluxo de caixa e atividades do sistema.",
       stat: counts && `${counts.atividades} atividades`,
     },
   ];
