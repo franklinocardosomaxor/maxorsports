@@ -5,12 +5,10 @@ import {
 } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 
-export function CurrencyInput({ value, onChange, placeholder = "0,00", className = "", prefix = "R$ " }) {
-  const formatDisplay = (val) => {
-    if (val === null || val === undefined || val === "") return "";
-    const num = typeof val === "number" ? val : parseFloat(String(val).replace(",", "."));
-    if (isNaN(num)) return "";
-    return num.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export function CurrencyInput({ value, onChange, placeholder = "0,00", className = "", prefix = "R$ " }: { value: number; onChange: (val: number) => void; placeholder?: string; className?: string; prefix?: string }) {
+  const formatDisplay = (val: number) => {
+    if (val === null || val === undefined || val === 0) return "";
+    return val.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const [displayValue, setDisplayValue] = useState(formatDisplay(value));
@@ -19,7 +17,7 @@ export function CurrencyInput({ value, onChange, placeholder = "0,00", className
     setDisplayValue(formatDisplay(value));
   }, [value]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, "");
     if (!raw) {
       setDisplayValue("");
