@@ -309,9 +309,185 @@ export function Fase1Catalog() {
             </div>
             {/* Form omitted for brevity in response, logic is handled in the file */}
             <form onSubmit={handleSubmit} className="space-y-6">
-                <button type="submit" disabled={saving} className="bg-[color:var(--cyan-brand)] text-navy font-bold px-6 py-2 rounded-xl">
-                  {saving ? "Salvando..." : "Salvar"}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">SKU</label>
+                  <input
+                    type="text"
+                    value={form.sku}
+                    onChange={e => setForm({...form, sku: e.target.value})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Nome do Produto</label>
+                  <input
+                    type="text"
+                    value={form.name_prod}
+                    onChange={e => setForm({...form, name_prod: e.target.value})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Marca</label>
+                  <select
+                    value={form.marca_prod}
+                    onChange={e => setForm({...form, marca_prod: e.target.value})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  >
+                    <option value="Nike">Nike</option>
+                    <option value="Adidas">Adidas</option>
+                    <option value="Mizuno">Mizuno</option>
+                    <option value="Asics">Asics</option>
+                    <option value="Puma">Puma</option>
+                    <option value="Oakley">Oakley</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Categoria</label>
+                  <input
+                    type="text"
+                    value={form.categoria_prod}
+                    onChange={e => setForm({...form, categoria_prod: e.target.value})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Tipo</label>
+                  <input
+                    type="text"
+                    value={form.tipo_prod}
+                    onChange={e => setForm({...form, tipo_prod: e.target.value})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Gênero</label>
+                  <select
+                    value={form.genero}
+                    onChange={e => setForm({...form, genero: e.target.value})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  >
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Unissex">Unissex</option>
+                    <option value="Kids">Kids</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-background/30 p-4 rounded-2xl border border-border">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Custo Fornecedor</label>
+                  <CurrencyInput value={form.costSupplier} onChange={v => setForm({...form, costSupplier: v})} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Frete</label>
+                  <CurrencyInput value={form.shippingCost} onChange={v => setForm({...form, shippingCost: v})} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Margem (%)</label>
+                  <input
+                    type="number"
+                    value={form.marginPercent}
+                    onChange={e => setForm({...form, marginPercent: Number(e.target.value)})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Preço Venda</label>
+                  <CurrencyInput value={form.valor_dec} onChange={v => setForm({...form, valor_dec: v})} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Estoque Qtd</label>
+                  <input
+                    type="number"
+                    value={form.qtde_est}
+                    onChange={e => setForm({...form, qtde_est: Number(e.target.value)})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-foreground/50 uppercase">Selo Vitrine</label>
+                  <select
+                    value={form.badgeText}
+                    onChange={e => setForm({...form, badgeText: e.target.value})}
+                    className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                  >
+                    <option value="Normal">Normal (Sem Selo)</option>
+                    <option value="Destaque">Destaque</option>
+                    <option value="Lançamento">Lançamento</option>
+                    <option value="Oferta">Oferta</option>
+                    <option value="Nenhum">Nenhum (Ocultar)</option>
+                  </select>
+                </div>
+                <div className="flex items-center gap-2 pt-8">
+                  <input
+                    type="checkbox"
+                    checked={form.siteVisible}
+                    onChange={e => setForm({...form, siteVisible: e.target.checked})}
+                  />
+                  <label className="text-xs font-bold uppercase">Visível no Site</label>
+                </div>
+                <div className="flex items-center gap-2 pt-8">
+                  <input
+                    type="checkbox"
+                    checked={form.brandVisible}
+                    onChange={e => setForm({...form, brandVisible: e.target.checked})}
+                  />
+                  <label className="text-xs font-bold uppercase">Visível em Marcas</label>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <label className="text-xs font-bold text-foreground/50 uppercase flex items-center justify-between">
+                  Imagens <span>{form.imagens.length} arquivos</span>
+                </label>
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                  {form.imagens.map((img, idx) => (
+                    <div key={img.id} className="relative aspect-square bg-background rounded-xl border border-border overflow-hidden">
+                      <img src={img.url_imagem} className="w-full h-full object-cover" />
+                      <button 
+                        type="button"
+                        onClick={() => setForm(f => ({...f, imagens: f.imagens.filter(i => i.id !== img.id)}))}
+                        className="absolute top-1 right-1 bg-black/50 p-1 rounded-md text-white hover:bg-rose-500"
+                      >
+                        <X size={12} />
+                      </button>
+                      {img.is_principal && <div className="absolute bottom-0 inset-x-0 bg-[color:var(--mint-brand)] text-navy text-[8px] font-bold text-center py-0.5">PRINCIPAL</div>}
+                    </div>
+                  ))}
+                  <label className="aspect-square bg-background border border-dashed border-border rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-border/30 transition">
+                    <Upload size={20} className="text-foreground/30" />
+                    <span className="text-[10px] text-foreground/50 mt-1 uppercase">Subir</span>
+                    <input type="file" multiple className="hidden" onChange={handleFileUpload} />
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-6 border-t border-border">
+                <button
+                  type="button"
+                  onClick={() => setModalOpen(false)}
+                  className="px-6 py-2.5 rounded-xl border border-border font-bold text-foreground/60 hover:bg-border transition"
+                >
+                  Cancelar
                 </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="bg-[color:var(--cyan-brand)] text-navy font-bold px-8 py-2.5 rounded-xl hover:brightness-110 transition flex items-center gap-2"
+                >
+                  {saving ? <RefreshCw size={18} className="animate-spin" /> : <Shield size={18} />}
+                  {saving ? "Salvando..." : editingId ? "Atualizar Produto" : "Criar Produto"}
+                </button>
+              </div>
             </form>
           </div>
         </div>
