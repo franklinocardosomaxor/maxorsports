@@ -259,6 +259,10 @@ export const Route = createFileRoute("/api/public/crm/products")({
             if (!img) motivos.push("sem imagem");
             else if (isUnreachableUrl(img))
               motivos.push(`imagem inalcançável pela nuvem (${img}) — envie base64 ou URL https pública`);
+            
+            const seloNorm = normalizeSelo(r.tag);
+            if (seloNorm === null) motivos.push(`selo inválido ou inexistente ("${r.tag ?? ''}") — use Destaque, Lancamento ou Oferta`);
+            
             return {
               sku: r.sku,
               name: r.name,
@@ -266,7 +270,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
               brand_visible: r.brand_visible,
               img,
               exibido_no_site: motivos.length === 0,
-              selo_normalizado: normalizeSelo(r.tag),
+              selo_normalizado: seloNorm,
               motivos,
             };
           });
