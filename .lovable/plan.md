@@ -1,47 +1,33 @@
-# MaxorCRM dentro do site — estrutura base e migração do Antigravity
+# Migração da Fase 1 do MaxorCRM (Catálogo e Estoque)
 
-Criar o diretório `maxorcrm` no site Maxor Sports, com menu de três fases, pronto para
-receber os comandos de migração do Antigravity que você vai enviar em seguida.
+Migrar o módulo de gestão de estoque e produtos do Antigravity para o novo diretório `maxorcrm/fase-1`, adaptando para o Dark Theme Navy do site e atualizando o banco de dados.
 
 ## Estado atual (verificado)
 
-- Já existe `/admin` (login) e `/admin/crm` (painel resumido com contagem de contatos e negócios).
-- O backend já tem todo o schema do CRM: `organizations`, `pipelines`, `stages`, `contacts`,
-  `deals`, `activities`, `products`, `user_roles`, com RLS por organização e papel.
-- Os super-admins `maxortecnologia@gmail.com` e `franklinocardoso@gmail.com` já recebem o papel
-  `super_admin` automaticamente via trigger no banco.
-- Nesta sessão já foram criados dois arquivos de esqueleto (`src/routes/maxorcrm/route.tsx` e
-  `src/routes/maxorcrm/index.tsx`) com o layout Navy, a trava de acesso e o menu de três fases.
-  Eles servem de base e serão ajustados conforme os comandos que você enviar.
+- O site público está operacional em `src/routes/index.tsx`.
+- O painel `/maxorcrm` já possui rotas base para as três fases, mas a `fase-1.tsx` é apenas um esqueleto.
+- A tabela `public.products` no banco de dados ainda não possui colunas específicas do CRM (como `name_prod`, `marca_prod`, `qtde_est`, etc.) exigidas pelo novo módulo.
 
-## O que fica pronto agora
+## O que será feito
 
-1. **Rota `/maxorcrm`** com layout próprio em Navy (#0F1720), cabeçalho MaxorCRM, identificação do
-   usuário logado e botão sair. Sem SSR, como o restante da área administrativa.
-2. **Trava de acesso**: somente os dois e-mails super-admin entram. Qualquer outro usuário vê
-   "Acesso negado"; quem não está logado vai para o login administrativo.
-3. **Menu de três fases** no topo, com destaque na fase ativa:
-   - Fase 1 · Catálogo
-   - Fase 2 · Comercial
-   - Fase 3 · Operação
-   Os nomes são provisórios — você redefine cada fase nos próximos comandos.
-4. **Página inicial do MaxorCRM** com três cartões (um por fase) mostrando contadores reais do
-   banco: produtos publicados, contatos, negócios e atividades.
-5. **Três páginas de fase** criadas vazias, cada uma com seu próprio título e descrição, prontas
-   para receber os módulos migrados do Antigravity conforme seus comandos.
+### 1. Infraestrutura de Banco de Dados (Supabase)
+Criar uma migration para estender a tabela `public.products` com as colunas necessárias para o CRM, garantindo compatibilidade com o script de schema fornecido:
+- Adicionar colunas de dados do produto: `id_produto`, `name_prod`, `marca_prod`, `categoria_prod`, `tipo_prod`, `genero`, `valor_dec`, `discount_price`, `num_cal_min`, `num_cal_max`, `qtde_est`, `vender_sem_estoque`, `badge_text`, `status`, `foto_principal`, `imagens` (JSONB), `descricao`, `slug`.
+- Garantir que as políticas de RLS e triggers de `updated_at` permaneçam funcionais.
 
-## O que fica aguardando seus comandos
+### 2. Implementação da Fase 1 (Catálogo)
+Transformar `src/routes/maxorcrm/fase-1.tsx` em um centro de comando completo para produtos:
+- **Interface Dark Navy**: Adaptar o componente `StockPageLovable` para usar os tokens de cores do projeto (#0F1720, Cyan, Mint, Lime).
+- **Gestão de Produtos**: Implementar a listagem, busca e edição de produtos usando o cliente Supabase integrado do projeto.
+- **Formulário Inteligente**: Incluir os blocos A (Dados), B (Preços), C (Estoque) e D (Exposição E-commerce v1.4) com as lógicas de cálculo de margem e preço.
+- **Galeria de Mídia**: Suporte para upload de fotos físicas via Base64 (conforme o modelo Antigravity).
+- **Visibilidade Independente**: Integrar as regras de `site_visible` e `brand_visible`.
 
-A migração completa do Antigravity (telas, regras e fluxos de cada fase) só entra depois que você
-enviar o conteúdo de cada fase. Nada do layout ou das regras do site público é alterado.
+### 3. Integração e Segurança
+- Garantir que a `src/maxor-kit/` seja utilizada para componentes compartilhados quando aplicável.
+- Reforçar que apenas os super-admins (`maxortecnologia@gmail.com` e `franklinocardoso@gmail.com`) acessem esta fase.
 
 ## Detalhes técnicos
-
-- Arquivos: `src/routes/maxorcrm/route.tsx` (layout + gate), `src/routes/maxorcrm/index.tsx`
-  (visão geral), `src/routes/maxorcrm/fase-1.tsx`, `fase-2.tsx`, `fase-3.tsx`.
-- Leitura de dados pelo cliente Supabase do browser, com RLS aplicando como o usuário logado —
-  nenhuma consulta com chave de serviço no navegador.
-- `head()` com `robots: noindex, nofollow` em todas as rotas do MaxorCRM.
-- Componentes reutilizáveis que surgirem na migração vão para `src/maxor-kit/`, mantendo a
-  sincronia com o CRM.
-- Nenhuma mudança de schema é necessária nesta etapa.
+- Conversão do código React (.jsx) fornecido para TypeScript (.tsx).
+- Uso do hook `useCatalogVersion` para invalidar caches quando o estoque mudar.
+- Nenhuma alteração no layout do site público (`/`).
