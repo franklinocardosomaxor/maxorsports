@@ -139,7 +139,7 @@ export function Fase1Catalog() {
     const finalSiteVisible = isHiddenByTag ? false : Boolean(form.siteVisible);
     const finalTag = isHiddenByTag ? "Nenhum" : form.badgeText;
 
-    const payload = {
+    const payload: any = {
       sku: form.sku,
       name: form.name_prod,
       name_prod: form.name_prod,
@@ -176,11 +176,11 @@ export function Fase1Catalog() {
 
     let error = null;
     if (editingId) {
-      const res = await supabase.from('products').update(payload).eq('id', editingId);
-      error = res.error;
+      const { error: err } = await supabase.from('products').update(payload).eq('id', editingId);
+      error = err;
     } else {
-      const res = await supabase.from('products').insert([payload]);
-      error = res.error;
+      const { error: err } = await supabase.from('products').insert([payload]);
+      error = err;
     }
 
     setSaving(false);
