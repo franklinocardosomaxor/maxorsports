@@ -265,7 +265,7 @@ export const Route = createFileRoute("/api/public/crm/products")({
               site_visible: r.site_visible,
               brand_visible: r.brand_visible,
               img,
-              exibido_no_site: motivos.length === 0,
+              exibido_no_site: motivos.length === 0 && normalizeSelo(r.tag) !== null,
               selo_normalizado: normalizeSelo(r.tag),
               motivos,
             };
