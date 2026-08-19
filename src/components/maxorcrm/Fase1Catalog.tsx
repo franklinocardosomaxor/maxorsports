@@ -200,12 +200,45 @@ export function Fase1Catalog() {
         const b64 = reader.result as string;
         setForm(prev => ({
           ...prev,
-          imagens: [...prev.imagens, { id: `img_${Date.now()}`, url_imagem: b64, is_principal: prev.imagens.length === 0, exibir_no_site: true }]
+          imagens: [...prev.imagens, { id: `img_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, url_imagem: b64, is_principal: prev.imagens.length === 0, exibir_no_site: true }]
         }));
       };
       reader.readAsDataURL(file);
     });
   };
+
+  const round2 = (n: number) => Math.round((Number.isFinite(n) ? n : 0) * 100) / 100;
+
+  /** Preço Venda Final = (Custo + Frete) × (1 + Margem/100) */
+  const recalcPrice = (cost: number, ship: number, margin: number) =>
+    round2((cost + ship) * (1 + margin / 100));
+
+  /** Margem % = (Preço / (Custo + Frete) - 1) × 100 */
+  const recalcMargin = (cost: number, ship: number, price: number) => {
+    const base = cost + ship;
+    if (base <= 0) return 0;
+    return round2((price / base - 1) * 100);
+  };
+
+  const setCost = (v: number) =>
+    setForm(f => ({ ...f, costSupplier: v, valor_dec: recalcPrice(v, f.shippingCost, f.marginPercent) }));
+
+  const setShipping = (v: number) =>
+    setForm(f => ({ ...f, shippingCost: v, valor_dec: recalcPrice(f.costSupplier, v, f.marginPercent) }));
+
+  const setMargin = (v: number) =>
+    setForm(f => ({ ...f, marginPercent: v, valor_dec: recalcPrice(f.costSupplier, f.shippingCost, v) }));
+
+  const setFinalPrice = (v: number) =>
+    setForm(f => ({ ...f, valor_dec: v, marginPercent: recalcMargin(f.costSupplier, f.shippingCost, v) }));
+
+  /** Trava: selo "Nenhum" força site_visible = false */
+  const setBadge = (v: string) =>
+    setForm(f => ({ ...f, badgeText: v, siteVisible: v === "Nenhum" ? false : f.siteVisible }));
+
+  const badgeBlocked = form.badgeText === "Nenhum";
+  const lucroBruto = round2(form.valor_dec - (form.costSupplier + form.shippingCost));
+
 
   return (
     <div className="space-y-6">
