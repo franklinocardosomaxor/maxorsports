@@ -24,7 +24,6 @@ import { Route as DestaquesRouteImport } from './routes/destaques'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
-import { Route as MaxorcrmRouteRouteImport } from './routes/maxorcrm/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoupasIndexRouteImport } from './routes/roupas.index'
 import { Route as MaxorcrmIndexRouteImport } from './routes/maxorcrm/index'
@@ -118,11 +117,6 @@ const CategoriasRoute = CategoriasRouteImport.update({
 const CatalogoRoute = CatalogoRouteImport.update({
   id: '/catalogo',
   path: '/catalogo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MaxorcrmRouteRoute = MaxorcrmRouteRouteImport.update({
-  id: '/maxorcrm',
-  path: '/maxorcrm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -224,7 +218,6 @@ const ApiPublicCrmImageSplatRoute = ApiPublicCrmImageSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/maxorcrm': typeof MaxorcrmRouteWithChildren
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
@@ -236,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mais-vendidos': typeof MaisVendidosRoute
   '/masculino': typeof MasculinoRoute
+  '/maxorcrm': typeof MaxorcrmRouteWithChildren
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -260,7 +254,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/maxorcrm': typeof MaxorcrmIndexRoute
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
@@ -287,6 +280,7 @@ export interface FileRoutesByTo {
   '/roupas/$category': typeof RoupasCategoryRoute
   '/admin': typeof AdminIndexRoute
   '/marcas': typeof MarcasIndexRoute
+  '/maxorcrm': typeof MaxorcrmIndexRoute
   '/roupas': typeof RoupasIndexRoute
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
@@ -296,7 +290,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/maxorcrm': typeof MaxorcrmRouteWithChildren
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
@@ -308,6 +301,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mais-vendidos': typeof MaisVendidosRoute
   '/masculino': typeof MasculinoRoute
+  '/maxorcrm': typeof MaxorcrmRouteWithChildren
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -334,7 +328,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/maxorcrm'
     | '/catalogo'
     | '/categorias'
     | '/checkout'
@@ -346,6 +339,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mais-vendidos'
     | '/masculino'
+    | '/maxorcrm'
     | '/minha-conta'
     | '/ofertas'
     | '/sitemap.xml'
@@ -370,7 +364,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/maxorcrm'
     | '/catalogo'
     | '/categorias'
     | '/checkout'
@@ -397,6 +390,7 @@ export interface FileRouteTypes {
     | '/roupas/$category'
     | '/admin'
     | '/marcas'
+    | '/maxorcrm'
     | '/roupas'
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
@@ -405,7 +399,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/maxorcrm'
     | '/catalogo'
     | '/categorias'
     | '/checkout'
@@ -417,6 +410,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/mais-vendidos'
     | '/masculino'
+    | '/maxorcrm'
     | '/minha-conta'
     | '/ofertas'
     | '/sitemap.xml'
@@ -442,7 +436,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  MaxorcrmRouteRoute: typeof MaxorcrmRouteRoute
   CatalogoRoute: typeof CatalogoRoute
   CategoriasRoute: typeof CategoriasRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -579,13 +572,6 @@ declare module '@tanstack/react-router' {
       path: '/catalogo'
       fullPath: '/catalogo'
       preLoaderRoute: typeof CatalogoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/maxorcrm': {
-      id: '/maxorcrm'
-      path: '/maxorcrm'
-      fullPath: '/maxorcrm'
-      preLoaderRoute: typeof MaxorcrmRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -744,7 +730,6 @@ const MaxorcrmRouteWithChildren = MaxorcrmRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  MaxorcrmRouteRoute: MaxorcrmRouteRoute,
   CatalogoRoute: CatalogoRoute,
   CategoriasRoute: CategoriasRoute,
   CheckoutRoute: CheckoutRoute,
