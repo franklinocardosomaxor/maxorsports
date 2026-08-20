@@ -4,6 +4,7 @@ import {
   DollarSign, X, Upload, Shield, RefreshCw, Star 
 } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
+import { getMyOrgId } from "@/lib/maxorcrm-org";
 
 export function CurrencyInput({ value, onChange, placeholder = "0,00", className = "", prefix = "R$ " }: { value: number; onChange: (val: number) => void; placeholder?: string; className?: string; prefix?: string }) {
   const formatDisplay = (val: number) => {
@@ -135,11 +136,19 @@ export function Fase1Catalog() {
     e.preventDefault();
     setSaving(true);
 
+    const orgId = await getMyOrgId();
+    if (!orgId) {
+      setSaving(false);
+      alert("Não foi possível identificar sua organização no CRM. Faça login novamente.");
+      return;
+    }
+
     const isHiddenByTag = !form.badgeText || form.badgeText.toLowerCase() === "nenhum";
     const finalSiteVisible = isHiddenByTag ? false : Boolean(form.siteVisible);
     const finalTag = isHiddenByTag ? "Nenhum" : form.badgeText;
 
     const payload: any = {
+      org_id: orgId,
       sku: form.sku,
       name: form.name_prod,
       name_prod: form.name_prod,
