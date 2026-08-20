@@ -173,8 +173,8 @@ export function Fase1Catalog() {
       descricao: form.descricao,
       description: form.descricao,
       imagens: form.imagens,
-      foto_principal: mainImage,
-      img: mainImage,
+      foto_principal: form.imagens.find(i => i.is_principal)?.url_imagem || form.imagens[0]?.url_imagem || "",
+      img: form.imagens.find(i => i.is_principal)?.url_imagem || form.imagens[0]?.url_imagem || "",
       images: form.imagens.map((i: any) => i.url_imagem).filter(Boolean)
     };
 
