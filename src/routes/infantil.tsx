@@ -11,8 +11,10 @@ export const Route = createFileRoute("/infantil")({
       { name: "description", content: "Coleção infantil Maxor Sports: tênis leves e resistentes para corrida, casual e trail." },
       { property: "og:title", content: "Tênis Infantil — Maxor Sports" },
       { property: "og:description", content: "Tênis infantis com estilo e resistência." },
-          { property: "og:url", content: "https://maxorsports.lovable.app/infantil" },
-],
+      { property: "og:url", content: "https://maxorsports.lovable.app/infantil" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/infantil" }],
   }),
 });

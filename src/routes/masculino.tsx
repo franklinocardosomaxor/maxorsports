@@ -11,8 +11,10 @@ export const Route = createFileRoute("/masculino")({
       { name: "description", content: "Coleção masculina Maxor Sports: tênis de corrida, basquete, casual, trail e training com curadoria premium." },
       { property: "og:title", content: "Tênis Masculino — Maxor Sports" },
       { property: "og:description", content: "Tênis masculinos com performance e estilo." },
-          { property: "og:url", content: "https://maxorsports.lovable.app/masculino" },
-],
+      { property: "og:url", content: "https://maxorsports.lovable.app/masculino" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/masculino" }],
   }),
 });

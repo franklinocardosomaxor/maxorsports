@@ -31,6 +31,8 @@ export const Route = createFileRoute("/marcas/$brand")({
         { property: "og:title", content: `${brand.name} — Maxor Sports` },
         { property: "og:description", content: `Coleção ${brand.name} — ${brand.tagline}.` },
         { property: "og:url", content: url },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [{ rel: "canonical", href: url }],
     };
