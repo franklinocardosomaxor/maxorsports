@@ -31,6 +31,7 @@ export const Route = createFileRoute("/produto/$id")({
         { property: "og:url", content: url },
         { property: "og:image", content: product.img },
         { name: "twitter:image", content: product.img },
+        { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [{ rel: "canonical", href: url }],
     };

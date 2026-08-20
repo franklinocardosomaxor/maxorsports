@@ -15,6 +15,7 @@ export const Route = createFileRoute("/mais-vendidos")({
       { property: "og:title", content: "Mais Vendidos — Maxor Sports" },
       { property: "og:description", content: "Confira o que está fazendo sucesso na Maxor Sports." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://maxorsports.lovable.app/mais-vendidos" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/mais-vendidos" }],

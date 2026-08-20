@@ -16,8 +16,8 @@ export const Route = createFileRoute("/lancamentos")({
       { property: "og:description", content: "Novidades e drops que acabaram de chegar na Maxor Sports." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-          { property: "og:url", content: "https://maxorsports.lovable.app/lancamentos" },
-],
+      { property: "og:url", content: "https://maxorsports.lovable.app/lancamentos" },
+    ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/lancamentos" }],
   }),
 });

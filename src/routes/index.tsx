@@ -46,10 +46,11 @@ export const Route = createFileRoute("/")({
           "Tênis masculinos, femininos e infantis com curadoria Maxor Sports: lançamentos, ofertas e atendimento no WhatsApp.",
       },
       { property: "og:url", content: "https://maxorsports.lovable.app/" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:type", content: "website" },
     ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/" }],
   }),
-
 });
 
 const NAV = [

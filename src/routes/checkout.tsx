@@ -17,6 +17,8 @@ export const Route = createFileRoute("/checkout")({
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Checkout — Maxor Sports" },
       { property: "og:description", content: "Finalize seu pedido Maxor Sports." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: CheckoutPage,

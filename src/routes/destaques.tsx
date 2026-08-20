@@ -6,6 +6,18 @@ import { ChevronRight, Grid2X2 } from "lucide-react";
 
 export const Route = createFileRoute("/destaques")({
   component: DestaquesPage,
+  head: () => ({
+    meta: [
+      { title: "Destaques — Maxor Sports" },
+      { name: "description", content: "Seleção exclusiva dos modelos mais icônicos e desejados da Maxor Sports." },
+      { property: "og:title", content: "Destaques — Maxor Sports" },
+      { property: "og:description", content: "Modelos selecionados pela curadoria Maxor Sports." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://maxorsports.lovable.app/destaques" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/destaques" }],
+  }),
 });
 
 function DestaquesPage() {

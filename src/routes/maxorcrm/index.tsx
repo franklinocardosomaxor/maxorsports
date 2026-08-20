@@ -12,6 +12,8 @@ export const Route = createFileRoute("/maxorcrm/")({
       { name: "robots", content: "noindex, nofollow" },
       { property: "og:title", content: "MaxorCRM — Visão geral" },
       { property: "og:description", content: "Catálogo, comercial e operação em um só painel." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Overview,

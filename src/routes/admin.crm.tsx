@@ -12,6 +12,8 @@ export const Route = createFileRoute("/admin/crm")({
       { name: "robots", content: "noindex, nofollow" },
       { property: "og:title", content: "Painel CRM — Maxor Sports" },
       { property: "og:description", content: "Painel interno da equipe Maxor Sports." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AdminCrmPage,

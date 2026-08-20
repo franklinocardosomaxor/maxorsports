@@ -11,8 +11,10 @@ export const Route = createFileRoute("/feminino")({
       { name: "description", content: "Coleção feminina Maxor Sports: tênis de corrida, casual, trail e training com curadoria premium." },
       { property: "og:title", content: "Tênis Feminino — Maxor Sports" },
       { property: "og:description", content: "Tênis femininos com performance e estilo." },
-          { property: "og:url", content: "https://maxorsports.lovable.app/feminino" },
-],
+      { property: "og:url", content: "https://maxorsports.lovable.app/feminino" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/feminino" }],
   }),
 });
