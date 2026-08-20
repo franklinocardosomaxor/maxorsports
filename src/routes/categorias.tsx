@@ -15,9 +15,9 @@ export const Route = createFileRoute("/categorias")({
       { property: "og:title", content: "Categorias — Maxor Sports" },
       { property: "og:description", content: "Escolha sua categoria esportiva e encontre o modelo certo." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://maxorsports.lovable.app/categorias" },
       { name: "twitter:card", content: "summary_large_image" },
-          { property: "og:url", content: "https://maxorsports.lovable.app/categorias" },
-],
+    ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/categorias" }],
   }),
 });
