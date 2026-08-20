@@ -14,6 +14,8 @@ export const Route = createFileRoute("/login")({
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Entrar ou criar conta — Maxor Sports" },
       { property: "og:description", content: "Área do comprador Maxor Sports." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: LoginPage,
