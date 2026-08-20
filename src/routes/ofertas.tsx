@@ -20,8 +20,10 @@ export const Route = createFileRoute("/ofertas")({
         property: "og:description",
         content: "Descontos reais + combos promocionais Maxor Sports.",
       },
-          { property: "og:url", content: "https://maxorsports.lovable.app/ofertas" },
-],
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://maxorsports.lovable.app/ofertas" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
     links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/ofertas" }],
   }),
 });
