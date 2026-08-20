@@ -8,6 +8,18 @@ const SELOS_ORDER: Selo[] = ["destaque", "lancamento", "oferta", "mais-vendido",
 
 export const Route = createFileRoute("/catalogo")({
   component: CatalogoSeloPage,
+  head: () => ({
+    meta: [
+      { title: "Catálogo Completo — Maxor Sports" },
+      { name: "description", content: "Explore o catálogo completo de tênis e artigos esportivos da Maxor Sports. Filtre por marca, selo e novidades." },
+      { property: "og:title", content: "Catálogo Completo — Maxor Sports" },
+      { property: "og:description", content: "Encontre seu par ideal no catálogo da Maxor Sports." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://maxorsports.lovable.app/catalogo" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://maxorsports.lovable.app/catalogo" }],
+  }),
 });
 
 function CatalogoSeloPage() {
