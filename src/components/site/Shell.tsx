@@ -424,6 +424,17 @@ function MegaNav({ active }: { active?: string }) {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Menu Tênis consome o DIRETÓRIO VIVO de marcas (src/lib/brands.ts +
+  // produtos do CRM): marca nova cadastrada no CRM aparece aqui sozinha.
+  useCatalogVersion();
+  const brandItems = getBrandDirectory().map((b) => ({
+    label: b.name,
+    href: `/marcas/${b.slug}`,
+  }));
+  const nav = NAV.map((item) =>
+    item.label === "Tênis" ? { ...item, items: brandItems } : item,
+  );
+
   const handleMouseEnter = (label: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setOpenMenu(label);
