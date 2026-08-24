@@ -147,6 +147,21 @@ export function Fase1Catalog() {
     const finalSiteVisible = isHiddenByTag ? false : Boolean(form.siteVisible);
     const finalTag = isHiddenByTag ? "Nenhum" : form.badgeText;
 
+    // Seção da vitrine: derivada do gênero; selo "Oferta" vai para a prateleira /ofertas.
+    // Sem isso a coluna `section` caía no default 'masculino' e Feminino/Infantil/Ofertas
+    // nunca apareciam nas páginas correspondentes do site.
+    const generoLc = String(form.genero || "").toLowerCase();
+    const sectionFromGenero = generoLc.includes("fem")
+      ? "feminino"
+      : generoLc.includes("inf")
+        ? "infantil"
+        : "masculino";
+    const isOferta = /ofert|promo/.test(finalTag.toLowerCase());
+
+    // Preço "de" (riscado) só existe quando a equipe digita um valor promocional
+    // real — nunca inventado a partir do preço de venda (valor * 1.2).
+    const promoPrice = Number(form.discountPrice || 0);
+
     const payload: any = {
       org_id: orgId,
       sku: form.sku,
@@ -160,6 +175,7 @@ export function Fase1Catalog() {
       tipo_prod: form.tipo_prod,
       gender: form.genero,
       genero: form.genero,
+      section: isOferta ? "ofertas" : sectionFromGenero,
       model_group: form.modelGroup,
       color_variant: form.colorVariant,
       cost_supplier: Number(form.costSupplier || 0),
