@@ -53,6 +53,10 @@ let version = 0;
 /** Versão atual do catálogo — muda a cada sincronização com o CRM. */
 export const getCatalogVersion = () => version;
 
+let loaded = false;
+/** true depois que a PRIMEIRA sincronização com o CRM terminou (sucesso ou não). */
+export const isCatalogLoaded = () => loaded;
+
 const num = (v: unknown, fallback = 0) => {
   const n = typeof v === "string" ? Number(v.replace(",", ".")) : Number(v);
   return Number.isFinite(n) ? n : fallback;
@@ -210,7 +214,8 @@ export function setCrmProducts(products: unknown[] | null | undefined): number {
   if (next.length > 0) {
     ALL_PRODUCTS.push(...next);
   }
-  
+
+  loaded = true;
   version += 1;
   listeners.forEach((fn) => fn());
   return ALL_PRODUCTS.length;
