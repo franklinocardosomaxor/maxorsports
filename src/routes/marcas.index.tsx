@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
-import { BRANDS } from "@/components/site/brands-data";
-import { getBrandProducts } from "@/lib/catalog";
+import { getBrandVisual } from "@/components/site/brands-data";
+import { getBrandDirectory } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/marcas/")({
@@ -22,6 +22,10 @@ export const Route = createFileRoute("/marcas/")({
 });
 
 function MarcasIndex() {
+  // Re-renderiza quando o CRM sincroniza: contagens e marcas novas sobem sozinhas.
+  useCatalogVersion();
+  // Diretório vivo: lista estática + marcas do CRM (src/lib/brands.ts).
+  const directory = getBrandDirectory();
   return (
     <Shell active="Marcas">
       <div className="border-b border-white/10 bg-navy">
