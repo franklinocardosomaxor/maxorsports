@@ -1,5 +1,9 @@
+// Identidade VISUAL das marcas (logos, selos, taglines).
+// A lista oficial de marcas (slug/nome/aliases) vive em src/lib/brands.ts —
+// este arquivo apenas adiciona a camada visual por cima dela. Nunca cadastre
+// uma marca aqui sem cadastrá-la antes em src/lib/brands.ts.
+import { BRAND_DEFS } from "@/lib/brands";
 
-// Brand logos supplied by Franklin. Rendered on tiles.
 import logoNike from "@/assets/brands/nike.svg";
 import logoAdidas from "@/assets/brands/adidas.svg";
 import logoNewBalance from "@/assets/brands/new-balance.svg";
@@ -32,27 +36,36 @@ export type Brand = {
   accent: BrandAccent;
 };
 
-export const BRANDS: Brand[] = [
-  { slug: "nike",          name: "Nike",          mark: "NK", logo: logoNike,          tagline: "Just performance",       bg: "#ffffff", accent: "cyan" },
-  { slug: "adidas",        name: "Adidas",        mark: "AD", logo: logoAdidas,        tagline: "Impossible is nothing",  bg: "#ffffff", accent: "cyan" },
-  { slug: "new-balance",   name: "New Balance",   mark: "NB", logo: logoNewBalance,    tagline: "Fearlessly independent", bg: "#ffffff", accent: "cyan" },
-  { slug: "puma",          name: "Puma",          mark: "PM", logo: logoPuma,          tagline: "Forever faster",         bg: "#ffffff", accent: "lime" },
-  { slug: "asics",         name: "ASICS",         mark: "AS", logo: logoAsics,         tagline: "Sound mind, sound body", bg: "#ffffff", accent: "cyan" },
-  { slug: "converse",      name: "Converse",      mark: "CV", logo: logoConverse,      tagline: "Chuck Taylor legacy",    bg: "#ffffff", accent: "cyan" },
-  { slug: "vans",          name: "Vans",          mark: "VN", logo: logoVans,          tagline: "Off the wall",           bg: "#ffffff", accent: "cyan" },
-  { slug: "jordan",        name: "Jordan",        mark: "23", logo: logoJordan,        tagline: "Flight",                 bg: "#ffffff", accent: "lime" },
-  { slug: "hoka",          name: "HOKA",          mark: "HK", logo: logoHoka,          tagline: "Time to fly",            bg: "#ffffff", accent: "cyan" },
-  { slug: "on",            name: "On",            mark: "◯",  logo: logoOn,            tagline: "Swiss engineering",      bg: "#ffffff", accent: "cyan" },
-  { slug: "salomon",       name: "Salomon",       mark: "SL", logo: logoSalomon,       tagline: "Time to play",           bg: "#ffffff", accent: "cyan" },
-  { slug: "mizuno",        name: "Mizuno",        mark: "MZ", logo: logoMizuno,        tagline: "Reach beyond",           bg: "#ffffff", accent: "cyan" },
-  { slug: "fila",          name: "Fila",          mark: "FL", logo: logoFila,          tagline: "Since 1911",             bg: "#ffffff", accent: "cyan" },
-  { slug: "crocs",         name: "Crocs",         mark: "◇",  logo: logoCrocs,         tagline: "Come as you are",        bg: "#ffffff", accent: "lime" },
-  { slug: "timberland",    name: "Timberland",    mark: "TB", logo: logoTimberland,    tagline: "Best then. Better now.", bg: "#ffffff", accent: "cyan" },
-  { slug: "gucci",         name: "Gucci",         mark: "GG", logo: logoGucci,         tagline: "Milano since 1921",      bg: "#ffffff", accent: "lime" },
-  { slug: "prada",         name: "Prada",         mark: "PR", logo: logoPrada,         tagline: "Milano",                 bg: "#ffffff", accent: "cyan" },
-  { slug: "louis-vuitton", name: "Louis Vuitton", mark: "LV", logo: logoLouisVuitton,  tagline: "Paris maison",           bg: "#ffffff", accent: "cyan" },
-  { slug: "chuteiras",     name: "Chuteiras",     mark: "CH", logo: logoChuteiras, tagline: "A melhor seleção para o seu jogo", bg: "#ffffff", accent: "lime" },
-];
+type BrandVisual = { mark: string; logo?: string; tagline: string; accent: BrandAccent };
+
+const VISUALS: Record<string, BrandVisual> = {
+  "nike":          { mark: "NK", logo: logoNike,          tagline: "Just performance",       accent: "cyan" },
+  "adidas":        { mark: "AD", logo: logoAdidas,        tagline: "Impossible is nothing",  accent: "cyan" },
+  "new-balance":   { mark: "NB", logo: logoNewBalance,    tagline: "Fearlessly independent", accent: "cyan" },
+  "puma":          { mark: "PM", logo: logoPuma,          tagline: "Forever faster",         accent: "lime" },
+  "asics":         { mark: "AS", logo: logoAsics,         tagline: "Sound mind, sound body", accent: "cyan" },
+  "converse":      { mark: "CV", logo: logoConverse,      tagline: "Chuck Taylor legacy",    accent: "cyan" },
+  "vans":          { mark: "VN", logo: logoVans,          tagline: "Off the wall",           accent: "cyan" },
+  "jordan":        { mark: "23", logo: logoJordan,        tagline: "Flight",                 accent: "lime" },
+  "hoka":          { mark: "HK", logo: logoHoka,          tagline: "Time to fly",            accent: "cyan" },
+  "on":            { mark: "◯",  logo: logoOn,            tagline: "Swiss engineering",      accent: "cyan" },
+  "salomon":       { mark: "SL", logo: logoSalomon,       tagline: "Time to play",           accent: "cyan" },
+  "mizuno":        { mark: "MZ", logo: logoMizuno,        tagline: "Reach beyond",           accent: "cyan" },
+  "fila":          { mark: "FL", logo: logoFila,          tagline: "Since 1911",             accent: "cyan" },
+  "crocs":         { mark: "◇",  logo: logoCrocs,         tagline: "Come as you are",        accent: "lime" },
+  "timberland":    { mark: "TB", logo: logoTimberland,    tagline: "Best then. Better now.", accent: "cyan" },
+  "gucci":         { mark: "GG", logo: logoGucci,         tagline: "Milano since 1921",      accent: "lime" },
+  "prada":         { mark: "PR", logo: logoPrada,         tagline: "Milano",                 accent: "cyan" },
+  "louis-vuitton": { mark: "LV", logo: logoLouisVuitton,  tagline: "Paris maison",           accent: "cyan" },
+  "chuteiras":     { mark: "CH", logo: logoChuteiras,     tagline: "A melhor seleção para o seu jogo", accent: "lime" },
+};
+
+export const BRANDS: Brand[] = BRAND_DEFS.map((def) => ({
+  slug: def.slug,
+  name: def.name,
+  bg: "#ffffff",
+  ...(VISUALS[def.slug] ?? { mark: def.name.slice(0, 2).toUpperCase(), tagline: def.name, accent: "cyan" as BrandAccent }),
+}));
 
 export function getBrand(slug: string): Brand | undefined {
   return BRANDS.find((b) => b.slug === slug);

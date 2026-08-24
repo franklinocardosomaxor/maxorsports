@@ -13,6 +13,7 @@ export type DbProduct = {
   sku: string | null;
   name: string;
   brand: string;
+  marca_prod: string | null;
   section: string;
   category: string;
   description: string | null;
@@ -37,7 +38,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible, brand_visible",
+      "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible, brand_visible",
     )
     .eq("site_visible", true)
     .order("updated_at", { ascending: false });
@@ -49,7 +50,8 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
     return {
       id: row.sku || row.id,
       name: row.name,
-      brand: row.brand,
+      // `brand` é soberana; `marca_prod` é o espelho legado (fallback).
+      brand: row.brand ?? row.marca_prod,
       category: row.category,
       section: row.section,
       price: row.price,

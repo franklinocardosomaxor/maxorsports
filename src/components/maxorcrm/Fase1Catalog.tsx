@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { getMyOrgId } from "@/lib/maxorcrm-org";
+// Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
+import { BRAND_NAMES } from "@/lib/brands";
 
 export function CurrencyInput({ value, onChange, placeholder = "0,00", className = "", prefix = "R$ " }: { value: number; onChange: (val: number) => void; placeholder?: string; className?: string; prefix?: string }) {
   const formatDisplay = (val: number) => {
@@ -417,7 +419,7 @@ export function Fase1Catalog() {
                       onChange={e => setForm({ ...form, marca_prod: e.target.value })}
                       className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
                     >
-                      {["Nike", "Adidas", "New Balance", "Puma", "ASICS", "Converse", "Vans", "Jordan", "HOKA", "On", "Salomon", "Mizuno", "Fila", "Crocs", "Timberland", "Oakley"].map(b => (
+                      {BRAND_NAMES.map(b => (
                         <option key={b} value={b}>{b}</option>
                       ))}
                     </select>
