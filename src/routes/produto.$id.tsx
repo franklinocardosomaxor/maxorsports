@@ -1,26 +1,35 @@
-import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { listMyFavoriteIds, toggleFavorite } from "@/lib/favorites.functions";
 import { ChevronRight, Heart, ShieldCheck, Truck, RotateCw } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
-import { getProduct, getVariants, brl, type ProductWithSection } from "@/lib/catalog";
+import { brl, type ProductWithSection } from "@/lib/catalog";
+import { getProductPageData } from "@/lib/product-page.functions";
 import { useCart } from "@/lib/cart";
 
 const WHATSAPP_NUMBER = "5577999599009";
 
 export const Route = createFileRoute("/produto/$id")({
-  loader: ({ params }): { product: ProductWithSection; variants: ProductWithSection[] } => {
-    const product = getProduct(params.id);
-    if (!product) throw notFound();
-    return { product, variants: getVariants(product) };
+  // O loader roda no servidor (SSR) e busca o produto direto no banco —
+  // acesso direto, reload e links compartilhados não dependem mais do
+  // catálogo em memória do cliente (que só é populado após a hidratação).
+  loader: async ({ params }): Promise<{ product: ProductWithSection; variants: ProductWithSection[] }> => {
+    const data = await getProductPageData({ data: { id: params.id } });
+    if (!data) throw notFound();
+    return data;
   },
   head: ({ loaderData, params }) => {
     if (!loaderData) return { meta: [{ title: "Produto — Maxor Sports" }] };
     const { product } = loaderData;
     const title = `${product.name} — ${product.brand} | Maxor Sports`;
     const url = `https://maxorsports.lovable.app/produto/${params.id}`;
+    const imgAbs = product.img
+      ? product.img.startsWith("http")
+        ? product.img
+        : `https://maxorsports.lovable.app${product.img}`
+      : undefined;
     return {
       meta: [
         { title },
@@ -29,16 +38,68 @@ export const Route = createFileRoute("/produto/$id")({
         { property: "og:description", content: `${product.brand} · ${product.category} · a partir de ${brl(product.price)}.` },
         { property: "og:type", content: "product" },
         { property: "og:url", content: url },
-        { property: "og:image", content: product.img },
-        { name: "twitter:image", content: product.img },
+        ...(imgAbs
+          ? [
+              { property: "og:image", content: imgAbs },
+              { name: "twitter:image", content: imgAbs },
+            ]
+          : []),
         { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [{ rel: "canonical", href: url }],
     };
   },
 
+  notFoundComponent: ProductNotFound,
+  errorComponent: ProductError,
   component: ProductPage,
 });
+
+function ProductNotFound() {
+  return (
+    <Shell active="">
+      <div className="mx-auto max-w-xl px-4 py-24 text-center">
+        <p className="text-xs font-black uppercase tracking-[0.3em] text-[color:var(--cyan-brand)]">Erro 404</p>
+        <h1 className="mt-3 font-display text-3xl font-black uppercase text-offwhite">Produto não encontrado</h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Este tênis pode ter saído da vitrine ou o link está incorreto.
+        </p>
+        <Link
+          to="/catalogo"
+          className="mt-8 inline-block rounded-xl bg-[color:var(--cyan-brand)] px-6 py-3 font-display text-sm font-black uppercase tracking-widest text-navy transition hover:brightness-110"
+        >
+          Explorar catálogo
+        </Link>
+      </div>
+    </Shell>
+  );
+}
+
+function ProductError({ reset }: { error: Error; reset: () => void }) {
+  const router = useRouter();
+  return (
+    <Shell active="">
+      <div className="mx-auto max-w-xl px-4 py-24 text-center">
+        <h1 className="font-display text-3xl font-black uppercase text-offwhite">
+          Não foi possível carregar o produto
+        </h1>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Falha ao sincronizar com o catálogo do CRM. Tente novamente.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            void router.invalidate();
+            reset();
+          }}
+          className="mt-8 rounded-xl bg-[color:var(--cyan-brand)] px-6 py-3 font-display text-sm font-black uppercase tracking-widest text-navy transition hover:brightness-110"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    </Shell>
+  );
+}
 
 function ProductPage() {
   const { product, variants } = Route.useLoaderData() as { product: ProductWithSection; variants: ProductWithSection[] };
