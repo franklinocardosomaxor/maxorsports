@@ -1,5 +1,12 @@
 import type { CatalogProduct } from "@/components/site/CatalogPage";
-import { brandSlug, canonicalBrandName, getBrandDef } from "@/lib/brands";
+import {
+  brandSlug,
+  buildBrandDirectory,
+  canonicalBrandName,
+  getBrandDef,
+  productMatchesBrand,
+  type BrandDirectoryEntry,
+} from "@/lib/brands";
 
 export { brandSlug };
 
