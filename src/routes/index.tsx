@@ -471,17 +471,23 @@ function CategoryBanners() {
 function BrandStrip() {
   // Re-renderiza quando o CRM sincroniza (realtime) para refletir o catálogo.
   useCatalogVersion();
-  // Diretório vivo (src/lib/brands.ts via catalog): slug único por construção,
-  // então nunca entra logo repetida no loop. Marcas com produto no CRM têm
-  // prioridade; se o CRM ainda não publicou nada, mostra a lista completa.
-  const directory = getBrandDirectory();
-  const withProducts = directory.filter((e) => e.count > 0);
-  const source = withProducts.length > 0 ? withProducts : directory;
+  // Diretório vivo completo: mantém a esteira estável antes/depois da hidratação.
+  // Produtos publicados sobem para o início, mas marcas "em breve" continuam na
+  // lista para evitar o colapso em uma única logo repetida após o sync do CRM.
+  const source = [...getBrandDirectory()].sort((a, b) => {
+    const activeDelta = Number(b.count > 0) - Number(a.count > 0);
+    if (activeDelta !== 0) return activeDelta;
+    return a.name.localeCompare(b.name, "pt-BR");
+  });
   const logos = source
     .map(getBrandVisual)
-    .filter((b) => b.logo)
     .map((b) => ({
-      src: b.logo!,
+      src: b.logo,
+      node: b.logo ? undefined : (
+        <span className="grid h-9 min-w-14 place-items-center rounded-xl bg-[color:var(--cream)] px-3 font-display text-base font-black uppercase text-navy">
+          {b.mark}
+        </span>
+      ),
       alt: b.name,
       title: b.name,
       href: `/marcas/${b.slug}`,
