@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { getMyOrgId } from "@/lib/maxorcrm-org";
+// Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
+import { BRAND_NAMES } from "@/lib/brands";
 
 export function CurrencyInput({ value, onChange, placeholder = "0,00", className = "", prefix = "R$ " }: { value: number; onChange: (val: number) => void; placeholder?: string; className?: string; prefix?: string }) {
   const formatDisplay = (val: number) => {

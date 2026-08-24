@@ -10,6 +10,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 import { normalizeSelo } from "@/lib/catalog";
+import { canonicalBrandName } from "@/lib/brands";
 
 /** Extrai a URL de uma foto vinda do CRM (string ou objeto {url|src|href|path}). */
 const toUrl = (v: unknown): string | null => {
