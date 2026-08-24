@@ -1,4 +1,7 @@
 import type { CatalogProduct } from "@/components/site/CatalogPage";
+import { brandSlug, canonicalBrandName, getBrandDef } from "@/lib/brands";
+
+export { brandSlug };
 
 /**
  * FLUXO ÚNICO DO CATÁLOGO (definitivo)
@@ -150,7 +153,9 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
   return {
     id: String(raw.id ?? raw.sku ?? ""),
     name: String(raw.name ?? "Produto"),
-    brand: String(raw.brand ?? "Maxor"),
+    // Marca canonizada pela fonte única (src/lib/brands.ts). Aceita tanto a
+    // coluna soberana `brand` quanto o espelho legado `marca_prod`.
+    brand: canonicalBrandName(raw.brand ?? raw.marca_prod) ?? "Maxor",
     category: String(raw.category ?? "Casual"),
     price: num(raw.price),
     old: oldValue !== undefined && oldValue !== null ? num(oldValue) : undefined,

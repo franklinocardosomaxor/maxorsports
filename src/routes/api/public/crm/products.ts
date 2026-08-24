@@ -171,7 +171,7 @@ const normalizeIncoming = (input: unknown) => {
   return {
     sku: str(pick(raw, PATTERNS.sku)),
     name: str(pick(raw, PATTERNS.name)),
-    brand: str(pick(raw, PATTERNS.brand)) ?? "Maxor",
+    brand: canonicalBrandName(pick(raw, PATTERNS.brand)) ?? "Maxor",
     category: str(pick(raw, PATTERNS.category)) ?? "Casual",
     description: str(pick(raw, PATTERNS.description)) ?? null,
     section: toSection(pick(raw, PATTERNS.section)),
