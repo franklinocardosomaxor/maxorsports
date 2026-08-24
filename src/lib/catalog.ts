@@ -259,14 +259,22 @@ export function getBrandProducts(slug: string) {
   const def = getBrandDef(slug);
   return ALL_PRODUCTS.filter((p) => {
     if (p.brand_visible === false) return false;
-    // Marcas com matchBy "category" (ex.: Chuteiras) filtram pela categoria:
-    // o produto mantém a marca real (Nike, Adidas...) no cadastro.
-    if (def?.matchBy === "category") {
-      const cat = brandSlug(p.category);
-      return def.aliases.some((a) => cat.includes(brandSlug(a)));
-    }
+    // Regra única de matching (src/lib/brands.ts). Marcas-categoria como
+    // Chuteiras filtram pela categoria — o produto mantém a marca real.
+    if (def) return productMatchesBrand(p, def);
+    // Marca que existe só no CRM (fora da lista estática): slug derivado
+    // do nome canonizado — mesma regra do diretório vivo.
     return brandSlug(p.brand) === slug;
   });
+}
+
+/**
+ * Diretório VIVO de marcas: lista estática (src/lib/brands.ts) + marcas
+ * descobertas nos produtos do CRM, com contagem atualizada a cada sync.
+ * Menu Tênis, /marcas, /marcas/$slug e o carrossel da Home leem daqui.
+ */
+export function getBrandDirectory(): BrandDirectoryEntry[] {
+  return buildBrandDirectory(ALL_PRODUCTS);
 }
 
 

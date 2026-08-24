@@ -2,7 +2,7 @@
 // A lista oficial de marcas (slug/nome/aliases) vive em src/lib/brands.ts —
 // este arquivo apenas adiciona a camada visual por cima dela. Nunca cadastre
 // uma marca aqui sem cadastrá-la antes em src/lib/brands.ts.
-import { BRAND_DEFS } from "@/lib/brands";
+import { BRAND_DEFS, type BrandDirectoryEntry } from "@/lib/brands";
 
 import logoNike from "@/assets/brands/nike.svg";
 import logoAdidas from "@/assets/brands/adidas.svg";
