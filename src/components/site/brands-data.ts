@@ -70,3 +70,21 @@ export const BRANDS: Brand[] = BRAND_DEFS.map((def) => ({
 export function getBrand(slug: string): Brand | undefined {
   return BRANDS.find((b) => b.slug === slug);
 }
+
+/** Iniciais de fallback para marcas sem logo cadastrada (ex.: novas do CRM). */
+const initials = (name: string): string => {
+  const words = name.split(/\s+/).filter(Boolean);
+  const ini = words.map((w) => w[0]).join("");
+  const src = ini.length >= 2 ? ini : name.replace(/[^A-Za-z0-9]/g, "");
+  return src.slice(0, 2).toUpperCase() || "MX";
+};
+
+/**
+ * Camada visual para QUALQUER entrada do diretório vivo — estática ou
+ * descoberta no CRM. Marca sem logo cadastrada recebe iniciais + accent cyan,
+ * então marca nova do CRM ganha página e cartão automaticamente.
+ */
+export function getBrandVisual(entry: Pick<BrandDirectoryEntry, "slug" | "name">): Brand {
+  const v = VISUALS[entry.slug] ?? { mark: initials(entry.name), tagline: entry.name, accent: "cyan" as BrandAccent };
+  return { slug: entry.slug, name: entry.name, bg: "#ffffff", ...v };
+}
