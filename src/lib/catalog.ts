@@ -242,19 +242,21 @@ export function getSectionProducts(section: ProductWithSection["section"]) {
   return ALL_PRODUCTS.filter((p) => p.section === section);
 }
 
-/** Converte o nome da marca em slug ("New Balance" -> "new-balance"). */
-export const brandSlug = (s: string) =>
-  String(s ?? "")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
 /** Produtos de uma marca (sempre vindos do CRM). */
 export function getBrandProducts(slug: string) {
-  return ALL_PRODUCTS.filter((p) => brandSlug(p.brand) === slug && p.brand_visible !== false);
+  const def = getBrandDef(slug);
+  return ALL_PRODUCTS.filter((p) => {
+    if (p.brand_visible === false) return false;
+    // Marcas com matchBy "category" (ex.: Chuteiras) filtram pela categoria:
+    // o produto mantém a marca real (Nike, Adidas...) no cadastro.
+    if (def?.matchBy === "category") {
+      const cat = brandSlug(p.category);
+      return def.aliases.some((a) => cat.includes(brandSlug(a)));
+    }
+    return brandSlug(p.brand) === slug;
+  });
 }
+
 
 /**
  * Slugs de marcas que possuem ao menos um produto com `brand_visible = true`.
