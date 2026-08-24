@@ -39,7 +39,6 @@ import { Route as ColecaoMasculinoRouteImport } from './routes/colecao.masculino
 import { Route as ColecaoFemininoRouteImport } from './routes/colecao.feminino'
 import { Route as BlogGuiaTenisNikeRouteImport } from './routes/blog.guia-tenis-nike'
 import { Route as AdminCrmRouteImport } from './routes/admin.crm'
-import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
 import { Route as ApiPublicCrmProductsRouteImport } from './routes/api/public/crm/products'
@@ -195,11 +194,6 @@ const AdminCrmRoute = AdminCrmRouteImport.update({
   path: '/admin/crm',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicBootstrapAdminRoute = ApiPublicBootstrapAdminRouteImport.update({
-  id: '/api/public/bootstrap-admin',
-  path: '/api/public/bootstrap-admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicWebhooksWhatsappRoute =
   ApiPublicWebhooksWhatsappRouteImport.update({
     id: '/api/public/webhooks/whatsapp',
@@ -253,7 +247,6 @@ export interface FileRoutesByFullPath {
   '/marcas/': typeof MarcasIndexRoute
   '/maxorcrm/': typeof MaxorcrmIndexRoute
   '/roupas/': typeof RoupasIndexRoute
-  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
@@ -289,7 +282,6 @@ export interface FileRoutesByTo {
   '/marcas': typeof MarcasIndexRoute
   '/maxorcrm': typeof MaxorcrmIndexRoute
   '/roupas': typeof RoupasIndexRoute
-  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
@@ -327,7 +319,6 @@ export interface FileRoutesById {
   '/marcas/': typeof MarcasIndexRoute
   '/maxorcrm/': typeof MaxorcrmIndexRoute
   '/roupas/': typeof RoupasIndexRoute
-  '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/api/public/crm/products': typeof ApiPublicCrmProductsRoute
   '/api/public/webhooks/stripe': typeof ApiPublicWebhooksStripeRoute
   '/api/public/webhooks/whatsapp': typeof ApiPublicWebhooksWhatsappRoute
@@ -366,7 +357,6 @@ export interface FileRouteTypes {
     | '/marcas/'
     | '/maxorcrm/'
     | '/roupas/'
-    | '/api/public/bootstrap-admin'
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
@@ -402,7 +392,6 @@ export interface FileRouteTypes {
     | '/marcas'
     | '/maxorcrm'
     | '/roupas'
-    | '/api/public/bootstrap-admin'
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
@@ -439,7 +428,6 @@ export interface FileRouteTypes {
     | '/marcas/'
     | '/maxorcrm/'
     | '/roupas/'
-    | '/api/public/bootstrap-admin'
     | '/api/public/crm/products'
     | '/api/public/webhooks/stripe'
     | '/api/public/webhooks/whatsapp'
@@ -473,7 +461,6 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   MarcasIndexRoute: typeof MarcasIndexRoute
   RoupasIndexRoute: typeof RoupasIndexRoute
-  ApiPublicBootstrapAdminRoute: typeof ApiPublicBootstrapAdminRoute
   ApiPublicCrmProductsRoute: typeof ApiPublicCrmProductsRoute
   ApiPublicWebhooksStripeRoute: typeof ApiPublicWebhooksStripeRoute
   ApiPublicWebhooksWhatsappRoute: typeof ApiPublicWebhooksWhatsappRoute
@@ -692,13 +679,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCrmRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/bootstrap-admin': {
-      id: '/api/public/bootstrap-admin'
-      path: '/api/public/bootstrap-admin'
-      fullPath: '/api/public/bootstrap-admin'
-      preLoaderRoute: typeof ApiPublicBootstrapAdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/webhooks/whatsapp': {
       id: '/api/public/webhooks/whatsapp'
       path: '/api/public/webhooks/whatsapp'
@@ -775,7 +755,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   MarcasIndexRoute: MarcasIndexRoute,
   RoupasIndexRoute: RoupasIndexRoute,
-  ApiPublicBootstrapAdminRoute: ApiPublicBootstrapAdminRoute,
   ApiPublicCrmProductsRoute: ApiPublicCrmProductsRoute,
   ApiPublicWebhooksStripeRoute: ApiPublicWebhooksStripeRoute,
   ApiPublicWebhooksWhatsappRoute: ApiPublicWebhooksWhatsappRoute,
