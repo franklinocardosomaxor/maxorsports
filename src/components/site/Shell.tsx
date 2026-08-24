@@ -449,7 +449,7 @@ function MegaNav({ active }: { active?: string }) {
   return (
     <nav className="relative border-b border-white/10 bg-navy text-offwhite" onMouseLeave={handleMouseLeave}>
       <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4">
-        {NAV.map((item) => {
+        {nav.map((item) => {
           const isActive = active === item.label;
           const isOffer = item.label === "Ofertas";
           const hasItems = "items" in item && item.items && item.items.length > 0;
@@ -494,7 +494,7 @@ function MegaNav({ active }: { active?: string }) {
       </div>
 
       {/* DROPDOWN CONTENT */}
-      {NAV.map((item) => {
+      {nav.map((item) => {
         if (!("items" in item) || !item.items) return null;
         const isOpen = openMenu === item.label;
 
