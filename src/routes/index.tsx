@@ -21,10 +21,10 @@ import {
 import monogram from "@/assets/opt/maxor-monogram.png";
 import { Shell } from "@/components/site/Shell";
 import { LogoLoop } from "@/components/site/LogoLoop";
-import { BRANDS } from "@/components/site/brands-data";
+import { getBrandVisual } from "@/components/site/brands-data";
 
 import { useMemo } from "react";
-import { ALL_PRODUCTS, getVisibleBrandSlugs } from "@/lib/catalog";
+import { ALL_PRODUCTS, getBrandDirectory } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import catFem from "@/assets/cat-feminino.jpg";
 import catMasc from "@/assets/cat-masculino.jpg";
@@ -469,16 +469,23 @@ function CategoryBanners() {
 }
 
 function BrandStrip() {
-  // Re-renderiza quando o CRM sincroniza (realtime) para refletir brand_visible.
+  // Re-renderiza quando o CRM sincroniza (realtime) para refletir o catálogo.
   useCatalogVersion();
-  const visible = getVisibleBrandSlugs();
-  const source = visible.length > 0 ? BRANDS.filter((b) => visible.includes(b.slug)) : BRANDS;
-  const logos = source.filter((b) => b.logo).map((b) => ({
-    src: b.logo!,
-    alt: b.name,
-    title: b.name,
-    href: `/marcas/${b.slug}`,
-  }));
+  // Diretório vivo (src/lib/brands.ts via catalog): slug único por construção,
+  // então nunca entra logo repetida no loop. Marcas com produto no CRM têm
+  // prioridade; se o CRM ainda não publicou nada, mostra a lista completa.
+  const directory = getBrandDirectory();
+  const withProducts = directory.filter((e) => e.count > 0);
+  const source = withProducts.length > 0 ? withProducts : directory;
+  const logos = source
+    .map(getBrandVisual)
+    .filter((b) => b.logo)
+    .map((b) => ({
+      src: b.logo!,
+      alt: b.name,
+      title: b.name,
+      href: `/marcas/${b.slug}`,
+    }));
 
   return (
     <section className="border-y border-border bg-secondary/60">

@@ -84,3 +84,91 @@ export function canonicalBrandName(input: unknown): string | null {
 export function getBrandDef(slug: string): BrandDef | undefined {
   return BRAND_DEFS.find((b) => b.slug === slug);
 }
+
+// ---------------------------------------------------------------------------
+// DIRETÓRIO VIVO — lista estática + marcas vindas do CRM, com contagem viva.
+// Menu Tênis, /marcas, /marcas/$slug, busca e carrossel da Home consomem
+// SOMENTE este diretório (via getBrandDirectory() em src/lib/catalog.ts).
+// ---------------------------------------------------------------------------
+
+/** Produto mínimo para o matching de marca (qualquer fonte). */
+export type BrandMatchProduct = { brand?: unknown; category?: unknown };
+
+/**
+ * REGRA ÚNICA de correspondência produto ↔ marca.
+ * Catálogo, busca, menu e páginas de marca delegam o matching para cá —
+ * qualquer ajuste de correspondência acontece SOMENTE nesta função.
+ */
+export function productMatchesBrand(p: BrandMatchProduct, def: BrandDef): boolean {
+  if (def.matchBy === "category") {
+    // Marcas-categoria (ex.: Chuteiras): o produto mantém a marca real no
+    // cadastro (Nike, Adidas...) e a vitrine filtra pela CATEGORIA.
+    const cat = brandSlug(p.category);
+    if (!cat) return false;
+    return [def.slug, def.name, ...def.aliases].some((a) => cat.includes(brandSlug(a)));
+  }
+  const b = normKey(p.brand);
+  if (!b) return false;
+  if (b === normKey(def.name) || b === normKey(def.slug)) return true;
+  return def.aliases.some((a) => normKey(a) === b);
+}
+
+/** Entrada do diretório vivo: definição + contagem de produtos do CRM. */
+export type BrandDirectoryEntry = BrandDef & {
+  /** Produtos visíveis do CRM associados a esta marca. */
+  count: number;
+  /** true quando a marca existe só no CRM (fora da lista estática acima). */
+  fromCrm: boolean;
+};
+
+/**
+ * Monta o diretório vivo de marcas a partir dos produtos do CRM:
+ *  - toda marca estática aparece SEMPRE (count 0 = "em breve" na vitrine);
+ *  - marca nova cadastrada no CRM entra automaticamente no fim da lista,
+ *    com slug derivado do nome canonizado — e ganha página /marcas/<slug>;
+ *  - marcas-categoria (Chuteiras) contam pela categoria, não pela marca;
+ *  - slugs são únicos por construção (sem logo repetida no carrossel).
+ */
+export function buildBrandDirectory(
+  products: ReadonlyArray<BrandMatchProduct & { brand_visible?: boolean }>,
+): BrandDirectoryEntry[] {
+  const visible = products.filter((p) => p.brand_visible !== false);
+  const counts = new Map<string, number>();
+  const extras = new Map<string, BrandDirectoryEntry>();
+
+  for (const p of visible) {
+    const canonical = canonicalBrandName(p.brand);
+    if (!canonical) continue;
+    const def = LOOKUP.get(normKey(canonical));
+    if (def) {
+      // Marca-categoria não conta por marca (evita dupla contagem).
+      if (def.matchBy !== "category") {
+        counts.set(def.slug, (counts.get(def.slug) ?? 0) + 1);
+      }
+      continue;
+    }
+    // Marca que existe só no CRM: ganha entrada própria no diretório.
+    const slug = brandSlug(canonical);
+    if (!slug) continue;
+    const entry =
+      extras.get(slug) ??
+      ({ slug, name: canonical, aliases: [], matchBy: "brand", fromCrm: true, count: 0 } as BrandDirectoryEntry);
+    entry.count += 1;
+    extras.set(slug, entry);
+  }
+
+  // Marcas-categoria: contam pela CATEGORIA do produto.
+  for (const def of BRAND_DEFS) {
+    if (def.matchBy === "category") {
+      counts.set(def.slug, visible.filter((p) => productMatchesBrand(p, def)).length);
+    }
+  }
+
+  const base: BrandDirectoryEntry[] = BRAND_DEFS.map((def) => ({
+    ...def,
+    fromCrm: false,
+    count: counts.get(def.slug) ?? 0,
+  }));
+  const crmOnly = Array.from(extras.values()).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  return [...base, ...crmOnly];
+}

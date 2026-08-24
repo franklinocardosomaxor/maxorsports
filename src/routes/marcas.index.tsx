@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
-import { BRANDS } from "@/components/site/brands-data";
-import { getBrandProducts } from "@/lib/catalog";
+import { getBrandVisual } from "@/components/site/brands-data";
+import { getBrandDirectory } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/marcas/")({
@@ -22,6 +22,10 @@ export const Route = createFileRoute("/marcas/")({
 });
 
 function MarcasIndex() {
+  // Re-renderiza quando o CRM sincroniza: contagens e marcas novas sobem sozinhas.
+  useCatalogVersion();
+  // Diretório vivo: lista estática + marcas do CRM (src/lib/brands.ts).
+  const directory = getBrandDirectory();
   return (
     <Shell active="Marcas">
       <div className="border-b border-white/10 bg-navy">
@@ -50,8 +54,10 @@ function MarcasIndex() {
 
       <div className="mx-auto max-w-7xl px-4 py-10">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {BRANDS.map((b) => {
-            const count = getBrandProducts(b.slug).length;
+          {directory.map((entry) => {
+            const b = getBrandVisual(entry);
+            const count = entry.count;
+            const comingSoon = count === 0;
             return (
               <Link
                 key={b.slug}
@@ -59,9 +65,14 @@ function MarcasIndex() {
                 params={{ brand: b.slug }}
                 className="group relative overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-lg"
               >
+                {comingSoon && (
+                  <span className="absolute right-2 top-2 z-10 rounded-full border border-[color:var(--lime-brand)]/40 bg-navy/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[color:var(--lime-brand)]">
+                    Em breve
+                  </span>
+                )}
                 <div className="flex aspect-square items-center justify-center bg-card p-4">
                   {b.logo ? (
-                    <div className="flex h-full w-full items-center justify-center rounded-xl bg-[color:var(--cream)] p-4">
+                    <div className={`flex h-full w-full items-center justify-center rounded-xl bg-[color:var(--cream)] p-4 ${comingSoon ? "opacity-60 grayscale" : ""}`}>
                       <img
                         src={b.logo}
                         alt={b.name}
@@ -76,7 +87,7 @@ function MarcasIndex() {
                   )}
                 </div>
                 <div className="flex items-center justify-between border-t border-border bg-card px-3 py-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  <span>{count} modelos</span>
+                  <span>{comingSoon ? "Em breve" : `${count} ${count === 1 ? "modelo" : "modelos"}`}</span>
                   <span className="text-[color:var(--cyan-brand)] transition group-hover:translate-x-1">
                     ver →
                   </span>

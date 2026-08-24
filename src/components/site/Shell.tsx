@@ -14,6 +14,9 @@ import {
 import { recordNewsletterSignup } from "@/lib/crm.contacts.functions";
 import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { brandSlug } from "@/lib/brands";
+import { getBrandDirectory } from "@/lib/catalog";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import { BRANDS } from "./brands-data";
 
 const Aurora = lazy(() => import("./Aurora"));
@@ -264,13 +267,13 @@ function SearchDropdown({ state, onClose }: { state: SearchState; onClose: () =>
             <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6">
               {state.hits.slice(0, 12).map((p) => (
                 <li key={p.id}>
-                  <a href={`/marcas/${p.brand.toLowerCase().replace(/\s+/g, "-")}`} className="group block rounded-xl bg-white/5 p-2 hover:bg-white/10">
+                  <Link to="/marcas/$brand" params={{ brand: brandSlug(p.brand) }} className="group block rounded-xl bg-white/5 p-2 hover:bg-white/10">
                     <div className="aspect-square overflow-hidden rounded-lg bg-card">
                       <img src={p.img} alt={p.name} loading="lazy" decoding="async" className="h-full w-full object-contain p-2 transition group-hover:scale-105" />
                     </div>
                     <div className="mt-2 truncate text-[11px] font-semibold text-offwhite">{p.name}</div>
                     <div className="text-[10px] text-offwhite/60">{p.brand}</div>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -421,6 +424,17 @@ function MegaNav({ active }: { active?: string }) {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Menu Tênis consome o DIRETÓRIO VIVO de marcas (src/lib/brands.ts +
+  // produtos do CRM): marca nova cadastrada no CRM aparece aqui sozinha.
+  useCatalogVersion();
+  const brandItems = getBrandDirectory().map((b) => ({
+    label: b.name,
+    href: `/marcas/${b.slug}`,
+  }));
+  const nav = NAV.map((item) =>
+    item.label === "Tênis" ? { ...item, items: brandItems } : item,
+  );
+
   const handleMouseEnter = (label: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setOpenMenu(label);
@@ -435,7 +449,7 @@ function MegaNav({ active }: { active?: string }) {
   return (
     <nav className="relative border-b border-white/10 bg-navy text-offwhite" onMouseLeave={handleMouseLeave}>
       <div className="mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4">
-        {NAV.map((item) => {
+        {nav.map((item) => {
           const isActive = active === item.label;
           const isOffer = item.label === "Ofertas";
           const hasItems = "items" in item && item.items && item.items.length > 0;
@@ -480,7 +494,7 @@ function MegaNav({ active }: { active?: string }) {
       </div>
 
       {/* DROPDOWN CONTENT */}
-      {NAV.map((item) => {
+      {nav.map((item) => {
         if (!("items" in item) || !item.items) return null;
         const isOpen = openMenu === item.label;
 
