@@ -376,6 +376,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     raw_tag: String(raw.tag ?? raw.selo ?? ""),
     site_visible: isPublished(raw),
     brand_visible: toBool(raw.brand_visible ?? raw.brandVisible, true),
+    gender: clean(raw.genero ?? raw.gender ?? raw.section) || undefined,
   } as ProductWithSection;
 }
 
