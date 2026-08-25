@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useServerFn } from "@tanstack/react-start";
 import { 
   Plus, Edit, Search, Eye, EyeOff, Package, 
   DollarSign, X, Upload, Shield, RefreshCw, Star 
 } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { getMyOrgId } from "@/lib/maxorcrm-org";
+import { uploadProductImage } from "@/lib/product-images.functions";
 // Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
 import { BRAND_NAMES } from "@/lib/brands";
 
@@ -16,6 +18,67 @@ type ProductImage = {
 };
 
 const makeImageId = (index: number) => `img_${Date.now()}_${index}_${Math.random().toString(36).slice(2, 7)}`;
+
+const PRODUCT_LIST_COLUMNS =
+  "id, sku, name, name_prod, brand, marca_prod, category, categoria_prod, price, valor_dec, site_visible, tag, badge_text, img, foto_principal, created_at, status";
+
+const PRODUCT_EDIT_COLUMNS =
+  "id, sku, name, name_prod, brand, marca_prod, category, categoria_prod, type, tipo_prod, gender, genero, model_group, color_variant, cost_supplier, shipping_cost, margin_percent, import_cost_included, price, valor_dec, old_price, discount_price, num_cal_min, num_cal_max, qtde_est, stock, vender_sem_estoque, site_visible, brand_visible, tag, badge_text, status, descricao, description, imagens, foto_principal, img, images";
+
+const isDataImageUrl = (url: string) => /^data:image\//i.test(url.trim());
+
+const readFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => reject(new Error("Falha ao ler a imagem."));
+    reader.readAsDataURL(file);
+  });
+
+const imageFileToUploadDataUrl = async (file: File) => {
+  if (!file.type.startsWith("image/")) throw new Error("Envie apenas arquivos de imagem.");
+  if (file.type === "image/svg+xml") return readFileAsDataUrl(file);
+
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error("Não foi possível abrir a imagem."));
+      image.src = objectUrl;
+    });
+
+    const maxSide = 1600;
+    const scale = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+    if (file.size <= 900_000 && scale === 1) return readFileAsDataUrl(file);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
+    canvas.height = Math.max(1, Math.round((img.naturalHeight || img.height) * scale));
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return readFileAsDataUrl(file);
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    return await new Promise<string>((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Não foi possível otimizar a imagem."));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result ?? ""));
+          reader.onerror = () => reject(new Error("Falha ao preparar a imagem."));
+          reader.readAsDataURL(blob);
+        },
+        "image/webp",
+        0.86,
+      );
+    });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+};
 
 const normalizeProductImages = (prod: any): ProductImage[] => {
   const rawImagens = Array.isArray(prod.imagens) ? prod.imagens : [];
@@ -99,6 +162,10 @@ export function Fase1Catalog() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [loadingProductId, setLoadingProductId] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const uploadImage = useServerFn(uploadProductImage);
 
   const emptyForm = {
     sku: "",
@@ -132,7 +199,7 @@ export function Fase1Catalog() {
     setLoading(true);
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select(PRODUCT_LIST_COLUMNS)
       .neq('status', 'deleted')
       .order('created_at', { ascending: false });
 
@@ -146,33 +213,46 @@ export function Fase1Catalog() {
     fetchProducts();
   }, []);
 
-  const handleOpenModal = (prod: any = null) => {
+  const handleOpenModal = async (prod: any = null) => {
+    setImageError(null);
     if (prod) {
-      setEditingId(prod.id);
+      setLoadingProductId(prod.id);
+      const { data, error } = await supabase
+        .from('products')
+        .select(PRODUCT_EDIT_COLUMNS)
+        .eq('id', prod.id)
+        .maybeSingle();
+      setLoadingProductId(null);
+      if (error) {
+        alert(`Erro ao abrir produto: ${error.message}`);
+        return;
+      }
+      const source = data ?? prod;
+      setEditingId(source.id);
       setForm({
-        sku: prod.sku || "",
-        name_prod: prod.name_prod || prod.name || "",
-        marca_prod: prod.marca_prod || prod.brand || "Nike",
-        categoria_prod: prod.categoria_prod || prod.category || "Calçados Esportivos",
-        tipo_prod: prod.tipo_prod || prod.type || "Calçados Esportivos",
-        genero: prod.genero || prod.gender || "Masculino",
-        modelGroup: prod.model_group || "",
-        colorVariant: prod.color_variant || "",
-        costSupplier: Number(prod.cost_supplier || 0),
-        shippingCost: Number(prod.shipping_cost || 0),
-        marginPercent: Number(prod.margin_percent || 0),
-        importCostIncluded: Boolean(prod.import_cost_included ?? false),
-        valor_dec: Number(prod.price || prod.valor_dec || 0),
-        discountPrice: Number(prod.old_price || prod.discount_price || 0),
-        num_cal_min: prod.num_cal_min || 37,
-        num_cal_max: prod.num_cal_max || 44,
-        qtde_est: prod.qtde_est ?? prod.stock ?? 0,
-        vender_sem_estoque: prod.vender_sem_estoque ?? true,
-        siteVisible: prod.site_visible ?? true,
-        brandVisible: prod.brand_visible ?? true,
-        badgeText: prod.tag || prod.badge_text || "Normal",
-        descricao: prod.descricao || prod.description || "",
-        imagens: normalizeProductImages(prod)
+        sku: source.sku || "",
+        name_prod: source.name_prod || source.name || "",
+        marca_prod: source.marca_prod || source.brand || "Nike",
+        categoria_prod: source.categoria_prod || source.category || "Calçados Esportivos",
+        tipo_prod: source.tipo_prod || source.type || "Calçados Esportivos",
+        genero: source.genero || source.gender || "Masculino",
+        modelGroup: source.model_group || "",
+        colorVariant: source.color_variant || "",
+        costSupplier: Number(source.cost_supplier || 0),
+        shippingCost: Number(source.shipping_cost || 0),
+        marginPercent: Number(source.margin_percent || 0),
+        importCostIncluded: Boolean(source.import_cost_included ?? false),
+        valor_dec: Number(source.price || source.valor_dec || 0),
+        discountPrice: Number(source.old_price || source.discount_price || 0),
+        num_cal_min: source.num_cal_min || 37,
+        num_cal_max: source.num_cal_max || 44,
+        qtde_est: source.qtde_est ?? source.stock ?? 0,
+        vender_sem_estoque: source.vender_sem_estoque ?? true,
+        siteVisible: source.site_visible ?? true,
+        brandVisible: source.brand_visible ?? true,
+        badgeText: source.tag || source.badge_text || "Normal",
+        descricao: source.descricao || source.description || "",
+        imagens: normalizeProductImages(source)
       });
     } else {
       setEditingId(null);
@@ -182,114 +262,153 @@ export function Fase1Catalog() {
     setModalOpen(true);
   };
 
+  const storeProductImage = async (dataUrl: string, index: number) => {
+    const sku = form.sku.trim() || `produto-${Date.now()}`;
+    const { url } = await uploadImage({ data: { imageDataUrl: dataUrl, sku } });
+    if (!url) throw new Error(`Imagem ${index + 1} não foi salva.`);
+    return url;
+  };
+
+  const prepareImagesForSave = async () => {
+    const resolved: ProductImage[] = [];
+    for (let index = 0; index < form.imagens.length; index += 1) {
+      const img = form.imagens[index];
+      const currentUrl = img.url_imagem.trim();
+      const url = isDataImageUrl(currentUrl) ? await storeProductImage(currentUrl, index) : currentUrl;
+      if (url) resolved.push({ ...img, url_imagem: url });
+    }
+    return resolved.map((img, index) => ({ ...img, is_principal: index === 0 ? resolved.every((i) => !i.is_principal) || img.is_principal : img.is_principal }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setImageError(null);
 
-    const orgId = await getMyOrgId();
-    if (!orgId) {
-      setSaving(false);
-      alert("Não foi possível identificar sua organização no CRM. Faça login novamente.");
-      return;
-    }
+    try {
+      const orgId = await getMyOrgId();
+      if (!orgId) {
+        setSaving(false);
+        alert("Não foi possível identificar sua organização no CRM. Faça login novamente.");
+        return;
+      }
 
-    const isHiddenByTag = !form.badgeText || form.badgeText.toLowerCase() === "nenhum";
-    const finalSiteVisible = isHiddenByTag ? false : Boolean(form.siteVisible);
-    const finalTag = isHiddenByTag ? "Nenhum" : form.badgeText;
+      const resolvedImages = await prepareImagesForSave();
+      setForm((current) => ({ ...current, imagens: resolvedImages }));
 
-    // Seção da vitrine: derivada do gênero; selo "Oferta" vai para a prateleira /ofertas.
-    // Sem isso a coluna `section` caía no default 'masculino' e Feminino/Infantil/Ofertas
-    // nunca apareciam nas páginas correspondentes do site.
-    const generoLc = String(form.genero || "").toLowerCase();
-    const sectionFromGenero = generoLc.includes("fem")
-      ? "feminino"
-      : generoLc.includes("inf")
-        ? "infantil"
-        : "masculino";
-    const isOferta = /ofert|promo/.test(finalTag.toLowerCase());
+      const isHiddenByTag = !form.badgeText || form.badgeText.toLowerCase() === "nenhum";
+      const finalSiteVisible = isHiddenByTag ? false : Boolean(form.siteVisible);
+      const finalTag = isHiddenByTag ? "Nenhum" : form.badgeText;
 
-    // Preço "de" (riscado) só existe quando a equipe digita um valor promocional
-    // real — nunca inventado a partir do preço de venda (valor * 1.2).
-    const promoPrice = Number(form.discountPrice || 0);
+      // Seção da vitrine: derivada do gênero; selo "Oferta" vai para a prateleira /ofertas.
+      // Sem isso a coluna `section` caía no default 'masculino' e Feminino/Infantil/Ofertas
+      // nunca apareciam nas páginas correspondentes do site.
+      const generoLc = String(form.genero || "").toLowerCase();
+      const sectionFromGenero = generoLc.includes("fem")
+        ? "feminino"
+        : generoLc.includes("inf")
+          ? "infantil"
+          : "masculino";
+      const isOferta = /ofert|promo/.test(finalTag.toLowerCase());
 
-    const payload: any = {
-      org_id: orgId,
-      sku: form.sku,
-      name: form.name_prod,
-      name_prod: form.name_prod,
-      brand: form.marca_prod,
-      marca_prod: form.marca_prod,
-      category: form.categoria_prod,
-      categoria_prod: form.categoria_prod,
-      type: form.tipo_prod,
-      tipo_prod: form.tipo_prod,
-      gender: form.genero,
-      genero: form.genero,
-      section: isOferta ? "ofertas" : sectionFromGenero,
-      model_group: form.modelGroup,
-      color_variant: form.colorVariant,
-      cost_supplier: Number(form.costSupplier || 0),
-      shipping_cost: Number(form.shippingCost || 0),
-      margin_percent: Number(form.marginPercent || 0),
-      import_cost: importTaxFor(Number(form.costSupplier || 0)),
-      import_cost_included: Boolean(form.importCostIncluded),
-      price: Number(form.valor_dec || 0),
-      valor_dec: Number(form.valor_dec || 0),
-      old_price: promoPrice > 0 ? promoPrice : null,
-      discount_price: promoPrice > 0 ? promoPrice : 0,
-      num_cal_min: Number(form.num_cal_min || 37),
-      num_cal_max: Number(form.num_cal_max || 44),
-      stock: Number(form.qtde_est ?? 0),
-      qtde_est: Number(form.qtde_est ?? 0),
-      vender_sem_estoque: Boolean(form.vender_sem_estoque),
-      site_visible: finalSiteVisible,
-      brand_visible: Boolean(form.brandVisible),
-      tag: finalTag,
-      badge_text: finalTag,
-      status: finalSiteVisible ? 'published' : 'hidden',
-      descricao: form.descricao,
-      description: form.descricao,
-      imagens: form.imagens,
-      foto_principal: form.imagens.find(i => i.is_principal)?.url_imagem || form.imagens[0]?.url_imagem || "",
-      img: form.imagens.find(i => i.is_principal)?.url_imagem || form.imagens[0]?.url_imagem || "",
-      images: form.imagens
+      // Preço "de" (riscado) só existe quando a equipe digita um valor promocional
+      // real — nunca inventado a partir do preço de venda (valor * 1.2).
+      const promoPrice = Number(form.discountPrice || 0);
+      const principalImage = resolvedImages.find(i => i.is_principal)?.url_imagem || resolvedImages[0]?.url_imagem || "";
+      const visibleImages = resolvedImages
         .filter((i) => i.exibir_no_site !== false)
         .sort((a, b) => Number(b.is_principal) - Number(a.is_principal))
         .map((i) => i.url_imagem)
-        .filter(Boolean)
-    };
+        .filter(Boolean);
 
-    let error = null;
-    if (editingId) {
-      const { error: err } = await supabase.from('products').update(payload).eq('id', editingId);
-      error = err;
-    } else {
-      const { error: err } = await supabase.from('products').insert([payload]);
-      error = err;
-    }
+      const payload: any = {
+        org_id: orgId,
+        sku: form.sku,
+        name: form.name_prod,
+        name_prod: form.name_prod,
+        brand: form.marca_prod,
+        marca_prod: form.marca_prod,
+        category: form.categoria_prod,
+        categoria_prod: form.categoria_prod,
+        type: form.tipo_prod,
+        tipo_prod: form.tipo_prod,
+        gender: form.genero,
+        genero: form.genero,
+        section: isOferta ? "ofertas" : sectionFromGenero,
+        model_group: form.modelGroup,
+        color_variant: form.colorVariant,
+        cost_supplier: Number(form.costSupplier || 0),
+        shipping_cost: Number(form.shippingCost || 0),
+        margin_percent: Number(form.marginPercent || 0),
+        import_cost: importTaxFor(Number(form.costSupplier || 0)),
+        import_cost_included: Boolean(form.importCostIncluded),
+        price: Number(form.valor_dec || 0),
+        valor_dec: Number(form.valor_dec || 0),
+        old_price: promoPrice > 0 ? promoPrice : null,
+        discount_price: promoPrice > 0 ? promoPrice : 0,
+        num_cal_min: Number(form.num_cal_min || 37),
+        num_cal_max: Number(form.num_cal_max || 44),
+        stock: Number(form.qtde_est ?? 0),
+        qtde_est: Number(form.qtde_est ?? 0),
+        vender_sem_estoque: Boolean(form.vender_sem_estoque),
+        site_visible: finalSiteVisible,
+        brand_visible: Boolean(form.brandVisible),
+        tag: finalTag,
+        badge_text: finalTag,
+        status: finalSiteVisible ? 'published' : 'hidden',
+        descricao: form.descricao,
+        description: form.descricao,
+        imagens: resolvedImages,
+        foto_principal: principalImage,
+        img: principalImage,
+        images: visibleImages
+      };
 
-    setSaving(false);
-    if (!error) {
-      setModalOpen(false);
-      fetchProducts();
-    } else {
-      alert(`Erro ao salvar no Supabase: ${error.message}`);
+      let error = null;
+      if (editingId) {
+        const { error: err } = await supabase.from('products').update(payload).eq('id', editingId);
+        error = err;
+      } else {
+        const { error: err } = await supabase.from('products').insert([payload]);
+        error = err;
+      }
+
+      setSaving(false);
+      if (!error) {
+        setModalOpen(false);
+        fetchProducts();
+      } else {
+        alert(`Erro ao salvar no banco: ${error.message}`);
+      }
+    } catch (err) {
+      setSaving(false);
+      const message = err instanceof Error ? err.message : "Falha inesperada ao salvar o produto.";
+      setImageError(message);
+      alert(`Erro ao salvar no banco: ${message}`);
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const b64 = reader.result as string;
+    e.target.value = "";
+    if (!files.length) return;
+    setUploadingImages(true);
+    setImageError(null);
+    try {
+      for (const file of files) {
+        if (file.size > 12 * 1024 * 1024) throw new Error(`A imagem "${file.name}" é muito grande. Use até 12MB.`);
+        const dataUrl = await imageFileToUploadDataUrl(file);
+        const url = await storeProductImage(dataUrl, form.imagens.length);
         setForm(prev => ({
           ...prev,
-          imagens: [...prev.imagens, { id: makeImageId(prev.imagens.length), url_imagem: b64, is_principal: prev.imagens.length === 0, exibir_no_site: true }]
+          imagens: [...prev.imagens, { id: makeImageId(prev.imagens.length), url_imagem: url, is_principal: prev.imagens.length === 0, exibir_no_site: true }]
         }));
-      };
-      reader.readAsDataURL(file);
-    });
+      }
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "Não foi possível enviar a imagem.");
+    } finally {
+      setUploadingImages(false);
+    }
   };
 
   const round2 = (n: number) => Math.round((Number.isFinite(n) ? n : 0) * 100) / 100;
@@ -443,8 +562,8 @@ export function Fase1Catalog() {
                       </span>
                     </td>
                     <td className="p-4 text-right">
-                      <button onClick={() => handleOpenModal(prod)} className="p-2 bg-background hover:bg-border rounded-lg text-foreground/60 transition">
-                        <Edit size={16} />
+                      <button disabled={loadingProductId === prod.id} onClick={() => handleOpenModal(prod)} className="p-2 bg-background hover:bg-border rounded-lg text-foreground/60 transition disabled:opacity-50">
+                        {loadingProductId === prod.id ? <RefreshCw size={16} className="animate-spin" /> : <Edit size={16} />}
                       </button>
                     </td>
                   </tr>
@@ -731,8 +850,13 @@ export function Fase1Catalog() {
               {/* GALERIA DE FOTOS FÍSICAS REAIS */}
               <div className="space-y-4">
                 <label className="text-xs font-bold text-foreground/50 uppercase flex items-center justify-between">
-                  Galeria de Fotos Físicas Reais <span>{form.imagens.length} arquivos</span>
+                  Galeria de Fotos Físicas Reais <span>{uploadingImages ? "Enviando…" : `${form.imagens.length} arquivos`}</span>
                 </label>
+                {imageError && (
+                  <p className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-200">
+                    {imageError}
+                  </p>
+                )}
                 <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
                   {form.imagens.map((img) => (
                     <div
@@ -764,10 +888,10 @@ export function Fase1Catalog() {
                       </button>
                     </div>
                   ))}
-                  <label className="aspect-square bg-background border border-dashed border-border rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-border/30 transition">
-                    <Upload size={20} className="text-foreground/30" />
-                    <span className="text-[10px] text-foreground/50 mt-1 uppercase">Subir</span>
-                    <input type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
+                  <label className={`aspect-square bg-background border border-dashed border-border rounded-xl flex flex-col items-center justify-center transition ${uploadingImages ? "cursor-wait opacity-60" : "cursor-pointer hover:bg-border/30"}`}>
+                    {uploadingImages ? <RefreshCw size={20} className="animate-spin text-foreground/40" /> : <Upload size={20} className="text-foreground/30" />}
+                    <span className="text-[10px] text-foreground/50 mt-1 uppercase">{uploadingImages ? "Enviando" : "Subir"}</span>
+                    <input disabled={uploadingImages} type="file" accept="image/*" multiple className="hidden" onChange={handleFileUpload} />
                   </label>
                 </div>
               </div>
@@ -783,11 +907,11 @@ export function Fase1Catalog() {
                 </button>
                 <button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || uploadingImages}
                   className="bg-[color:var(--cyan-brand)] text-navy font-bold px-8 py-2.5 rounded-xl hover:brightness-110 transition flex items-center gap-2"
                 >
-                  {saving ? <RefreshCw size={18} className="animate-spin" /> : <Shield size={18} />}
-                  {saving ? "Salvando..." : editingId ? "Atualizar Produto" : "Criar Produto"}
+                  {saving || uploadingImages ? <RefreshCw size={18} className="animate-spin" /> : <Shield size={18} />}
+                  {uploadingImages ? "Enviando fotos..." : saving ? "Salvando..." : editingId ? "Atualizar Produto" : "Criar Produto"}
                 </button>
               </div>
             </form>
