@@ -34,6 +34,8 @@ export type ProductWithSection = CatalogProduct & {
   site_visible?: boolean;
   /** Status de visibilidade na página de marcas. */
   brand_visible?: boolean;
+  /** Gênero cadastrado no CRM (masculino, feminino, infantil, unissex). */
+  gender?: string;
 };
 
 /**
