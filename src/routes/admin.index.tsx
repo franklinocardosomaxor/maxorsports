@@ -34,7 +34,7 @@ function AdminLoginPage() {
     let active = true;
     supabase.auth.getUser().then(({ data }) => {
       if (!active) return;
-      if (data.user) navigate({ to: "/admin/crm", replace: true });
+      if (data.user) navigate({ to: "/maxorcrm", replace: true });
       else setChecking(false);
     });
     return () => {
@@ -52,7 +52,7 @@ function AdminLoginPage() {
         password,
       });
       if (authError) throw authError;
-      navigate({ to: "/admin/crm", replace: true });
+      navigate({ to: "/maxorcrm", replace: true });
     } catch (err) {
       setError(
         err instanceof Error && /invalid/i.test(err.message)
