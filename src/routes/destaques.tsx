@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
 import { ChevronRight, Grid2X2 } from "lucide-react";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/destaques")({
   component: DestaquesPage,
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/destaques")({
 });
 
 function DestaquesPage() {
-  const version = getCatalogVersion();
+  const version = useCatalogVersion();
   const viewMode = useViewMode();
 
   // Agrupa os produtos que possuem o selo 'destaque' pela sua tag original (ex: "Destaque", "Novidade", etc.)
