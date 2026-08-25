@@ -65,6 +65,7 @@ export function CatalogPage({
   const [maxPrice, setMaxPrice] = useState(1600);
   const [sort, setSort] = useState<Sort>("Mais relevantes");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const viewMode = useViewMode();
 
   const accentColor = ACCENT_VAR[theme.accent];
 
@@ -250,19 +251,22 @@ export function CatalogPage({
               <span className="font-semibold text-foreground">{filtered.length}</span> produtos
             </span>
           </div>
-          <label className="flex shrink-0 items-center gap-2 text-sm">
-            <span className="hidden text-muted-foreground sm:inline">Ordenar por</span>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as Sort)}
-              className="rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold focus:outline-none"
-              style={{ borderColor: accentColor }}
-            >
-              {SORTS.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
-          </label>
+          <div className="flex shrink-0 items-center gap-3">
+            <ViewModeToggle />
+            <label className="flex items-center gap-2 text-sm">
+              <span className="hidden text-muted-foreground sm:inline">Ordenar por</span>
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as Sort)}
+                className="rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold focus:outline-none"
+                style={{ borderColor: accentColor }}
+              >
+                {SORTS.map((s) => (
+                  <option key={s}>{s}</option>
+                ))}
+              </select>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -279,10 +283,14 @@ export function CatalogPage({
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
-                {filtered.map((p) => (
-                  <ProductCard key={p.id} p={p} accent={accentColor} />
-                ))}
+              <div className={viewModeContainerClass(viewMode)}>
+                {filtered.map((p) =>
+                  viewMode === "list" ? (
+                    <ProductListRow key={p.id} product={p} />
+                  ) : (
+                    <ProductCard key={p.id} p={p} accent={accentColor} />
+                  ),
+                )}
               </div>
             )}
           </div>
