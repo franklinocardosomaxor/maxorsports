@@ -38,7 +38,7 @@ copy_tree src/hooks
 copy_tree src/lib
 copy_tree src/assets
 copy_tree GUIA-INTEGRACAO-CRM.md
-copy_tree HANDOFF-ANTIGRAVITY.md
+copy_tree docs/historico/HANDOFF-ANTIGRAVITY.md
 
 # styles.css do kit vira referência, não sobrescreve o do CRM
 if [ -f "$TMP/src/styles.css" ]; then
