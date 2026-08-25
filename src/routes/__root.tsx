@@ -186,8 +186,8 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const isCrmArea = pathname.startsWith("/admin") || pathname.startsWith("/maxorcrm");
-  // Sincroniza o catálogo publicado pelo CRM (tabela compartilhada products).
-  useCrmSync();
+  // Sincroniza a vitrine pública; pausa nas telas do CRM para não disputar recursos durante cadastro/salvamento.
+  useCrmSync(!isCrmArea);
 
   useEffect(() => {
     if (!isCrmArea || typeof document === "undefined") return;

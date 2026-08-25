@@ -31,9 +31,9 @@ export type CrmSyncStatus = {
   error: string | null;
 };
 
-export function useCrmSync(): CrmSyncStatus {
+export function useCrmSync(enabled = true): CrmSyncStatus {
   const [status, setStatus] = useState<CrmSyncStatus>({
-    loading: true,
+    loading: enabled,
     loaded: false,
     error: null,
   });
@@ -59,6 +59,13 @@ export function useCrmSync(): CrmSyncStatus {
   }, []);
 
   useEffect(() => {
+    if (!enabled) {
+      aliveRef.current = false;
+      inFlightRef.current = false;
+      setStatus({ loading: false, loaded: false, error: null });
+      return;
+    }
+
     aliveRef.current = true;
     void refresh();
 
@@ -85,7 +92,7 @@ export function useCrmSync(): CrmSyncStatus {
       window.removeEventListener("focus", onVisible);
       supabase.removeChannel(channel);
     };
-  }, [refresh]);
+  }, [enabled, refresh]);
 
   return status;
 }
