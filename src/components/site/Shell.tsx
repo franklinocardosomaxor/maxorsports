@@ -90,6 +90,15 @@ const NAV = [
   { label: "Lançamentos", href: "/lancamentos" },
   { label: "Mais Vendidos", href: "/mais-vendidos" },
   { label: "Ofertas", href: "/ofertas" },
+  { 
+    label: "Diversos", 
+    href: "#",
+    items: [
+      { label: "Roupas", href: "/roupas" },
+      { label: "Acessórios", href: "/acessorios" },
+      { label: "Eletrônico", href: "/eletronicos" },
+    ]
+  },
   { label: "Maxor CRM", href: "/maxorcrm" },
 ];
 
@@ -670,8 +679,9 @@ function Footer() {
         { label: "Chuteiras", href: "/marcas/chuteiras" },
         { label: "Catálogo completo", href: "/catalogo" },
         { label: "Roupas", href: "/roupas" },
+        { label: "Acessórios", href: "/acessorios" },
+        { label: "Eletrônico", href: "/eletronicos" },
         { label: "Ofertas", href: "/ofertas" },
-
       ],
     },
   ];
