@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
   Search, User, Heart, ShoppingBag, Zap, Camera, X, Loader2,
   Instagram, Facebook, Youtube, Phone, Mail, Truck, ChevronDown,
+  MessageCircle, PackageSearch, CreditCard, Plane,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
@@ -18,6 +19,7 @@ import { brandSlug } from "@/lib/brands";
 import { getBrandDirectory } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import { BRANDS } from "./brands-data";
+import { CampaignModal } from "./CampaignModal";
 
 const Aurora = lazy(() => import("./Aurora"));
 
@@ -114,10 +116,45 @@ export function Shell({ children, active }: { children: ReactNode; active?: stri
     <div className="min-h-screen bg-background text-foreground">
       <TopBar />
       <Header />
+      <HowItWorksStrip />
       <MegaNav active={active} />
       {children}
       <Newsletter />
       <Footer />
+      <CampaignModal />
+    </div>
+  );
+}
+
+/**
+ * Timeline "Como funciona" — faixa fina e discreta acima do menu,
+ * explicando o fluxo de compra por encomenda/importação.
+ */
+function HowItWorksStrip() {
+  const steps = [
+    { icon: ShoppingBag, label: "Escolhe no site" },
+    { icon: MessageCircle, label: "Confirma no WhatsApp" },
+    { icon: PackageSearch, label: "Verificamos estoque" },
+    { icon: CreditCard, label: "Você paga" },
+    { icon: Plane, label: "Importamos" },
+    { icon: Truck, label: "Entrega" },
+  ];
+  return (
+    <div className="border-b border-white/5 bg-navy/70 text-offwhite">
+      <ol className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 py-2">
+        {steps.map((s, i) => (
+          <li key={s.label} className="flex shrink-0 items-center gap-2">
+            <span className="grid h-5 w-5 place-items-center rounded-full bg-[color:var(--cyan-brand)]/15 text-[10px] font-bold text-[color:var(--cyan-brand)]">
+              {i + 1}
+            </span>
+            <s.icon className="h-3.5 w-3.5 text-[color:var(--mint-brand)]" aria-hidden />
+            <span className="whitespace-nowrap text-[11px] font-medium uppercase tracking-wider text-offwhite/70">
+              {s.label}
+            </span>
+            {i < steps.length - 1 && <span aria-hidden className="mx-1 h-px w-6 bg-white/15" />}
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
