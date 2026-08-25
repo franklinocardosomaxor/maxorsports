@@ -99,7 +99,7 @@ const NAV = [
       { label: "Eletrônico", href: "/eletronicos" },
     ]
   },
-  { label: "Maxor CRM", href: "/maxorcrm" },
+  // MaxorCRM é interno: acesso somente por URL direta (/maxorcrm).
 ];
 
 
