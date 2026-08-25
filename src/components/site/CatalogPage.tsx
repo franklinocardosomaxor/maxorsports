@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, SlidersHorizontal, Heart, X } from "lucide-react";
 import { Shell } from "./Shell";
+import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "./view-mode";
 
 export type CatalogProduct = {
   id: string;
