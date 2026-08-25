@@ -195,11 +195,15 @@ export default function Aurora(props: AuroraProps) {
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener("resize", resize);
-      try {
-        gl.canvas.remove();
-      } catch {
-        // Navegações rápidas podem desmontar o cabeçalho antes do cleanup do WebGL.
-        // `remove()` é idempotente na prática; se o navegador já removeu, seguimos.
+      const canvas = gl.canvas;
+      const parent = canvas.parentNode;
+      if (parent) {
+        try {
+          parent.removeChild(canvas);
+        } catch {
+          // Navegações rápidas ou tradutores/extensões podem mover o canvas antes do cleanup.
+          // Se ele já não pertence ao pai esperado, seguimos sem quebrar a navegação.
+        }
       }
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };

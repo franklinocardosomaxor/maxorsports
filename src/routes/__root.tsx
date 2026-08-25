@@ -20,6 +20,50 @@ import { useCrmSync } from "../hooks/use-crm-sync";
 
 const SplashCursor = lazy(() => import("../components/site/SplashCursor"));
 
+function DomMutationSafety() {
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof Node === "undefined") return;
+
+    const nodePrototype = Node.prototype as typeof Node.prototype & {
+      __maxorSafeDomPatch?: boolean;
+      __maxorOriginalRemoveChild?: typeof Node.prototype.removeChild;
+      __maxorOriginalInsertBefore?: typeof Node.prototype.insertBefore;
+    };
+
+    if (nodePrototype.__maxorSafeDomPatch) return;
+
+    const originalRemoveChild = nodePrototype.removeChild;
+    const originalInsertBefore = nodePrototype.insertBefore;
+
+    nodePrototype.__maxorSafeDomPatch = true;
+    nodePrototype.__maxorOriginalRemoveChild = originalRemoveChild;
+    nodePrototype.__maxorOriginalInsertBefore = originalInsertBefore;
+
+    nodePrototype.removeChild = function patchedRemoveChild<T extends Node>(this: Node, child: T): T {
+      if (child.parentNode !== this) {
+        if (child.parentNode) {
+          return originalRemoveChild.call(child.parentNode, child) as T;
+        }
+        return child;
+      }
+      return originalRemoveChild.call(this, child) as T;
+    } as typeof Node.prototype.removeChild;
+
+    nodePrototype.insertBefore = function patchedInsertBefore<T extends Node>(
+      this: Node,
+      newNode: T,
+      referenceNode: Node | null,
+    ): T {
+      if (referenceNode && referenceNode.parentNode !== this) {
+        return originalInsertBefore.call(this, newNode, null) as T;
+      }
+      return originalInsertBefore.call(this, newNode, referenceNode) as T;
+    } as typeof Node.prototype.insertBefore;
+  }, []);
+
+  return null;
+}
+
 function SplashCursorClient() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -145,10 +189,34 @@ function RootComponent() {
   // Sincroniza o catálogo publicado pelo CRM (tabela compartilhada products).
   useCrmSync();
 
+  useEffect(() => {
+    if (!isCrmArea || typeof document === "undefined") return;
+
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlTranslate = html.getAttribute("translate");
+    const previousBodyTranslate = body.getAttribute("translate");
+
+    html.setAttribute("translate", "no");
+    body.setAttribute("translate", "no");
+    html.classList.add("notranslate");
+    body.classList.add("notranslate");
+
+    return () => {
+      if (previousHtmlTranslate === null) html.removeAttribute("translate");
+      else html.setAttribute("translate", previousHtmlTranslate);
+      if (previousBodyTranslate === null) body.removeAttribute("translate");
+      else body.setAttribute("translate", previousBodyTranslate);
+      html.classList.remove("notranslate");
+      body.classList.remove("notranslate");
+    };
+  }, [isCrmArea]);
+
 
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
+        <DomMutationSafety />
         {!isCrmArea && <SplashCursorClient />}
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
