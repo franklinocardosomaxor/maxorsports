@@ -169,7 +169,9 @@ export default function Aurora(props: AuroraProps) {
     });
 
     const mesh = new Mesh(gl, { geometry, program });
-    ctn.appendChild(gl.canvas);
+    if (!gl.canvas.parentNode) {
+      ctn.appendChild(gl.canvas);
+    }
 
     let animateId = 0;
     const update = (t: number) => {
@@ -193,8 +195,11 @@ export default function Aurora(props: AuroraProps) {
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener("resize", resize);
-      if (ctn && gl.canvas.parentNode === ctn) {
-        ctn.removeChild(gl.canvas);
+      try {
+        gl.canvas.remove();
+      } catch {
+        // Navegações rápidas podem desmontar o cabeçalho antes do cleanup do WebGL.
+        // `remove()` é idempotente na prática; se o navegador já removeu, seguimos.
       }
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
