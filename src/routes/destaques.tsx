@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ALL_PRODUCTS, getCatalogVersion, Selo, SELO_LABEL } from "@/lib/catalog";
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
+import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
 import { ChevronRight, Grid2X2 } from "lucide-react";
 
 export const Route = createFileRoute("/destaques")({
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/destaques")({
 
 function DestaquesPage() {
   const version = getCatalogVersion();
+  const viewMode = useViewMode();
 
   // Agrupa os produtos que possuem o selo 'destaque' pela sua tag original (ex: "Destaque", "Novidade", etc.)
   // para permitir a visualização "separada pelo seu destaque"
@@ -62,6 +64,7 @@ function DestaquesPage() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS</span>
+            <ViewModeToggle />
           </div>
         </header>
 
@@ -83,10 +86,14 @@ function DestaquesPage() {
                     {groupName}
                   </h2>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                  {groupedHighlights[groupName].map((product) => (
-                    <ProductMiniCard key={product.id} product={product} />
-                  ))}
+                <div className={viewModeContainerClass(viewMode)}>
+                  {groupedHighlights[groupName].map((product) =>
+                    viewMode === "list" ? (
+                      <ProductListRow key={product.id} product={product} />
+                    ) : (
+                      <ProductMiniCard key={product.id} product={product} />
+                    ),
+                  )}
                 </div>
               </section>
             ))}
