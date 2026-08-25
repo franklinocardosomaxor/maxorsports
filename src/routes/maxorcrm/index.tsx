@@ -1,7 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Boxes, Kanban, Plug, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Boxes, Kanban, Plug, Loader2, Image as ImageIcon, Upload, X,
+  Megaphone, RefreshCw, Eye, EyeOff,
+} from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadCampaignImage, type SiteCampaign } from "@/lib/campaign.functions";
 
 export const Route = createFileRoute("/maxorcrm/")({
   ssr: false,
@@ -71,21 +76,262 @@ function Overview() {
   ];
 
   return (
-    <section className="grid gap-4 md:grid-cols-3">
-      {cards.map(({ to, icon: Icon, title, desc, stat }) => (
-        <Link
-          key={to}
-          to={to}
-          className="rounded-2xl border border-border bg-card p-6 transition hover:border-[color:var(--cyan-brand)] hover:brightness-110"
-        >
-          <Icon className="h-6 w-6 text-[color:var(--cyan-brand)]" />
-          <h2 className="mt-3 font-display text-lg font-black uppercase text-offwhite">{title}</h2>
-          <p className="mt-1 text-sm text-foreground/65">{desc}</p>
-          <p className="mt-4 text-xs font-bold uppercase tracking-wider text-[color:var(--mint-brand)]">
-            {stat ?? <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-          </p>
-        </Link>
-      ))}
+    <div className="space-y-6">
+      <section className="grid gap-4 md:grid-cols-3">
+        {cards.map(({ to, icon: Icon, title, desc, stat }) => (
+          <Link
+            key={to}
+            to={to}
+            className="rounded-2xl border border-border bg-card p-6 transition hover:border-[color:var(--cyan-brand)] hover:brightness-110"
+          >
+            <Icon className="h-6 w-6 text-[color:var(--cyan-brand)]" />
+            <h2 className="mt-3 font-display text-lg font-black uppercase text-offwhite">{title}</h2>
+            <p className="mt-1 text-sm text-foreground/65">{desc}</p>
+            <p className="mt-4 text-xs font-bold uppercase tracking-wider text-[color:var(--mint-brand)]">
+              {stat ?? <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            </p>
+          </Link>
+        ))}
+      </section>
+
+      <CampaignManager />
+    </div>
+  );
+}
+
+/**
+ * Banner de abertura do site — o admin sobe até 3 imagens, escreve os textos
+ * e decide se a campanha aparece (modal) quando o cliente abre o site.
+ */
+function CampaignManager() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [campaignId, setCampaignId] = useState<string | null>(null);
+  const [active, setActive] = useState(false);
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [ctaLabel, setCtaLabel] = useState("");
+  const [ctaUrl, setCtaUrl] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const uploadImage = useServerFn(uploadCampaignImage);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const { data } = await supabase
+        .from("site_campaign")
+        .select("id, active, title, subtitle, cta_label, cta_url, images, updated_at")
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!alive) return;
+      if (data) {
+        const c = data as unknown as SiteCampaign;
+        setCampaignId(c.id);
+        setActive(c.active);
+        setTitle(c.title ?? "");
+        setSubtitle(c.subtitle ?? "");
+        setCtaLabel(c.cta_label ?? "");
+        setCtaUrl(c.cta_url ?? "");
+        setImages(Array.isArray(c.images) ? c.images : []);
+      }
+      setLoading(false);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const onPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []).slice(0, 3 - images.length);
+    if (fileRef.current) fileRef.current.value = "";
+    if (!files.length) return;
+    setUploading(true);
+    setFeedback(null);
+    try {
+      for (const f of files) {
+        if (f.size > 7 * 1024 * 1024) {
+          setFeedback(`"${f.name}" é muito grande (máx. 7MB).`);
+          continue;
+        }
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result ?? ""));
+          reader.onerror = () => reject(new Error("falha ao ler arquivo"));
+          reader.readAsDataURL(f);
+        });
+        const idx = images.length;
+        const { url } = await uploadImage({ data: { imageDataUrl: dataUrl, index: idx } });
+        setImages((prev) => [...prev, url]);
+      }
+    } catch (err) {
+      setFeedback(`Erro no upload: ${(err as Error).message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const save = async () => {
+    setSaving(true);
+    setFeedback(null);
+    const payload = {
+      active,
+      title: title.trim() || "Campanha Maxor Sports",
+      subtitle: subtitle.trim() || null,
+      cta_label: ctaLabel.trim() || null,
+      cta_url: ctaUrl.trim() || null,
+      images: images.slice(0, 3),
+    };
+    const { error } = campaignId
+      ? await supabase.from("site_campaign").update(payload).eq("id", campaignId)
+      : await supabase.from("site_campaign").insert([payload]);
+    setSaving(false);
+    setFeedback(error ? `Erro ao salvar: ${error.message}` : "Campanha salva com sucesso.");
+  };
+
+  return (
+    <section className="rounded-2xl border border-border bg-card p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="flex items-center gap-2 font-display text-lg font-black uppercase text-offwhite">
+          <Megaphone className="h-5 w-5 text-[color:var(--cyan-brand)]" /> Banner de Abertura do Site
+        </h2>
+        <label className="flex cursor-pointer items-center gap-2">
+          <input
+            type="checkbox"
+            checked={active}
+            onChange={(e) => setActive(e.target.checked)}
+            className="accent-[color:var(--mint-brand)]"
+          />
+          <span className="flex items-center gap-1.5 text-xs font-bold uppercase text-foreground/75">
+            {active ? <Eye className="h-4 w-4 text-[color:var(--mint-brand)]" /> : <EyeOff className="h-4 w-4" />}
+            {active ? "Visível ao abrir o site" : "Oculto"}
+          </span>
+        </label>
+      </div>
+      <p className="mt-1 text-xs text-foreground/60">
+        A campanha aparece como um cartaz quando o cliente abre o site; ele fecha e navega normalmente. Aceita até 3 imagens em rotação.
+      </p>
+
+      {loading ? (
+        <div className="mt-6 flex items-center gap-2 text-sm text-foreground/60">
+          <Loader2 className="h-4 w-4 animate-spin" /> Carregando campanha…
+        </div>
+      ) : (
+        <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_320px]">
+          {/* Caixa grande de imagens */}
+          <div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {images.map((src, i) => (
+                <div
+                  key={src}
+                  className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-background"
+                >
+                  <img src={src} alt={`Imagem da campanha ${i + 1}`} className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setImages((prev) => prev.filter((_, j) => j !== i))}
+                    aria-label={`Remover imagem ${i + 1}`}
+                    className="absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-black/60 text-white transition hover:bg-rose-500"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                  <span className="absolute bottom-2 left-2 rounded bg-navy/80 px-2 py-0.5 text-[10px] font-bold text-offwhite">
+                    {i + 1}/3
+                  </span>
+                </div>
+              ))}
+
+              {images.length < 3 && (
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  disabled={uploading}
+                  className="flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[color:var(--cyan-brand)]/40 bg-background transition hover:bg-[color:var(--cyan-brand)]/5 disabled:opacity-50"
+                >
+                  {uploading ? (
+                    <Loader2 className="h-6 w-6 animate-spin text-[color:var(--cyan-brand)]" />
+                  ) : (
+                    <Upload className="h-6 w-6 text-[color:var(--cyan-brand)]" />
+                  )}
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-foreground/60">
+                    {uploading ? "Enviando…" : "Inserir foto do banner"}
+                  </span>
+                </button>
+              )}
+            </div>
+            {images.length === 0 && (
+              <p className="mt-3 flex items-center gap-2 text-[11px] text-foreground/50">
+                <ImageIcon className="h-3.5 w-3.5" /> Nenhuma imagem ainda — suba até 3 artes da campanha.
+              </p>
+            )}
+            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={onPick} />
+          </div>
+
+          {/* Textos e ações */}
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase text-foreground/50">Título da campanha</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex.: Semana do Consumidor"
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:border-[color:var(--cyan-brand)] focus:outline-none"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold uppercase text-foreground/50">Subtítulo (opcional)</label>
+              <input
+                type="text"
+                value={subtitle}
+                onChange={(e) => setSubtitle(e.target.value)}
+                placeholder="Ex.: Até 40% off em modelos selecionados"
+                className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:border-[color:var(--cyan-brand)] focus:outline-none"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase text-foreground/50">Botão (opcional)</label>
+                <input
+                  type="text"
+                  value={ctaLabel}
+                  onChange={(e) => setCtaLabel(e.target.value)}
+                  placeholder="Ver ofertas"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:border-[color:var(--cyan-brand)] focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase text-foreground/50">Link do botão</label>
+                <input
+                  type="text"
+                  value={ctaUrl}
+                  onChange={(e) => setCtaUrl(e.target.value)}
+                  placeholder="/ofertas"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:border-[color:var(--cyan-brand)] focus:outline-none"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={save}
+              disabled={saving || uploading}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[color:var(--cyan-brand)] px-6 py-2.5 text-sm font-bold text-navy transition hover:brightness-110 disabled:opacity-50"
+            >
+              {saving ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Megaphone className="h-4 w-4" />}
+              {saving ? "Salvando…" : "Salvar campanha"}
+            </button>
+            {feedback && (
+              <p className={`text-xs ${feedback.startsWith("Erro") ? "text-rose-400" : "text-[color:var(--mint-brand)]"}`}>
+                {feedback}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
