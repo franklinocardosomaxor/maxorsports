@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -139,6 +140,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const isCrmArea = pathname.startsWith("/admin") || pathname.startsWith("/maxorcrm");
   // Sincroniza o catálogo publicado pelo CRM (tabela compartilhada products).
   useCrmSync();
 
@@ -146,7 +149,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <CartProvider>
-        <SplashCursorClient />
+        {!isCrmArea && <SplashCursorClient />}
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </CartProvider>
