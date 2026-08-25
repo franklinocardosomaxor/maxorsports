@@ -239,10 +239,10 @@ function ProductPage() {
                   {variants.length > 1 ? `Cores disponíveis (${variants.length})` : "Cor"}
                 </h3>
                 <span className="text-xs text-muted-foreground">
-                  {variants.find((v) => v.id === product.id)?.name}
+                  {variants.find((v) => v.id === product.id)?.colorVariant ?? "Modelo selecionado"}
                 </span>
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {variants.map((v) => {
                   const isCurrent = v.id === product.id;
                   const swatch = v.colors[0] ?? "#111";
@@ -251,19 +251,25 @@ function ProductPage() {
                       key={v.id}
                       to="/produto/$id"
                       params={{ id: v.id }}
-                      title={v.name}
-                      className={`group flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                      title={v.colorVariant ?? v.name}
+                      className={`group grid grid-cols-[3rem_minmax(0,1fr)] items-center gap-3 rounded-xl border p-2 text-xs font-semibold transition ${
                         isCurrent
-                          ? "border-[color:var(--cyan-brand)] bg-navy text-offwhite"
+                          ? "border-[color:var(--cyan-brand)] bg-navy text-offwhite ring-1 ring-[color:var(--cyan-brand)]"
                           : "border-border bg-card hover:border-[color:var(--cyan-brand)]"
                       }`}
                     >
-                      <span
-                        className="h-5 w-5 rounded-full border border-black/10"
-                        style={{ background: swatch }}
-                        aria-hidden
-                      />
-                      <span className="max-w-[10rem] truncate">{v.name}</span>
+                      <span className="relative block aspect-square overflow-hidden rounded-lg border border-border bg-background">
+                        <img src={v.img} alt={v.colorVariant ?? v.name} loading="lazy" decoding="async" className="h-full w-full object-contain p-1" />
+                        <span
+                          className="absolute bottom-1 right-1 h-4 w-4 rounded-full border border-border"
+                          style={{ background: swatch }}
+                          aria-hidden
+                        />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-offwhite">{v.colorVariant ?? "Cor disponível"}</span>
+                        <span className="mt-0.5 block truncate text-[10px] font-medium text-muted-foreground">{v.name}</span>
+                      </span>
                     </Link>
                   );
                 })}

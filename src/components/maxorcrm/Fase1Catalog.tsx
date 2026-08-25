@@ -7,6 +7,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { getMyOrgId } from "@/lib/maxorcrm-org";
 import { uploadProductImage } from "@/lib/product-images.functions";
+import { deriveModelGroup } from "@/lib/catalog";
 // Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
 import { BRAND_NAMES } from "@/lib/brands";
 
@@ -26,6 +27,7 @@ const PRODUCT_EDIT_COLUMNS =
   "id, sku, name, name_prod, brand, marca_prod, category, categoria_prod, type, tipo_prod, gender, genero, model_group, color_variant, cost_supplier, shipping_cost, margin_percent, import_cost_included, price, valor_dec, old_price, discount_price, num_cal_min, num_cal_max, qtde_est, stock, vender_sem_estoque, site_visible, brand_visible, tag, badge_text, status, descricao, description, imagens, foto_principal, img, images";
 
 const isDataImageUrl = (url: string) => /^data:image\//i.test(url.trim());
+const cleanText = (value: unknown) => String(value ?? "").trim();
 
 const readFileAsDataUrl = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -228,16 +230,19 @@ export function Fase1Catalog() {
         return;
       }
       const source = data ?? prod;
+      const productName = cleanText(source.name_prod || source.name);
+      const productBrand = cleanText(source.marca_prod || source.brand || "Nike");
+      const productColor = cleanText(source.color_variant);
       setEditingId(source.id);
       setForm({
         sku: source.sku || "",
-        name_prod: source.name_prod || source.name || "",
-        marca_prod: source.marca_prod || source.brand || "Nike",
+        name_prod: productName,
+        marca_prod: productBrand,
         categoria_prod: source.categoria_prod || source.category || "Calçados Esportivos",
         tipo_prod: source.tipo_prod || source.type || "Calçados Esportivos",
         genero: source.genero || source.gender || "Masculino",
-        modelGroup: source.model_group || "",
-        colorVariant: source.color_variant || "",
+        modelGroup: deriveModelGroup(productName, productColor, productBrand, source.model_group),
+        colorVariant: productColor,
         costSupplier: Number(source.cost_supplier || 0),
         shippingCost: Number(source.shipping_cost || 0),
         marginPercent: Number(source.margin_percent || 0),
@@ -321,6 +326,7 @@ export function Fase1Catalog() {
         .map((i) => i.url_imagem)
         .filter(Boolean);
 
+      const finalModelGroup = deriveModelGroup(form.name_prod, form.colorVariant, form.marca_prod, form.modelGroup);
       const payload: any = {
         org_id: orgId,
         sku: form.sku,
@@ -335,7 +341,7 @@ export function Fase1Catalog() {
         gender: form.genero,
         genero: form.genero,
         section: isOferta ? "ofertas" : sectionFromGenero,
-        model_group: form.modelGroup,
+        model_group: finalModelGroup,
         color_variant: form.colorVariant,
         cost_supplier: Number(form.costSupplier || 0),
         shipping_cost: Number(form.shippingCost || 0),
@@ -358,7 +364,12 @@ export function Fase1Catalog() {
         status: finalSiteVisible ? 'published' : 'hidden',
         descricao: form.descricao,
         description: form.descricao,
-        imagens: resolvedImages,
+        imagens: resolvedImages.map((img) => ({
+          id: img.id,
+          url_imagem: img.url_imagem,
+          is_principal: Boolean(img.is_principal),
+          exibir_no_site: img.exibir_no_site !== false,
+        })),
         foto_principal: principalImage,
         img: principalImage,
         images: visibleImages

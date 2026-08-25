@@ -76,20 +76,111 @@ const inferSection = (raw: Record<string, unknown>): ProductWithSection["section
 
 const clean = (v: unknown) => String(v ?? "").trim();
 
+const GENERIC_MODEL_GROUPS = new Set([
+  "tenis",
+  "tenis-masculino",
+  "tenis-feminino",
+  "calcado",
+  "calcados",
+  "calcados-esportivos",
+  "sapato",
+  "produto",
+  "modelo",
+  "masculino",
+  "feminino",
+  "infantil",
+  "unissex",
+]);
+
+const COLOR_SUFFIX_WORDS = [
+  "preto",
+  "preta",
+  "branco",
+  "branca",
+  "azul",
+  "vermelho",
+  "vermelha",
+  "verde",
+  "amarelo",
+  "amarela",
+  "cinza",
+  "grafite",
+  "bege",
+  "marrom",
+  "rosa",
+  "roxo",
+  "roxa",
+  "laranja",
+  "off white",
+  "off-white",
+  "black",
+  "white",
+  "blue",
+  "red",
+  "green",
+  "yellow",
+  "grey",
+  "gray",
+  "pink",
+  "purple",
+  "orange",
+  "brown",
+  "cream",
+  "volt",
+];
+
+function stripBrandPrefix(name: string, brand: unknown): string {
+  const canonicalBrand = canonicalBrandName(brand);
+  const candidates = [canonicalBrand, brand].filter(Boolean).map((v) => String(v));
+  let out = name;
+  for (const candidate of candidates) {
+    const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(`^${escaped}[\\s/|:-]+`, "i"), "").trim();
+  }
+  return out;
+}
+
+function stripTrailingColorWords(name: string): string {
+  let out = name;
+  for (const word of COLOR_SUFFIX_WORDS) {
+    const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(`[\\s/|:-]+${escaped}$`, "i"), "").trim();
+  }
+  return out || name;
+}
+
+function isSpecificModelGroup(modelGroup: unknown, brand: unknown): boolean {
+  const model = clean(modelGroup);
+  if (!model) return false;
+  const modelKey = brandSlug(model);
+  if (!modelKey || GENERIC_MODEL_GROUPS.has(modelKey)) return false;
+  const brandKey = brandSlug(canonicalBrandName(brand) ?? brand);
+  if (brandKey && modelKey === brandKey) return false;
+  const asBrand = canonicalBrandName(model);
+  if (asBrand && brandSlug(asBrand) === modelKey && modelKey !== brandSlug(model)) return false;
+  return true;
+}
+
 /**
- * Quando o CRM não envia `model_group`, tenta derivar a família do produto
- * removendo o texto da variante de cor do final do nome. Isso evita que cada
- * cor vire um modelo diferente por acidente no site.
+ * Quando o CRM não envia um `model_group` útil, deriva a família do produto
+ * removendo marca e cor. Isso une variações reais sem colapsar uma marca inteira.
  */
-export function inferModelGroup(name: unknown, colorVariant: unknown): string {
+export function inferModelGroup(name: unknown, colorVariant: unknown, brand?: unknown): string {
   const rawName = clean(name);
   const rawColor = clean(colorVariant);
   if (!rawName) return "";
-  if (!rawColor) return rawName;
-  const nameLc = rawName.toLowerCase();
+  const withoutBrand = stripBrandPrefix(rawName, brand);
+  if (!rawColor) return stripTrailingColorWords(withoutBrand);
+  const nameLc = withoutBrand.toLowerCase();
   const colorLc = rawColor.toLowerCase();
-  if (!nameLc.endsWith(colorLc)) return rawName;
-  return rawName.slice(0, rawName.length - rawColor.length).replace(/[\s\-/|]+$/g, "").trim() || rawName;
+  if (!nameLc.endsWith(colorLc)) return stripTrailingColorWords(withoutBrand);
+  return withoutBrand.slice(0, withoutBrand.length - rawColor.length).replace(/[\s\-/|]+$/g, "").trim() || withoutBrand;
+}
+
+/** Chave humana do modelo: usa `model_group` só quando ele não é genérico. */
+export function deriveModelGroup(name: unknown, colorVariant: unknown, brand: unknown, modelGroup?: unknown): string {
+  if (isSpecificModelGroup(modelGroup, brand)) return clean(modelGroup);
+  return inferModelGroup(name, colorVariant, brand);
 }
 
 /** `site_visible` é a PRIMEIRA condição: sem `true`, o produto não existe pro site. */
@@ -180,7 +271,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
 
   const oldValue = raw.old_price ?? raw.old;
   const colorVariant = clean(raw.color_variant ?? raw.colorVariant ?? raw.cor_variante ?? raw.cor);
-  const group = clean(raw.model_group ?? raw.modelGroup ?? raw.modelId) || inferModelGroup(raw.name, colorVariant);
+  const group = deriveModelGroup(raw.name, colorVariant, raw.brand ?? raw.marca_prod, raw.model_group ?? raw.modelGroup ?? raw.modelId);
 
   const selo = normalizeSelo(raw.tag ?? raw.selo);
 
