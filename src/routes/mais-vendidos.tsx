@@ -3,6 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { useMemo } from "react";
 import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
+import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
 import { ALL_PRODUCTS } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/mais-vendidos")({
 
 function MaisVendidosPage() {
   const catalogVersion = useCatalogVersion();
+  const viewMode = useViewMode();
 
   const products = useMemo(() => {
     return ALL_PRODUCTS.filter((p) => p.selo === "mais-vendido");
@@ -60,11 +62,20 @@ function MaisVendidosPage() {
             Aguardando sincronização de produtos populares...
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-            {products.map((p) => (
-              <ProductMiniCard key={`${p.section}-${p.id}`} product={p} />
-            ))}
-          </div>
+          <>
+            <div className="mb-6 flex justify-end">
+              <ViewModeToggle />
+            </div>
+            <div className={viewModeContainerClass(viewMode)}>
+              {products.map((p) =>
+                viewMode === "list" ? (
+                  <ProductListRow key={`${p.section}-${p.id}`} product={p} />
+                ) : (
+                  <ProductMiniCard key={`${p.section}-${p.id}`} product={p} />
+                ),
+              )}
+            </div>
+          </>
         )}
       </div>
     </Shell>

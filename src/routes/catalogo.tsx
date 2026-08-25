@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ALL_PRODUCTS, getCatalogVersion, brl, brandSlug, Selo, SELO_LABEL } from "@/lib/catalog";
-import { useMemo, useState, useEffect } from "react";
+import { ALL_PRODUCTS, getCatalogVersion, Selo, SELO_LABEL } from "@/lib/catalog";
+import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
-import { ChevronRight, Grid2X2, LayoutList } from "lucide-react";
+import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
+import { ChevronRight, Grid2X2 } from "lucide-react";
 
 const SELOS_ORDER: Selo[] = ["destaque", "lancamento", "oferta", "mais-vendido", "normal"];
 
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/catalogo")({
 
 function CatalogoSeloPage() {
   const version = getCatalogVersion();
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const viewMode = useViewMode();
 
   // Agrupa produtos por selo
   const groupedProducts = useMemo(() => {
@@ -69,6 +70,7 @@ function CatalogoSeloPage() {
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS</span>
+              <ViewModeToggle />
             </div>
           </div>
         </header>
@@ -107,10 +109,14 @@ function CatalogoSeloPage() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-                    {products.map((product) => (
-                      <ProductMiniCard key={product.id} product={product} />
-                    ))}
+                  <div className={viewModeContainerClass(viewMode)}>
+                    {products.map((product) =>
+                      viewMode === "list" ? (
+                        <ProductListRow key={product.id} product={product} />
+                      ) : (
+                        <ProductMiniCard key={product.id} product={product} />
+                      ),
+                    )}
                   </div>
                 </section>
               );

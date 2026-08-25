@@ -3,6 +3,7 @@ import { ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
+import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
 import { ALL_PRODUCTS } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
@@ -26,6 +27,7 @@ function CategoriasPage() {
   // Muda a cada sync do CRM — precisa entrar nas deps, senão os memos
   // congelam na primeira renderização e produtos novos não aparecem.
   const catalogVersion = useCatalogVersion();
+  const viewMode = useViewMode();
   const categories = useMemo(
     () => Array.from(new Set(ALL_PRODUCTS.map((p) => p.category))).sort(),
     [catalogVersion],
@@ -83,10 +85,18 @@ function CategoriasPage() {
           })}
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-          {products.map((p) => (
-            <ProductMiniCard key={`${p.section}-${p.id}`} product={p} />
-          ))}
+        <div className="mt-6 flex justify-end">
+          <ViewModeToggle />
+        </div>
+
+        <div className={`mt-4 ${viewModeContainerClass(viewMode)}`}>
+          {products.map((p) =>
+            viewMode === "list" ? (
+              <ProductListRow key={`${p.section}-${p.id}`} product={p} />
+            ) : (
+              <ProductMiniCard key={`${p.section}-${p.id}`} product={p} />
+            ),
+          )}
         </div>
       </div>
     </Shell>

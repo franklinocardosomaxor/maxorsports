@@ -395,9 +395,6 @@ function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
             {product.colors.map((c) => (
               <span key={c} className="h-3.5 w-3.5 rounded-full border border-black/10" style={{ background: c }} />
             ))}
-            <span className={`text-[10px] font-medium uppercase tracking-wider ${dark ? "text-offwhite/60" : "text-muted-foreground"}`}>
-              +12 cores
-            </span>
           </div>
         )}
         <div className="mt-auto">
