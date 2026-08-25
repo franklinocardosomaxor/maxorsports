@@ -27,7 +27,14 @@ Ou seja: manter um único projeto está certo (mesmo banco, mesmo Maxor Kit, uma
 
 Três separações, em ordem de impacto:
 
-**1. Separação de navegação.** Remover "Maxor CRM" do menu público e do rodapé. Acesso passa a ser por URL direta (`/maxorcrm`) ou por um ponto discreto na área de conta, visível só para os dois super-admins. A rota já valida o e-mail; a mudança é de exposição, não de segurança.
+**1. Separação de navegação.** Remover apenas o item "Maxor CRM" da barra do topo (verificado: o rodapé não tem link do CRM, então nada muda lá). A barra passa de:
+
+```text
+antes:  MASCULINO · FEMININO · INFANTIL · TÊNIS ⌄ · LANÇAMENTOS · MAIS VENDIDOS · OFERTAS · DIVERSOS ⌄ · MAXOR CRM
+depois: MASCULINO · FEMININO · INFANTIL · TÊNIS ⌄ · LANÇAMENTOS · MAIS VENDIDOS · OFERTAS · DIVERSOS ⌄
+```
+
+Acesso passa a ser por URL direta (`/maxorcrm`) ou por um ponto discreto na área de conta, visível só para os dois super-admins. A rota já valida o e-mail; a mudança é de exposição, não de segurança.
 
 **2. Separação de carregamento.** Garantir que nada do CRM esteja no grafo de imports da vitrine: as telas do CRM entram por import dinâmico/lazy dentro das próprias rotas `/maxorcrm/*`, e nenhum componente de site importa `src/components/maxorcrm/*`. Resultado: o visitante nunca baixa as ~1.7k linhas de painel. As rotas do CRM já são `ssr: false`, então também não custam nada no servidor da vitrine.
 
