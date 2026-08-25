@@ -31,6 +31,7 @@ import {
   setCrmProducts,
   subscribeCatalog,
   getCatalogVersion,
+  deriveModelGroup,
 } from "@/lib/catalog";
 
 const IMG = "https://cdn.maxor.test/nike-pegasus.jpg";
@@ -156,11 +157,15 @@ describe("agrupamento canônico de modelos", () => {
     expect(getVariants(ALL_PRODUCTS[0])).toHaveLength(3);
   });
 
-  it("agrupa Air Zoom G.T. Cut mesmo quando uma linha veio com model_group curto", async () => {
+  it("preserva o modelo escolhido no CRM mesmo quando o nome tem complemento", () => {
+    expect(deriveModelGroup("Nike Air Force 1 Low Preto", "Preto", "Nike", "Air Force 1")).toBe("Air Force 1");
+  });
+
+  it("agrupa Air Zoom G.T. Cut quando as variações estão vinculadas ao mesmo model_group", async () => {
     await syncFromCrm([
       row({ id: "uuid-gt-1", sku: "MXR-2123", name: "Nike Air Zoom G.T. Cut Cinza / Rosa / Amarelo / Azul", model_group: "Nike Air Zoom G.T. Cut", color_variant: "Cinza / Rosa / Amarelo / Azul" }),
       row({ id: "uuid-gt-2", sku: "MXR-4949", name: "Nike Air Zoom G.T. Cut EP Branco / Preto / Laranja / Rosa", model_group: "Nike Air Zoom G.T. Cut", color_variant: "Branco / Preto / Laranja / Rosa" }),
-      row({ id: "uuid-gt-3", sku: "MXR-2722", name: "Nike Air Zoom G.T. Cut EP", model_group: "Nike Air Zoom G.T", color_variant: "Nike Air Zoom G.T. Cut EP" }),
+      row({ id: "uuid-gt-3", sku: "MXR-2722", name: "Nike Air Zoom G.T. Cut EP", model_group: "Nike Air Zoom G.T. Cut", color_variant: "Nike Air Zoom G.T. Cut EP" }),
     ]);
 
     const grouped = groupProductsByModel(ALL_PRODUCTS);

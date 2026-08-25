@@ -208,11 +208,6 @@ function canonicalModelKey(model: unknown, brand: unknown): string {
   return tokens.join("-");
 }
 
-function isModelKeyMoreSpecific(candidate: string, base: string): boolean {
-  if (!candidate || !base || candidate === base) return false;
-  return candidate.startsWith(`${base}-`) && candidate.split("-").length > base.split("-").length;
-}
-
 function isSpecificModelGroup(modelGroup: unknown, brand: unknown): boolean {
   const model = clean(modelGroup);
   if (!model) return false;
@@ -245,18 +240,10 @@ export function inferModelGroup(name: unknown, colorVariant: unknown, brand?: un
 export function deriveModelGroup(name: unknown, colorVariant: unknown, brand: unknown, modelGroup?: unknown): string {
   const inferred = inferModelGroup(name, colorVariant, brand);
   if (!isSpecificModelGroup(modelGroup, brand)) return inferred;
-
-  const model = clean(modelGroup);
-  const modelKey = canonicalModelKey(model, brand);
-  const inferredKey = canonicalModelKey(inferred, brand);
-
-  // Se o CRM enviou um agrupamento curto demais (ex.: "Nike Air Zoom G.T")
-  // mas o nome revela o modelo completo ("Nike Air Zoom G.T. Cut EP"), usa o
-  // nome como fonte mais específica. Isso mantém variações juntas sem colapsar
-  // uma marca inteira quando alguém digita só "Nike" no cadastro.
-  if (isModelKeyMoreSpecific(inferredKey, modelKey)) return stripQuotedNickname(stripTrailingColorWords(inferred));
-
-  return model;
+  // Se o CRM enviou um agrupamento específico, ele é a fonte soberana.
+  // Isso preserva a escolha feita no seletor "Modelo Agrupado" e impede que
+  // o nome do produto sobrescreva silenciosamente o vínculo entre colorways.
+  return clean(modelGroup);
 }
 
 function modelKeyFromParts(name: unknown, colorVariant: unknown, brand: unknown, modelGroup?: unknown): string {
@@ -265,7 +252,8 @@ function modelKeyFromParts(name: unknown, colorVariant: unknown, brand: unknown,
   const modelKey = isSpecificModelGroup(model, brand) ? canonicalModelKey(model, brand) : "";
   const inferredKey = canonicalModelKey(inferred, brand);
 
-  if (isModelKeyMoreSpecific(inferredKey, modelKey)) return inferredKey;
+  // O agrupamento salvo no CRM deve vencer a inferência do título. A inferência
+  // só existe como fallback quando não há `model_group` útil.
   if (modelKey) return modelKey;
   return inferredKey;
 }
