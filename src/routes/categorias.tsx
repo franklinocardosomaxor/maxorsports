@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
-import { ALL_PRODUCTS } from "@/lib/catalog";
+import { ALL_PRODUCTS, groupProductsByModel } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/categorias")({
@@ -35,7 +35,7 @@ function CategoriasPage() {
   const [active, setActive] = useState<string>("Todas");
 
   const products = useMemo(
-    () => (active === "Todas" ? ALL_PRODUCTS : ALL_PRODUCTS.filter((p) => p.category === active)),
+    () => groupProductsByModel(active === "Todas" ? ALL_PRODUCTS : ALL_PRODUCTS.filter((p) => p.category === active)),
     [active, catalogVersion],
   );
 

@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Shell } from "@/components/site/Shell";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
-import { ALL_PRODUCTS } from "@/lib/catalog";
+import { ALL_PRODUCTS, groupProductsByModel } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/lancamentos")({
@@ -28,7 +28,7 @@ function LancamentosPage() {
   const viewMode = useViewMode();
 
   const products = useMemo(() => {
-    return ALL_PRODUCTS.filter((p) => p.selo === "lancamento");
+    return groupProductsByModel(ALL_PRODUCTS.filter((p) => p.selo === "lancamento"));
   }, [catalogVersion]);
 
 

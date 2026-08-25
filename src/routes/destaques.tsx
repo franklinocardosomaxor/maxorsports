@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ALL_PRODUCTS, getCatalogVersion, Selo, SELO_LABEL } from "@/lib/catalog";
+import { ALL_PRODUCTS, getCatalogVersion, groupProductsByModel, type ProductWithSection } from "@/lib/catalog";
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
@@ -29,7 +29,7 @@ function DestaquesPage() {
   // para permitir a visualização "separada pelo seu destaque"
   const groupedHighlights = useMemo(() => {
     const highlights = ALL_PRODUCTS.filter(p => p.selo === 'destaque');
-    const groups: Record<string, typeof ALL_PRODUCTS> = {};
+    const groups: Record<string, ProductWithSection[]> = {};
     
     highlights.forEach(p => {
       const tag = p.tag || "Destaques";
@@ -37,11 +37,13 @@ function DestaquesPage() {
       groups[tag].push(p);
     });
     
-    return groups;
+    return Object.fromEntries(
+      Object.entries(groups).map(([name, items]) => [name, groupProductsByModel(items)]),
+    ) as Record<string, ProductWithSection[]>;
   }, [version]);
 
   const groupNames = Object.keys(groupedHighlights).sort();
-  const totalCount = ALL_PRODUCTS.filter(p => p.selo === 'destaque').length;
+  const totalCount = Object.values(groupedHighlights).reduce((sum, group) => sum + group.length, 0);
 
   return (
     <div className="min-h-screen bg-navy pt-24 pb-20">

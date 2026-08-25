@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { CatalogPage, type CatalogProduct } from "@/components/site/CatalogPage";
-import { ALL_PRODUCTS } from "@/lib/catalog";
+import { ALL_PRODUCTS, groupProductsByModel } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 
@@ -43,7 +43,7 @@ function OfertasPage() {
       seen.add(p.id);
       out.push(p as unknown as CatalogProduct);
     }
-    return out;
+    return groupProductsByModel(out as any) as unknown as CatalogProduct[];
   }, [catalogVersion]);
 
 
