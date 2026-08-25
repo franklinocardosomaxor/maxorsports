@@ -84,7 +84,7 @@ function EletronicosPage() {
       products={products}
       brands={brands.length > 0 ? brands : ["Maxor"]}
       categories={categories.length > 0 ? categories : ["Eletrônico"]}
-      sizes={sizes.length > 0 ? sizes : ["Único"]}
+      sizes={sizes.length > 0 ? sizes : []}
     />
   );
 }

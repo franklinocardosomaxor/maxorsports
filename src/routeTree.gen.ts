@@ -20,10 +20,12 @@ import { Route as LancamentosRouteImport } from './routes/lancamentos'
 import { Route as KitValidadorRouteImport } from './routes/kit-validador'
 import { Route as InfantilRouteImport } from './routes/infantil'
 import { Route as FemininoRouteImport } from './routes/feminino'
+import { Route as EletronicosRouteImport } from './routes/eletronicos'
 import { Route as DestaquesRouteImport } from './routes/destaques'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CategoriasRouteImport } from './routes/categorias'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
+import { Route as AcessoriosRouteImport } from './routes/acessorios'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoupasIndexRouteImport } from './routes/roupas.index'
 import { Route as MaxorcrmIndexRouteImport } from './routes/maxorcrm/index'
@@ -99,6 +101,11 @@ const FemininoRoute = FemininoRouteImport.update({
   path: '/feminino',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EletronicosRoute = EletronicosRouteImport.update({
+  id: '/eletronicos',
+  path: '/eletronicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DestaquesRoute = DestaquesRouteImport.update({
   id: '/destaques',
   path: '/destaques',
@@ -117,6 +124,11 @@ const CategoriasRoute = CategoriasRouteImport.update({
 const CatalogoRoute = CatalogoRouteImport.update({
   id: '/catalogo',
   path: '/catalogo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcessoriosRoute = AcessoriosRouteImport.update({
+  id: '/acessorios',
+  path: '/acessorios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -218,10 +230,12 @@ const ApiPublicCrmImageSplatRoute = ApiPublicCrmImageSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acessorios': typeof AcessoriosRoute
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
   '/destaques': typeof DestaquesRoute
+  '/eletronicos': typeof EletronicosRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/kit-validador': typeof KitValidadorRoute
@@ -254,10 +268,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acessorios': typeof AcessoriosRoute
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
   '/destaques': typeof DestaquesRoute
+  '/eletronicos': typeof EletronicosRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/kit-validador': typeof KitValidadorRoute
@@ -290,10 +306,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/acessorios': typeof AcessoriosRoute
   '/catalogo': typeof CatalogoRoute
   '/categorias': typeof CategoriasRoute
   '/checkout': typeof CheckoutRoute
   '/destaques': typeof DestaquesRoute
+  '/eletronicos': typeof EletronicosRoute
   '/feminino': typeof FemininoRoute
   '/infantil': typeof InfantilRoute
   '/kit-validador': typeof KitValidadorRoute
@@ -328,10 +346,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/acessorios'
     | '/catalogo'
     | '/categorias'
     | '/checkout'
     | '/destaques'
+    | '/eletronicos'
     | '/feminino'
     | '/infantil'
     | '/kit-validador'
@@ -364,10 +384,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/acessorios'
     | '/catalogo'
     | '/categorias'
     | '/checkout'
     | '/destaques'
+    | '/eletronicos'
     | '/feminino'
     | '/infantil'
     | '/kit-validador'
@@ -399,10 +421,12 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/acessorios'
     | '/catalogo'
     | '/categorias'
     | '/checkout'
     | '/destaques'
+    | '/eletronicos'
     | '/feminino'
     | '/infantil'
     | '/kit-validador'
@@ -436,10 +460,12 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcessoriosRoute: typeof AcessoriosRoute
   CatalogoRoute: typeof CatalogoRoute
   CategoriasRoute: typeof CategoriasRoute
   CheckoutRoute: typeof CheckoutRoute
   DestaquesRoute: typeof DestaquesRoute
+  EletronicosRoute: typeof EletronicosRoute
   FemininoRoute: typeof FemininoRoute
   InfantilRoute: typeof InfantilRoute
   KitValidadorRoute: typeof KitValidadorRoute
@@ -546,6 +572,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FemininoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eletronicos': {
+      id: '/eletronicos'
+      path: '/eletronicos'
+      fullPath: '/eletronicos'
+      preLoaderRoute: typeof EletronicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/destaques': {
       id: '/destaques'
       path: '/destaques'
@@ -572,6 +605,13 @@ declare module '@tanstack/react-router' {
       path: '/catalogo'
       fullPath: '/catalogo'
       preLoaderRoute: typeof CatalogoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/acessorios': {
+      id: '/acessorios'
+      path: '/acessorios'
+      fullPath: '/acessorios'
+      preLoaderRoute: typeof AcessoriosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -730,10 +770,12 @@ const MaxorcrmRouteWithChildren = MaxorcrmRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcessoriosRoute: AcessoriosRoute,
   CatalogoRoute: CatalogoRoute,
   CategoriasRoute: CategoriasRoute,
   CheckoutRoute: CheckoutRoute,
   DestaquesRoute: DestaquesRoute,
+  EletronicosRoute: EletronicosRoute,
   FemininoRoute: FemininoRoute,
   InfantilRoute: InfantilRoute,
   KitValidadorRoute: KitValidadorRoute,

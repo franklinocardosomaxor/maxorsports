@@ -84,7 +84,7 @@ function AcessoriosPage() {
       products={products}
       brands={brands.length > 0 ? brands : ["Maxor"]}
       categories={categories.length > 0 ? categories : ["Acessórios"]}
-      sizes={sizes.length > 0 ? sizes : ["Único"]}
+      sizes={sizes.length > 0 ? sizes : []}
     />
   );
 }
