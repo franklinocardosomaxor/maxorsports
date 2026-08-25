@@ -129,6 +129,39 @@ const COLOR_SUFFIX_WORDS = [
   "volt",
 ];
 
+const MODEL_SUFFIX_WORDS = new Set([
+  "ep",
+  "se",
+  "sp",
+  "qs",
+  "gs",
+  "ps",
+  "td",
+  "w",
+  "wmns",
+  "women",
+  "womens",
+  "premium",
+]);
+
+const ROMAN_MODEL_NUMBERS = new Map<string, string>([
+  ["i", "1"],
+  ["ii", "2"],
+  ["iii", "3"],
+  ["iv", "4"],
+  ["v", "5"],
+  ["vi", "6"],
+  ["vii", "7"],
+  ["viii", "8"],
+  ["ix", "9"],
+  ["x", "10"],
+  ["xi", "11"],
+  ["xii", "12"],
+  ["xiii", "13"],
+  ["xiv", "14"],
+  ["xv", "15"],
+]);
+
 function stripBrandPrefix(name: string, brand: unknown): string {
   const canonicalBrand = canonicalBrandName(brand);
   const candidates = [canonicalBrand, brand].filter(Boolean).map((v) => String(v));
@@ -147,6 +180,37 @@ function stripTrailingColorWords(name: string): string {
     out = out.replace(new RegExp(`[\\s/|:-]+${escaped}$`, "i"), "").trim();
   }
   return out || name;
+}
+
+function stripQuotedNickname(name: string): string {
+  return name
+    .replace(/["'“”‘’][^"'“”‘’]+["'“”‘’]/g, " ")
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function canonicalModelKey(model: unknown, brand: unknown): string {
+  const cleaned = stripQuotedNickname(stripTrailingColorWords(stripBrandPrefix(clean(model), brand)));
+  if (!cleaned) return "";
+
+  const tokens = brandSlug(cleaned)
+    .split("-")
+    .filter(Boolean)
+    .map((token) => ROMAN_MODEL_NUMBERS.get(token) ?? token);
+
+  while (tokens.length > 2) {
+    const last = tokens.at(-1);
+    if (!last || !MODEL_SUFFIX_WORDS.has(last)) break;
+    tokens.pop();
+  }
+
+  return tokens.join("-");
+}
+
+function isModelKeyMoreSpecific(candidate: string, base: string): boolean {
+  if (!candidate || !base || candidate === base) return false;
+  return candidate.startsWith(`${base}-`) && candidate.split("-").length > base.split("-").length;
 }
 
 function isSpecificModelGroup(modelGroup: unknown, brand: unknown): boolean {
@@ -179,8 +243,31 @@ export function inferModelGroup(name: unknown, colorVariant: unknown, brand?: un
 
 /** Chave humana do modelo: usa `model_group` só quando ele não é genérico. */
 export function deriveModelGroup(name: unknown, colorVariant: unknown, brand: unknown, modelGroup?: unknown): string {
-  if (isSpecificModelGroup(modelGroup, brand)) return clean(modelGroup);
-  return inferModelGroup(name, colorVariant, brand);
+  const inferred = inferModelGroup(name, colorVariant, brand);
+  if (!isSpecificModelGroup(modelGroup, brand)) return inferred;
+
+  const model = clean(modelGroup);
+  const modelKey = canonicalModelKey(model, brand);
+  const inferredKey = canonicalModelKey(inferred, brand);
+
+  // Se o CRM enviou um agrupamento curto demais (ex.: "Nike Air Zoom G.T")
+  // mas o nome revela o modelo completo ("Nike Air Zoom G.T. Cut EP"), usa o
+  // nome como fonte mais específica. Isso mantém variações juntas sem colapsar
+  // uma marca inteira quando alguém digita só "Nike" no cadastro.
+  if (isModelKeyMoreSpecific(inferredKey, modelKey)) return stripQuotedNickname(stripTrailingColorWords(inferred));
+
+  return model;
+}
+
+function modelKeyFromParts(name: unknown, colorVariant: unknown, brand: unknown, modelGroup?: unknown): string {
+  const model = clean(modelGroup);
+  const inferred = inferModelGroup(name, colorVariant, brand);
+  const modelKey = isSpecificModelGroup(model, brand) ? canonicalModelKey(model, brand) : "";
+  const inferredKey = canonicalModelKey(inferred, brand);
+
+  if (isModelKeyMoreSpecific(inferredKey, modelKey)) return inferredKey;
+  if (modelKey) return modelKey;
+  return inferredKey;
 }
 
 /** `site_visible` é a PRIMEIRA condição: sem `true`, o produto não existe pro site. */
@@ -343,9 +430,28 @@ export const mergeCrmProducts = setCrmProducts;
 
 /** Chave estável para reunir variantes do mesmo modelo na vitrine. */
 export function productModelKey(p: ProductWithSection): string {
-  const model = clean(p.modelId);
-  if (!model) return `${brandSlug(p.brand)}::${p.id}`;
-  return `${brandSlug(p.brand)}::${brandSlug(model)}`;
+  const modelKey = modelKeyFromParts(p.name, p.colorVariant, p.brand, p.modelId);
+  if (!modelKey) return `${brandSlug(p.brand)}::${p.id}`;
+  return `${brandSlug(p.brand)}::${modelKey}`;
+}
+
+/** Variantes de cor do mesmo modelo dentro de uma lista informada. */
+export function getVariantsFromProducts(
+  products: ReadonlyArray<ProductWithSection>,
+  base: ProductWithSection,
+): ProductWithSection[] {
+  const key = productModelKey(base);
+  const seen = new Set<string>();
+  const out: ProductWithSection[] = [];
+  for (const p of products) {
+    const k = productModelKey(p);
+    if (k !== key) continue;
+    const dedupKey = `${p.id}::${p.colorVariant ?? p.colors[0] ?? ""}`;
+    if (seen.has(dedupKey)) continue;
+    seen.add(dedupKey);
+    out.push(p);
+  }
+  return out.sort((a, b) => (a.id === base.id ? -1 : b.id === base.id ? 1 : 0));
 }
 
 /**
@@ -384,18 +490,7 @@ export function getProduct(id: string): ProductWithSection | undefined {
 
 /** Variantes de cor do mesmo modelo (agrupadas por `model_group` do CRM). */
 export function getVariants(base: ProductWithSection): ProductWithSection[] {
-  const key = productModelKey(base);
-  const seen = new Set<string>();
-  const out: ProductWithSection[] = [];
-  for (const p of ALL_PRODUCTS) {
-    const k = productModelKey(p);
-    if (k !== key) continue;
-    const dedupKey = `${p.id}::${p.colorVariant ?? p.colors[0] ?? ""}`;
-    if (seen.has(dedupKey)) continue;
-    seen.add(dedupKey);
-    out.push(p);
-  }
-  return out.sort((a, b) => (a.id === base.id ? -1 : b.id === base.id ? 1 : 0));
+  return getVariantsFromProducts(ALL_PRODUCTS, base);
 }
 
 export const brl = (n: number) =>

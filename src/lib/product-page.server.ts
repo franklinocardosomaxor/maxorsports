@@ -18,7 +18,7 @@ import {
   isUsableImage,
   normalizeProduct,
   normalizeSelo,
-  productModelKey,
+  getVariantsFromProducts,
   type ProductWithSection,
 } from "@/lib/catalog";
 
@@ -123,18 +123,8 @@ export async function fetchProductPageData(id: string): Promise<ProductPageData 
   const product = products.find((p) => p.id === id);
   if (!product) return null;
 
-  // Variantes de cor do mesmo modelo (mesma lógica de getVariants do cliente).
-  const groupKey = productModelKey(product);
-  const seen = new Set<string>();
-  const variants: ProductWithSection[] = [];
-  for (const p of products) {
-    if (productModelKey(p) !== groupKey) continue;
-    const dedupKey = `${p.id}::${p.colorVariant ?? p.colors[0] ?? ""}`;
-    if (seen.has(dedupKey)) continue;
-    seen.add(dedupKey);
-    variants.push(p);
-  }
-  variants.sort((a, b) => (a.id === product.id ? -1 : b.id === product.id ? 1 : 0));
+  // Variantes de cor do mesmo modelo — mesma regra canônica usada nas vitrines.
+  const variants = getVariantsFromProducts(products, product);
 
   return { product, variants };
 }

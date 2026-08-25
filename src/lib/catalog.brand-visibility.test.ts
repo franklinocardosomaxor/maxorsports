@@ -25,7 +25,9 @@ import { fetchDbProducts } from "@/lib/crm-db-catalog";
 import {
   ALL_PRODUCTS,
   getBrandProducts,
+  getVariants,
   getVisibleBrandSlugs,
+  groupProductsByModel,
   setCrmProducts,
   subscribeCatalog,
   getCatalogVersion,
@@ -138,5 +140,49 @@ describe("brand_visible: CRM → carrossel de marcas", () => {
     await syncFromCrm([]);
     expect(ALL_PRODUCTS).toHaveLength(0);
     expect(getVisibleBrandSlugs()).toEqual([]);
+  });
+});
+
+describe("agrupamento canônico de modelos", () => {
+  it("agrupa as 3 variações do Nike Air Zoom Vomero 17", async () => {
+    await syncFromCrm([
+      row({ id: "uuid-v17-1", sku: "MXR-5346", name: "Nike Air Zoom Vomero 17", model_group: "Nike Air Zoom Vomero 17", color_variant: "Creme / Amarelo fluorescente" }),
+      row({ id: "uuid-v17-2", sku: "MXR-5748", name: "Nike Air Zoom Vomero 17 Preto", model_group: "Nike Air Zoom Vomero 17", color_variant: "Preto" }),
+      row({ id: "uuid-v17-3", sku: "MXR-7155", name: "Nike Air Zoom Vomero 17", model_group: "Nike Air Zoom Vomero 17", color_variant: "Branco / Preto / Laranja" }),
+    ]);
+
+    const grouped = groupProductsByModel(ALL_PRODUCTS);
+    expect(grouped).toHaveLength(1);
+    expect(getVariants(ALL_PRODUCTS[0])).toHaveLength(3);
+  });
+
+  it("agrupa Air Zoom G.T. Cut mesmo quando uma linha veio com model_group curto", async () => {
+    await syncFromCrm([
+      row({ id: "uuid-gt-1", sku: "MXR-2123", name: "Nike Air Zoom G.T. Cut Cinza / Rosa / Amarelo / Azul", model_group: "Nike Air Zoom G.T. Cut", color_variant: "Cinza / Rosa / Amarelo / Azul" }),
+      row({ id: "uuid-gt-2", sku: "MXR-4949", name: "Nike Air Zoom G.T. Cut EP Branco / Preto / Laranja / Rosa", model_group: "Nike Air Zoom G.T. Cut", color_variant: "Branco / Preto / Laranja / Rosa" }),
+      row({ id: "uuid-gt-3", sku: "MXR-2722", name: "Nike Air Zoom G.T. Cut EP", model_group: "Nike Air Zoom G.T", color_variant: "Nike Air Zoom G.T. Cut EP" }),
+    ]);
+
+    const grouped = groupProductsByModel(ALL_PRODUCTS);
+    expect(grouped).toHaveLength(1);
+    expect(getVariants(ALL_PRODUCTS[2])).toHaveLength(3);
+  });
+
+  it("não mistura Vomero 17 com Vomero 19", async () => {
+    await syncFromCrm([
+      row({ id: "uuid-v17", sku: "MXR-5346", name: "Nike Air Zoom Vomero 17", model_group: "Nike Air Zoom Vomero 17", color_variant: "Creme / Amarelo fluorescente" }),
+      row({ id: "uuid-v19", sku: "MXR-8778", name: "Nike Vomero 19 Moonlight Verde Claro / Limão / Cinza Escuro", model_group: "Nike Vomero 19 Moonlight", color_variant: "Verde Claro / Limão / Cinza Escuro" }),
+    ]);
+
+    expect(groupProductsByModel(ALL_PRODUCTS)).toHaveLength(2);
+  });
+
+  it("ignora model_group genérico de marca e não colapsa modelos diferentes", async () => {
+    await syncFromCrm([
+      row({ id: "uuid-pegasus", sku: "MXR-1001", name: "Nike Pegasus 41 Preto", model_group: "nike", color_variant: "Preto" }),
+      row({ id: "uuid-vomero", sku: "MXR-1002", name: "Nike Air Zoom Vomero 17 Preto", model_group: "nike", color_variant: "Preto" }),
+    ]);
+
+    expect(groupProductsByModel(ALL_PRODUCTS)).toHaveLength(2);
   });
 });
