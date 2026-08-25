@@ -26,6 +26,8 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/categorias", changefreq: "weekly", priority: "0.7" },
           { path: "/marcas", changefreq: "weekly", priority: "0.7" },
           { path: "/roupas", changefreq: "weekly", priority: "0.7" },
+          { path: "/acessorios", changefreq: "weekly", priority: "0.7" },
+          { path: "/eletronicos", changefreq: "weekly", priority: "0.7" },
           { path: "/colecao/masculino", changefreq: "weekly", priority: "0.7" },
           { path: "/colecao/feminino", changefreq: "weekly", priority: "0.7" },
           { path: "/blog/guia-tenis-nike", changefreq: "monthly", priority: "0.6" },
