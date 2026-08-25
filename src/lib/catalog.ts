@@ -22,6 +22,10 @@ export { brandSlug };
 export type ProductWithSection = CatalogProduct & {
   section: "masculino" | "feminino" | "infantil" | "ofertas";
   modelId?: string;
+  /** Nome/descrição da cor cadastrada no CRM para esta variante. */
+  colorVariant?: string;
+  /** Quantas variantes publicadas existem neste mesmo modelo. */
+  variantCount?: number;
   /** Selo normalizado vindo do CRM. */
   selo?: Selo;
   /** Tag original do CRM (para depuração e fallbacks). */
@@ -69,6 +73,24 @@ const inferSection = (raw: Record<string, unknown>): ProductWithSection["section
   if (s.includes("ofer") || s.includes("promo")) return "ofertas";
   return "masculino";
 };
+
+const clean = (v: unknown) => String(v ?? "").trim();
+
+/**
+ * Quando o CRM não envia `model_group`, tenta derivar a família do produto
+ * removendo o texto da variante de cor do final do nome. Isso evita que cada
+ * cor vire um modelo diferente por acidente no site.
+ */
+export function inferModelGroup(name: unknown, colorVariant: unknown): string {
+  const rawName = clean(name);
+  const rawColor = clean(colorVariant);
+  if (!rawName) return "";
+  if (!rawColor) return rawName;
+  const nameLc = rawName.toLowerCase();
+  const colorLc = rawColor.toLowerCase();
+  if (!nameLc.endsWith(colorLc)) return rawName;
+  return rawName.slice(0, rawName.length - rawColor.length).replace(/[\s\-/|]+$/g, "").trim() || rawName;
+}
 
 /** `site_visible` é a PRIMEIRA condição: sem `true`, o produto não existe pro site. */
 export function isPublished(raw: Record<string, unknown>): boolean {
@@ -157,7 +179,8 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
   const img = isUsableImage(mainRaw) ? String(mainRaw) : (images[0] ?? "");
 
   const oldValue = raw.old_price ?? raw.old;
-  const group = raw.model_group ?? raw.modelGroup ?? raw.modelId;
+  const colorVariant = clean(raw.color_variant ?? raw.colorVariant ?? raw.cor_variante ?? raw.cor);
+  const group = clean(raw.model_group ?? raw.modelGroup ?? raw.modelId) || inferModelGroup(raw.name, colorVariant);
 
   const selo = normalizeSelo(raw.tag ?? raw.selo);
 
@@ -179,7 +202,8 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     sizes: Array.isArray(raw.sizes) ? (raw.sizes as unknown[]).map((s) => num(s)) : [],
     launch: selo === "lancamento",
     section: inferSection(raw),
-    modelId: group ? String(group) : undefined,
+    modelId: group || undefined,
+    colorVariant: colorVariant || undefined,
     // Armazena o selo original para depuração
     raw_tag: String(raw.tag ?? raw.selo ?? ""),
     site_visible: isPublished(raw),
@@ -226,19 +250,56 @@ export function setCrmProducts(products: unknown[] | null | undefined): number {
 /** Alias mantido por compatibilidade — o fluxo é sempre substituição total. */
 export const mergeCrmProducts = setCrmProducts;
 
+/** Chave estável para reunir variantes do mesmo modelo na vitrine. */
+export function productModelKey(p: ProductWithSection): string {
+  const model = clean(p.modelId);
+  if (!model) return `${brandSlug(p.brand)}::${p.id}`;
+  return `${brandSlug(p.brand)}::${brandSlug(model)}`;
+}
+
+/**
+ * Mostra um único card por modelo nas vitrines, mantendo as variações reunidas
+ * para a página de produto. A referência escolhida aponta para a variante mais
+ * recente/visível recebida do CRM.
+ */
+export function groupProductsByModel(products: ReadonlyArray<ProductWithSection>): ProductWithSection[] {
+  const grouped = new Map<string, { index: number; items: ProductWithSection[] }>();
+  products.forEach((p, index) => {
+    const key = productModelKey(p);
+    const bucket = grouped.get(key);
+    if (bucket) bucket.items.push(p);
+    else grouped.set(key, { index, items: [p] });
+  });
+
+  return Array.from(grouped.values())
+    .sort((a, b) => a.index - b.index)
+    .map(({ items }) => {
+      const rep = items[0];
+      const colors = Array.from(new Set(items.flatMap((p) => p.colors).filter(Boolean)));
+      const images = Array.from(new Set(items.flatMap((p) => [p.img, ...(p.images ?? [])]).filter(Boolean)));
+      return {
+        ...rep,
+        name: rep.modelId || rep.name,
+        colors: colors.length > 0 ? colors : rep.colors,
+        images: images.length > 0 ? images : rep.images,
+        variantCount: items.length,
+      };
+    });
+}
+
 export function getProduct(id: string): ProductWithSection | undefined {
   return ALL_PRODUCTS.find((p) => p.id === id);
 }
 
 /** Variantes de cor do mesmo modelo (agrupadas por `model_group` do CRM). */
 export function getVariants(base: ProductWithSection): ProductWithSection[] {
-  const key = base.modelId ?? base.id;
+  const key = productModelKey(base);
   const seen = new Set<string>();
   const out: ProductWithSection[] = [];
   for (const p of ALL_PRODUCTS) {
-    const k = p.modelId ?? p.id;
+    const k = productModelKey(p);
     if (k !== key) continue;
-    const dedupKey = `${p.name}::${p.colors[0] ?? ""}`;
+    const dedupKey = `${p.id}::${p.colorVariant ?? p.colors[0] ?? ""}`;
     if (seen.has(dedupKey)) continue;
     seen.add(dedupKey);
     out.push(p);
@@ -251,13 +312,13 @@ export const brl = (n: number) =>
 
 /** Produtos de uma seção (sempre vindos do CRM). */
 export function getSectionProducts(section: ProductWithSection["section"]) {
-  return ALL_PRODUCTS.filter((p) => p.section === section);
+  return groupProductsByModel(ALL_PRODUCTS.filter((p) => p.section === section));
 }
 
 /** Produtos de uma marca (sempre vindos do CRM). */
 export function getBrandProducts(slug: string) {
   const def = getBrandDef(slug);
-  return ALL_PRODUCTS.filter((p) => {
+  return groupProductsByModel(ALL_PRODUCTS.filter((p) => {
     if (p.brand_visible === false) return false;
     // Regra única de matching (src/lib/brands.ts). Marcas-categoria como
     // Chuteiras filtram pela categoria — o produto mantém a marca real.
@@ -265,7 +326,7 @@ export function getBrandProducts(slug: string) {
     // Marca que existe só no CRM (fora da lista estática): slug derivado
     // do nome canonizado — mesma regra do diretório vivo.
     return brandSlug(p.brand) === slug;
-  });
+  }));
 }
 
 /**
@@ -294,5 +355,5 @@ export function getVisibleBrandSlugs(): string[] {
 /** Produtos de uma categoria de roupa/linha (ex.: "Academia"). */
 export function getCategoryProducts(category: string) {
   const key = brandSlug(category);
-  return ALL_PRODUCTS.filter((p) => brandSlug(p.category) === key);
+  return groupProductsByModel(ALL_PRODUCTS.filter((p) => brandSlug(p.category) === key));
 }
