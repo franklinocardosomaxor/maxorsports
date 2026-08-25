@@ -28,6 +28,7 @@ export type DbProduct = {
   launch: boolean;
   tag: string | null;
   model_group: string | null;
+  color_variant: string | null;
   site_visible: boolean;
   brand_visible: boolean | null;
 };
@@ -39,6 +40,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
     .from("products")
     .select(
       "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible, brand_visible",
+      "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, site_visible, brand_visible",
     )
     .eq("site_visible", true)
     .order("updated_at", { ascending: false });
@@ -58,6 +60,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
       old: row.old_price ?? undefined,
       tag: row.tag ?? undefined,
       modelId: row.model_group ?? undefined,
+      colorVariant: row.color_variant ?? undefined,
       img: row.img ?? (row.images?.[0] ?? undefined),
       images: row.images ?? undefined,
       colors: row.colors ?? undefined,
