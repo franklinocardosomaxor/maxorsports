@@ -484,9 +484,23 @@ export function getVariants(base: ProductWithSection): ProductWithSection[] {
 export const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-/** Produtos de uma seção (sempre vindos do CRM). */
+/** Produto cadastrado como unissex no CRM (aparece em masculino e feminino). */
+export function isUnisexProduct(p: ProductWithSection): boolean {
+  const g = slug(p.gender);
+  return g.includes("unissex") || g.includes("unisex");
+}
+
+/**
+ * Produtos de uma seção (sempre vindos do CRM).
+ * Nas vitrines de gênero cada variação de cor é listada individualmente
+ * (sem agrupar por modelo) e os unissex aparecem em masculino e feminino.
+ */
 export function getSectionProducts(section: ProductWithSection["section"]) {
-  return groupProductsByModel(ALL_PRODUCTS.filter((p) => p.section === section));
+  return ALL_PRODUCTS.filter((p) => {
+    if (p.section === section) return true;
+    if ((section === "masculino" || section === "feminino") && isUnisexProduct(p)) return true;
+    return false;
+  });
 }
 
 /** Produtos de uma marca (sempre vindos do CRM). */
