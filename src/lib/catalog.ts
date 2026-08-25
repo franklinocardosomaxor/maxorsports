@@ -135,7 +135,7 @@ function stripBrandPrefix(name: string, brand: unknown): string {
   let out = name;
   for (const candidate of candidates) {
     const escaped = candidate.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    out = out.replace(new RegExp(`^${escaped}[\\s\-/|:]+`, "i"), "").trim();
+    out = out.replace(new RegExp(`^${escaped}[\\s/|:-]+`, "i"), "").trim();
   }
   return out;
 }
@@ -144,7 +144,7 @@ function stripTrailingColorWords(name: string): string {
   let out = name;
   for (const word of COLOR_SUFFIX_WORDS) {
     const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    out = out.replace(new RegExp(`[\\s\-/|:]+${escaped}$`, "i"), "").trim();
+    out = out.replace(new RegExp(`[\\s/|:-]+${escaped}$`, "i"), "").trim();
   }
   return out || name;
 }
