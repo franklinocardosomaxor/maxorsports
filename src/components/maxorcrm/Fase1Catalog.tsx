@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useServerFn } from "@tanstack/react-start";
 import { 
   Plus, Edit, Search, Eye, EyeOff, Package, 
@@ -21,13 +21,14 @@ type ProductImage = {
 const makeImageId = (index: number) => `img_${Date.now()}_${index}_${Math.random().toString(36).slice(2, 7)}`;
 
 const PRODUCT_LIST_COLUMNS =
-  "id, sku, name, name_prod, brand, marca_prod, category, categoria_prod, price, valor_dec, site_visible, tag, badge_text, img, foto_principal, created_at, status";
+  "id, sku, name, name_prod, brand, marca_prod, category, categoria_prod, model_group, color_variant, price, valor_dec, site_visible, tag, badge_text, img, foto_principal, created_at, status";
 
 const PRODUCT_EDIT_COLUMNS =
   "id, sku, name, name_prod, brand, marca_prod, category, categoria_prod, type, tipo_prod, gender, genero, model_group, color_variant, cost_supplier, shipping_cost, margin_percent, import_cost_included, price, valor_dec, old_price, discount_price, num_cal_min, num_cal_max, qtde_est, stock, vender_sem_estoque, site_visible, brand_visible, tag, badge_text, status, descricao, description, imagens, foto_principal, img, images";
 
 const isDataImageUrl = (url: string) => /^data:image\//i.test(url.trim());
 const cleanText = (value: unknown) => String(value ?? "").trim();
+const NEW_MODEL_VALUE = "__maxor_new_model__";
 
 const readFileAsDataUrl = (file: File) =>
   new Promise<string>((resolve, reject) => {
@@ -196,6 +197,29 @@ export function Fase1Catalog() {
   };
 
   const [form, setForm] = useState(emptyForm);
+
+  const modelOptions = useMemo(() => {
+    const grouped = new Map<string, { model: string; brand: string; count: number }>();
+    for (const product of products) {
+      const name = cleanText(product.name_prod || product.name);
+      const brand = cleanText(product.marca_prod || product.brand || "Nike");
+      const color = cleanText(product.color_variant);
+      const model = deriveModelGroup(name, color, brand, product.model_group);
+      if (!model) continue;
+      const key = `${brand.toLowerCase()}::${model.toLowerCase()}`;
+      const current = grouped.get(key);
+      if (current) current.count += 1;
+      else grouped.set(key, { model, brand, count: 1 });
+    }
+    return Array.from(grouped.values()).sort((a, b) =>
+      a.brand.localeCompare(b.brand, "pt-BR") || a.model.localeCompare(b.model, "pt-BR"),
+    );
+  }, [products]);
+
+  const selectedExistingModel = modelOptions.some(
+    (option) => option.model.toLowerCase() === cleanText(form.modelGroup).toLowerCase(),
+  );
+  const modelSelectValue = form.modelGroup && selectedExistingModel ? form.modelGroup : NEW_MODEL_VALUE;
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -682,6 +706,18 @@ export function Fase1Catalog() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-foreground/50 uppercase">Modelo Agrupado</label>
+                    <select
+                      value={modelSelectValue}
+                      onChange={e => setForm({ ...form, modelGroup: e.target.value === NEW_MODEL_VALUE ? "" : e.target.value })}
+                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
+                    >
+                      <option value={NEW_MODEL_VALUE}>Criar novo modelo</option>
+                      {modelOptions.map((option) => (
+                        <option key={`${option.brand}-${option.model}`} value={option.model}>
+                          {option.model} · {option.brand} · {option.count} cor{option.count === 1 ? "" : "es"}
+                        </option>
+                      ))}
+                    </select>
                     <input
                       type="text"
                       placeholder="Ex.: Pegasus 41"
@@ -689,6 +725,9 @@ export function Fase1Catalog() {
                       onChange={e => setForm({ ...form, modelGroup: e.target.value })}
                       className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
                     />
+                    <p className="text-[10px] text-foreground/45">
+                      Selecione um modelo existente para vincular esta cor ao mesmo card do site, ou digite um novo nome.
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-foreground/50 uppercase">Cor (Variante)</label>
