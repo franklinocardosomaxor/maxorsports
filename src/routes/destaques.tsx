@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ALL_PRODUCTS, getCatalogVersion, groupProductsByModel, type ProductWithSection } from "@/lib/catalog";
+import { ALL_PRODUCTS, groupProductsByModel, type ProductWithSection } from "@/lib/catalog";
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
