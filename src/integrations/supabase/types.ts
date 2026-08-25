@@ -336,6 +336,8 @@ export type Database = {
           imagens: Json
           images: string[]
           img: string | null
+          import_cost: number
+          import_cost_included: boolean
           launch: boolean
           marca_prod: string | null
           margin_percent: number
@@ -385,6 +387,8 @@ export type Database = {
           imagens?: Json
           images?: string[]
           img?: string | null
+          import_cost?: number
+          import_cost_included?: boolean
           launch?: boolean
           marca_prod?: string | null
           margin_percent?: number
@@ -434,6 +438,8 @@ export type Database = {
           imagens?: Json
           images?: string[]
           img?: string | null
+          import_cost?: number
+          import_cost_included?: boolean
           launch?: boolean
           marca_prod?: string | null
           margin_percent?: number
@@ -470,6 +476,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_campaign: {
+        Row: {
+          active: boolean
+          created_at: string
+          cta_label: string | null
+          cta_url: string | null
+          id: string
+          images: string[]
+          subtitle: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          id?: string
+          images?: string[]
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          id?: string
+          images?: string[]
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       stages: {
         Row: {
@@ -553,7 +595,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "manager" | "sales" | "viewer" | "super_admin"

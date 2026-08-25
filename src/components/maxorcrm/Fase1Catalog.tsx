@@ -66,6 +66,7 @@ export function Fase1Catalog() {
     costSupplier: 0,
     shippingCost: 0,
     marginPercent: 0,
+    importCostIncluded: false,
     valor_dec: 0,
     discountPrice: 0,
     num_cal_min: 37,
@@ -114,6 +115,7 @@ export function Fase1Catalog() {
         costSupplier: Number(prod.cost_supplier || 0),
         shippingCost: Number(prod.shipping_cost || 0),
         marginPercent: Number(prod.margin_percent || 0),
+        importCostIncluded: Boolean(prod.import_cost_included ?? false),
         valor_dec: Number(prod.price || prod.valor_dec || 0),
         discountPrice: Number(prod.old_price || prod.discount_price || 0),
         num_cal_min: prod.num_cal_min || 37,
@@ -183,6 +185,8 @@ export function Fase1Catalog() {
       cost_supplier: Number(form.costSupplier || 0),
       shipping_cost: Number(form.shippingCost || 0),
       margin_percent: Number(form.marginPercent || 0),
+      import_cost: importTaxFor(Number(form.costSupplier || 0)),
+      import_cost_included: Boolean(form.importCostIncluded),
       price: Number(form.valor_dec || 0),
       valor_dec: Number(form.valor_dec || 0),
       old_price: promoPrice > 0 ? promoPrice : null,
@@ -240,35 +244,55 @@ export function Fase1Catalog() {
 
   const round2 = (n: number) => Math.round((Number.isFinite(n) ? n : 0) * 100) / 100;
 
-  /** Preço Venda Final = (Custo + Frete) × (1 + Margem/100) */
-  const recalcPrice = (cost: number, ship: number, margin: number) =>
-    round2((cost + ship) * (1 + margin / 100));
+  /**
+   * Imposto de importação: VA × 60% + ICMS 17% "por dentro" + R$ 15,
+   * arredondado pra cima. VA = valor de compra (Custo Fornecedor).
+   * ICMS por dentro => divide por (1 - 0,17) = 0,83.
+   */
+  const importTaxFor = (va: number) => (va > 0 ? Math.ceil((va * 0.60) / 0.83 + 15) : 0);
 
-  /** Margem % = (Preço / (Custo + Frete) - 1) × 100 */
-  const recalcMargin = (cost: number, ship: number, price: number) => {
-    const base = cost + ship;
+  /** Custo extra entra na base de preço quando a caixa "Somar no custo" está marcada. */
+  const extraCost = (f: { costSupplier: number; importCostIncluded: boolean }) =>
+    f.importCostIncluded ? importTaxFor(f.costSupplier) : 0;
+
+  /** Preço Venda Final = (Custo + Frete + [Importação]) × (1 + Margem/100) */
+  const recalcPrice = (cost: number, ship: number, margin: number, extra = 0) =>
+    round2((cost + ship + extra) * (1 + margin / 100));
+
+  /** Margem % = (Preço / (Custo + Frete + [Importação]) - 1) × 100 */
+  const recalcMargin = (cost: number, ship: number, price: number, extra = 0) => {
+    const base = cost + ship + extra;
     if (base <= 0) return 0;
     return round2((price / base - 1) * 100);
   };
 
   const setCost = (v: number) =>
-    setForm(f => ({ ...f, costSupplier: v, valor_dec: recalcPrice(v, f.shippingCost, f.marginPercent) }));
+    setForm(f => ({ ...f, costSupplier: v, valor_dec: recalcPrice(v, f.shippingCost, f.marginPercent, f.importCostIncluded ? importTaxFor(v) : 0) }));
 
   const setShipping = (v: number) =>
-    setForm(f => ({ ...f, shippingCost: v, valor_dec: recalcPrice(f.costSupplier, v, f.marginPercent) }));
+    setForm(f => ({ ...f, shippingCost: v, valor_dec: recalcPrice(f.costSupplier, v, f.marginPercent, extraCost(f)) }));
 
   const setMargin = (v: number) =>
-    setForm(f => ({ ...f, marginPercent: v, valor_dec: recalcPrice(f.costSupplier, f.shippingCost, v) }));
+    setForm(f => ({ ...f, marginPercent: v, valor_dec: recalcPrice(f.costSupplier, f.shippingCost, v, extraCost(f)) }));
 
   const setFinalPrice = (v: number) =>
-    setForm(f => ({ ...f, valor_dec: v, marginPercent: recalcMargin(f.costSupplier, f.shippingCost, v) }));
+    setForm(f => ({ ...f, valor_dec: v, marginPercent: recalcMargin(f.costSupplier, f.shippingCost, v, extraCost(f)) }));
+
+  /** Caixa "Somar no custo": liga/desliga o imposto na base de formação de preço. */
+  const setImportIncluded = (on: boolean) =>
+    setForm(f => ({
+      ...f,
+      importCostIncluded: on,
+      valor_dec: recalcPrice(f.costSupplier, f.shippingCost, f.marginPercent, on ? importTaxFor(f.costSupplier) : 0),
+    }));
 
   /** Trava: selo "Nenhum" força site_visible = false */
   const setBadge = (v: string) =>
     setForm(f => ({ ...f, badgeText: v, siteVisible: v === "Nenhum" ? false : f.siteVisible }));
 
   const badgeBlocked = form.badgeText === "Nenhum";
-  const lucroBruto = round2(form.valor_dec - (form.costSupplier + form.shippingCost));
+  const importTax = importTaxFor(form.costSupplier);
+  const lucroBruto = round2(form.valor_dec - (form.costSupplier + form.shippingCost + extraCost(form)));
 
 
   return (
@@ -506,12 +530,39 @@ export function Fase1Catalog() {
                     <CurrencyInput value={form.valor_dec} onChange={setFinalPrice} />
                   </div>
                 </div>
+
+                {/* IMPOSTO DE IMPORTAÇÃO — calculado a partir do Valor de Compra (VA) */}
+                <div className="flex flex-col gap-3 rounded-xl border border-[color:var(--cyan-brand)]/30 bg-[color:var(--cyan-brand)]/5 px-4 py-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[color:var(--cyan-brand)]">
+                      Imposto de Importação (sugerido)
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-foreground/50">
+                      VA × 60% + ICMS 17% por dentro + R$ 15 · arredondado pra cima
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-5">
+                    <span className="font-display text-xl font-black text-offwhite">
+                      R$ {importTax.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={form.importCostIncluded}
+                        onChange={e => setImportIncluded(e.target.checked)}
+                        className="accent-[color:var(--mint-brand)]"
+                      />
+                      <span className="text-[11px] font-bold uppercase text-foreground/70">Somar no custo</span>
+                    </label>
+                  </div>
+                </div>
+
                 <p className="text-[11px] text-foreground/50">
                   Lucro bruto estimado:{" "}
                   <span className={lucroBruto >= 0 ? "font-bold text-[color:var(--mint-brand)]" : "font-bold text-rose-400"}>
                     R$ {lucroBruto.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>{" "}
-                  · Fórmula: (Custo + Frete) × (1 + Margem/100)
+                  · Fórmula: (Custo + Frete{form.importCostIncluded ? " + Importação" : ""}) × (1 + Margem/100)
                 </p>
               </section>
 
