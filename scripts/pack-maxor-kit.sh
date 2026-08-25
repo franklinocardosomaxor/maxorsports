@@ -21,7 +21,7 @@ copy() { # copy <path relativo ao projeto>
 # --- kit + guias ------------------------------------------------------------
 copy src/maxor-kit
 copy GUIA-INTEGRACAO-CRM.md
-copy HANDOFF-ANTIGRAVITY.md
+copy docs/historico/HANDOFF-ANTIGRAVITY.md
 
 # --- estilos e tokens -------------------------------------------------------
 copy src/styles.css

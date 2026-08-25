@@ -20,7 +20,7 @@ check() { # check <descrição> <comando...>
 
 echo "== 1. Arquivos do kit =="
 for f in src/maxor-kit/index.ts src/maxor-kit/tokens.ts src/maxor-kit/assets.ts \
-         src/maxor-kit/README.md GUIA-INTEGRACAO-CRM.md HANDOFF-ANTIGRAVITY.md \
+         src/maxor-kit/README.md GUIA-INTEGRACAO-CRM.md docs/historico/HANDOFF-ANTIGRAVITY.md \
          scripts/pack-maxor-kit.sh scripts/integrar-maxor-kit.sh; do
   check "$f" test -f "$f"
 done
