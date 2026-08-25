@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Fase2Sales } from "@/components/maxorcrm/Fase2Sales";
+import { Suspense, lazy } from "react";
+import { Loader2 } from "lucide-react";
+
+// Carregado sob demanda: o painel comercial nunca entra no bundle da vitrine.
+const Fase2Sales = lazy(() =>
+  import("@/components/maxorcrm/Fase2Sales").then((m) => ({ default: m.Fase2Sales })),
+);
 
 export const Route = createFileRoute("/maxorcrm/fase-2")({
   ssr: false,
@@ -14,5 +20,19 @@ export const Route = createFileRoute("/maxorcrm/fase-2")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => <Fase2Sales />,
+  component: Fase2Route,
 });
+
+function Fase2Route() {
+  return (
+    <Suspense
+      fallback={
+        <span className="flex items-center gap-2 text-sm text-foreground/70">
+          <Loader2 className="h-4 w-4 animate-spin" /> Carregando painel comercial…
+        </span>
+      }
+    >
+      <Fase2Sales />
+    </Suspense>
+  );
+}
