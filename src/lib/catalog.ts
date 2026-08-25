@@ -208,11 +208,6 @@ function canonicalModelKey(model: unknown, brand: unknown): string {
   return tokens.join("-");
 }
 
-function isModelKeyMoreSpecific(candidate: string, base: string): boolean {
-  if (!candidate || !base || candidate === base) return false;
-  return candidate.startsWith(`${base}-`) && candidate.split("-").length > base.split("-").length;
-}
-
 function isSpecificModelGroup(modelGroup: unknown, brand: unknown): boolean {
   const model = clean(modelGroup);
   if (!model) return false;
