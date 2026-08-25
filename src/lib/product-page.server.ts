@@ -18,11 +18,12 @@ import {
   isUsableImage,
   normalizeProduct,
   normalizeSelo,
+  productModelKey,
   type ProductWithSection,
 } from "@/lib/catalog";
 
 const COLUMNS =
-  "id, sku, name, brand, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, site_visible, brand_visible";
+  "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, site_visible, brand_visible";
 
 /** Cliente público (anon) para leitura server-side — RLS `products_public_read` se aplica. */
 function createPublicClient() {
@@ -50,6 +51,7 @@ type DbRow = {
   sku: string | null;
   name: string;
   brand: string;
+  marca_prod: string | null;
   section: string;
   category: string;
   description: string | null;
@@ -64,6 +66,7 @@ type DbRow = {
   launch: boolean;
   tag: string | null;
   model_group: string | null;
+  color_variant: string | null;
   site_visible: boolean;
   brand_visible: boolean | null;
 };
@@ -73,13 +76,14 @@ function mapRow(row: DbRow): Record<string, unknown> {
   return {
     id: row.sku || row.id,
     name: row.name,
-    brand: row.brand,
+    brand: row.brand ?? row.marca_prod,
     category: row.category,
     section: row.section,
     price: row.price,
     old: row.old_price ?? undefined,
     tag: row.tag ?? undefined,
     modelId: row.model_group ?? undefined,
+    colorVariant: row.color_variant ?? undefined,
     img: row.img ?? (row.images?.[0] ?? undefined),
     images: row.images ?? undefined,
     colors: row.colors ?? undefined,
@@ -120,12 +124,12 @@ export async function fetchProductPageData(id: string): Promise<ProductPageData 
   if (!product) return null;
 
   // Variantes de cor do mesmo modelo (mesma lógica de getVariants do cliente).
-  const groupKey = product.modelId ?? product.id;
+  const groupKey = productModelKey(product);
   const seen = new Set<string>();
   const variants: ProductWithSection[] = [];
   for (const p of products) {
-    if ((p.modelId ?? p.id) !== groupKey) continue;
-    const dedupKey = `${p.name}::${p.colors[0] ?? ""}`;
+    if (productModelKey(p) !== groupKey) continue;
+    const dedupKey = `${p.id}::${p.colorVariant ?? p.colors[0] ?? ""}`;
     if (seen.has(dedupKey)) continue;
     seen.add(dedupKey);
     variants.push(p);

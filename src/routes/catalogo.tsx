@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ALL_PRODUCTS, getCatalogVersion, Selo, SELO_LABEL } from "@/lib/catalog";
+import { ALL_PRODUCTS, groupProductsByModel, Selo, SELO_LABEL, type ProductWithSection } from "@/lib/catalog";
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
 import { ChevronRight, Grid2X2 } from "lucide-react";
+import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 const SELOS_ORDER: Selo[] = ["destaque", "lancamento", "oferta", "mais-vendido", "normal"];
 
@@ -24,12 +25,12 @@ export const Route = createFileRoute("/catalogo")({
 });
 
 function CatalogoSeloPage() {
-  const version = getCatalogVersion();
+  const version = useCatalogVersion();
   const viewMode = useViewMode();
 
   // Agrupa produtos por selo
   const groupedProducts = useMemo(() => {
-    const groups: Record<Selo, typeof ALL_PRODUCTS> = {
+    const groups: Record<Selo, ProductWithSection[]> = {
       destaque: [],
       lancamento: [],
       oferta: [],
@@ -43,10 +44,16 @@ function CatalogoSeloPage() {
       }
     });
 
-    return groups;
+    return {
+      destaque: groupProductsByModel(groups.destaque),
+      lancamento: groupProductsByModel(groups.lancamento),
+      oferta: groupProductsByModel(groups.oferta),
+      "mais-vendido": groupProductsByModel(groups["mais-vendido"]),
+      normal: groupProductsByModel(groups.normal),
+    } satisfies Record<Selo, ProductWithSection[]>;
   }, [version]);
 
-  const totalCount = ALL_PRODUCTS.length;
+  const totalCount = Object.values(groupedProducts).reduce((sum, group) => sum + group.length, 0);
 
   return (
     <div className="min-h-screen bg-navy pt-24 pb-20">

@@ -24,7 +24,7 @@ import { LogoLoop } from "@/components/site/LogoLoop";
 import { getBrandVisual } from "@/components/site/brands-data";
 
 import { useMemo } from "react";
-import { ALL_PRODUCTS, getBrandDirectory } from "@/lib/catalog";
+import { ALL_PRODUCTS, getBrandDirectory, groupProductsByModel } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import catFem from "@/assets/cat-feminino.jpg";
 import catMasc from "@/assets/cat-masculino.jpg";
@@ -74,10 +74,10 @@ function Home() {
     }
     return {
       categories: cats,
-      launches: ALL_PRODUCTS.filter((p) => p.selo === "lancamento").slice(0, 4),
-      offers: ALL_PRODUCTS.filter((p) => p.selo === "oferta").slice(0, 4),
-      bestSellers: ALL_PRODUCTS.filter((p) => p.selo === "mais-vendido").slice(0, 4),
-      highlights: ALL_PRODUCTS.filter((p) => p.selo === "destaque").slice(0, 4),
+      launches: groupProductsByModel(ALL_PRODUCTS.filter((p) => p.selo === "lancamento")).slice(0, 4),
+      offers: groupProductsByModel(ALL_PRODUCTS.filter((p) => p.selo === "oferta")).slice(0, 4),
+      bestSellers: groupProductsByModel(ALL_PRODUCTS.filter((p) => p.selo === "mais-vendido")).slice(0, 4),
+      highlights: groupProductsByModel(ALL_PRODUCTS.filter((p) => p.selo === "destaque")).slice(0, 4),
     };
   }, [version]);
 

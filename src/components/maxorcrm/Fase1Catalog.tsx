@@ -8,6 +8,52 @@ import { getMyOrgId } from "@/lib/maxorcrm-org";
 // Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
 import { BRAND_NAMES } from "@/lib/brands";
 
+type ProductImage = {
+  id: string;
+  url_imagem: string;
+  is_principal: boolean;
+  exibir_no_site: boolean;
+};
+
+const makeImageId = (index: number) => `img_${Date.now()}_${index}_${Math.random().toString(36).slice(2, 7)}`;
+
+const normalizeProductImages = (prod: any): ProductImage[] => {
+  const rawImagens = Array.isArray(prod.imagens) ? prod.imagens : [];
+  const fromJson = rawImagens
+    .map((item: any, index: number) => {
+      const url = typeof item === "string" ? item : item?.url_imagem ?? item?.url ?? item?.src ?? item?.path;
+      if (!url) return null;
+      return {
+        id: String(item?.id ?? makeImageId(index)),
+        url_imagem: String(url),
+        is_principal: Boolean(item?.is_principal),
+        exibir_no_site: item?.exibir_no_site ?? true,
+      } satisfies ProductImage;
+    })
+    .filter((item: ProductImage | null): item is ProductImage => Boolean(item));
+
+  const fromArray = (Array.isArray(prod.images) ? prod.images : [])
+    .filter(Boolean)
+    .map((url: string, index: number) => ({
+      id: makeImageId(index + fromJson.length),
+      url_imagem: String(url),
+      is_principal: false,
+      exibir_no_site: true,
+    } satisfies ProductImage));
+
+  const all = [...fromJson, ...fromArray];
+  const seen = new Set<string>();
+  const unique = all.filter((img) => {
+    if (seen.has(img.url_imagem)) return false;
+    seen.add(img.url_imagem);
+    return true;
+  });
+
+  const preferred = String(prod.foto_principal || prod.img || unique[0]?.url_imagem || "");
+  const selectedIndex = unique.findIndex((img) => img.is_principal || img.url_imagem === preferred);
+  return unique.map((img, index) => ({ ...img, is_principal: index === (selectedIndex >= 0 ? selectedIndex : 0) }));
+};
+
 export function CurrencyInput({ value, onChange, placeholder = "0,00", className = "", prefix = "R$ " }: { value: number; onChange: (val: number) => void; placeholder?: string; className?: string; prefix?: string }) {
   const formatDisplay = (val: number) => {
     if (val === null || val === undefined || val === 0) return "";
@@ -77,7 +123,7 @@ export function Fase1Catalog() {
     brandVisible: true,
     badgeText: "Normal",
     descricao: "",
-    imagens: [] as any[]
+    imagens: [] as ProductImage[]
   };
 
   const [form, setForm] = useState(emptyForm);
@@ -126,7 +172,7 @@ export function Fase1Catalog() {
         brandVisible: prod.brand_visible ?? true,
         badgeText: prod.tag || prod.badge_text || "Normal",
         descricao: prod.descricao || prod.description || "",
-        imagens: Array.isArray(prod.imagens) ? prod.imagens : []
+        imagens: normalizeProductImages(prod)
       });
     } else {
       setEditingId(null);
@@ -206,7 +252,11 @@ export function Fase1Catalog() {
       imagens: form.imagens,
       foto_principal: form.imagens.find(i => i.is_principal)?.url_imagem || form.imagens[0]?.url_imagem || "",
       img: form.imagens.find(i => i.is_principal)?.url_imagem || form.imagens[0]?.url_imagem || "",
-      images: form.imagens.map((i: any) => i.url_imagem).filter(Boolean)
+      images: form.imagens
+        .filter((i) => i.exibir_no_site !== false)
+        .sort((a, b) => Number(b.is_principal) - Number(a.is_principal))
+        .map((i) => i.url_imagem)
+        .filter(Boolean)
     };
 
     let error = null;
@@ -235,7 +285,7 @@ export function Fase1Catalog() {
         const b64 = reader.result as string;
         setForm(prev => ({
           ...prev,
-          imagens: [...prev.imagens, { id: `img_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, url_imagem: b64, is_principal: prev.imagens.length === 0, exibir_no_site: true }]
+          imagens: [...prev.imagens, { id: makeImageId(prev.imagens.length), url_imagem: b64, is_principal: prev.imagens.length === 0, exibir_no_site: true }]
         }));
       };
       reader.readAsDataURL(file);
@@ -289,6 +339,22 @@ export function Fase1Catalog() {
   /** Trava: selo "Nenhum" força site_visible = false */
   const setBadge = (v: string) =>
     setForm(f => ({ ...f, badgeText: v, siteVisible: v === "Nenhum" ? false : f.siteVisible }));
+
+  const setPrincipalImage = (id: string) =>
+    setForm(f => ({
+      ...f,
+      imagens: f.imagens.map((img) => ({ ...img, is_principal: img.id === id })),
+    }));
+
+  const removeImage = (id: string) =>
+    setForm(f => {
+      const removed = f.imagens.find((img) => img.id === id);
+      const next = f.imagens.filter((img) => img.id !== id);
+      if (removed?.is_principal && next.length > 0) {
+        return { ...f, imagens: next.map((img, index) => ({ ...img, is_principal: index === 0 })) };
+      }
+      return { ...f, imagens: next };
+    });
 
   const badgeBlocked = form.badgeText === "Nenhum";
   const importTax = importTaxFor(form.costSupplier);
@@ -669,16 +735,33 @@ export function Fase1Catalog() {
                 </label>
                 <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
                   {form.imagens.map((img) => (
-                    <div key={img.id} className="relative aspect-square bg-background rounded-xl border border-border overflow-hidden">
+                    <div
+                      key={img.id}
+                      className={`relative aspect-square bg-background rounded-xl border overflow-hidden ${
+                        img.is_principal ? "border-[color:var(--mint-brand)] ring-2 ring-[color:var(--mint-brand)]/40" : "border-border"
+                      }`}
+                    >
                       <img src={img.url_imagem} alt="Foto do produto" className="w-full h-full object-cover" />
                       <button
                         type="button"
-                        onClick={() => setForm(f => ({ ...f, imagens: f.imagens.filter(i => i.id !== img.id) }))}
-                        className="absolute top-1 right-1 bg-black/50 p-1 rounded-md text-white hover:bg-rose-500"
+                        onClick={() => removeImage(img.id)}
+                        aria-label="Remover foto"
+                        className="absolute top-1 right-1 bg-navy/80 p-1 rounded-md text-offwhite hover:bg-rose-500"
                       >
                         <X size={12} />
                       </button>
-                      {img.is_principal && <div className="absolute bottom-0 inset-x-0 bg-[color:var(--mint-brand)] text-navy text-[8px] font-bold text-center py-0.5">PRINCIPAL</div>}
+                      <button
+                        type="button"
+                        onClick={() => setPrincipalImage(img.id)}
+                        aria-pressed={img.is_principal}
+                        className={`absolute bottom-0 inset-x-0 py-1 text-[8px] font-bold uppercase transition ${
+                          img.is_principal
+                            ? "bg-[color:var(--mint-brand)] text-navy"
+                            : "bg-navy/85 text-offwhite hover:bg-[color:var(--cyan-brand)] hover:text-navy"
+                        }`}
+                      >
+                        {img.is_principal ? "Principal" : "Marcar principal"}
+                      </button>
                     </div>
                   ))}
                   <label className="aspect-square bg-background border border-dashed border-border rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-border/30 transition">

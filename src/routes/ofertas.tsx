@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { CatalogPage, type CatalogProduct } from "@/components/site/CatalogPage";
-import { ALL_PRODUCTS } from "@/lib/catalog";
+import { ALL_PRODUCTS, groupProductsByModel, type ProductWithSection } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 
@@ -36,14 +36,14 @@ function OfertasPage() {
   // com preço antigo maior que o atual + a vitrine base local.
   const products = useMemo(() => {
     const seen = new Set<string>();
-    const out: CatalogProduct[] = [];
+    const out: ProductWithSection[] = [];
     for (const p of ALL_PRODUCTS) {
       const isOffer = p.selo === "oferta";
       if (!isOffer || seen.has(p.id)) continue;
       seen.add(p.id);
-      out.push(p as unknown as CatalogProduct);
+      out.push(p);
     }
-    return out;
+    return groupProductsByModel(out) as unknown as CatalogProduct[];
   }, [catalogVersion]);
 
 
