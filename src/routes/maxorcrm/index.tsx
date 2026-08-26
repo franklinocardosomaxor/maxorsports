@@ -2,11 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Boxes, Kanban, Plug, Loader2, Image as ImageIcon, Upload, X,
-  Megaphone, RefreshCw, Eye, EyeOff,
+  Megaphone, RefreshCw, Eye, EyeOff, CreditCard,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadCampaignImage, type SiteCampaign } from "@/lib/campaign.functions";
+import { refreshSiteSettings } from "@/hooks/use-site-settings";
 
 export const Route = createFileRoute("/maxorcrm/")({
   ssr: false,
