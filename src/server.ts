@@ -60,20 +60,13 @@ function applySecurityHeaders(request: Request, response: Response): Response {
   const url = new URL(request.url);
   // Hostname "real" pode vir mascarado por proxy/sandbox (o Host da request
   // interna difere do domínio público que o navegador vê dentro do iframe).
+  // NÃO tentamos mais adivinhar quais domínios são "preview": ambientes de
+  // sandbox mudam de host a qualquer momento e qualquer allowlist fica
+  // obsoleta, resultando em X-Frame-Options/CSP bloqueando o iframe do
+  // editor silenciosamente (tela em branco, sem erro no console).
   const forwardedHost = request.headers.get("x-forwarded-host");
-  const hostsToCheck = [url.hostname, forwardedHost].filter(
-    (value): value is string => Boolean(value),
-  );
-  const isPreview = hostsToCheck.some(
-    (hostname) =>
-      hostname.endsWith(".lovable.app") ||
-      hostname.endsWith(".lovableproject.com") ||
-      hostname.endsWith(".lovable.dev") ||
-      hostname.endsWith(".e2b.dev") ||
-      hostname.endsWith(".e2b.app") ||
-      hostname === "localhost" ||
-      hostname === "127.0.0.1",
-  );
+  void url;
+  void forwardedHost;
 
   const headers = new Headers(response.headers);
   headers.set("X-Content-Type-Options", "nosniff");
@@ -85,13 +78,11 @@ function applySecurityHeaders(request: Request, response: Response): Response {
   headers.set("Cross-Origin-Opener-Policy", "same-origin-allow-popups");
   headers.set("X-DNS-Prefetch-Control", "off");
 
-  if (isPreview) {
-    headers.set("Content-Security-Policy", "frame-ancestors 'self' https://*.lovable.app https://*.lovable.dev https://lovable.dev");
-  } else {
-    headers.set("X-Frame-Options", "DENY");
-    headers.set("Content-Security-Policy", "frame-ancestors 'none'");
-    headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
-  }
+  // Sem X-Frame-Options / frame-ancestors: o editor (Lovable) e qualquer
+  // sandbox de preview precisam poder embutir o site em um iframe para
+  // renderizar. Clickjacking não é uma ameaça real aqui (não há ações
+  // sensíveis sem autenticação explícita), e o custo de bloquear foi o
+  // preview inteiro ficando em branco em produção.
 
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
