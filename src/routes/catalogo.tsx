@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ALL_PRODUCTS, groupProductsByModel, Selo, SELO_LABEL, type ProductWithSection } from "@/lib/catalog";
+import { ALL_PRODUCTS, type ProductWithSection } from "@/lib/catalog";
+import { BRAND_NAMES, canonicalBrandName } from "@/lib/brands";
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
 import { ChevronRight, Grid2X2 } from "lucide-react";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
-const SELOS_ORDER: Selo[] = ["destaque", "lancamento", "oferta", "mais-vendido", "normal"];
+const brandAnchor = (brand: string) => `marca-${brand.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+
 
 export const Route = createFileRoute("/catalogo")({
   component: CatalogoSeloPage,
