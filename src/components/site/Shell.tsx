@@ -82,6 +82,7 @@ const NAV = [
   { label: "Masculino", href: "/masculino" },
   { label: "Feminino", href: "/feminino" },
   { label: "Infantil", href: "/infantil" },
+  { label: "Unissex", href: "/unissex" },
   { 
     label: "Tênis", 
     href: "/catalogo",
@@ -673,6 +674,7 @@ function Footer() {
         { label: "Masculino", href: "/masculino" },
         { label: "Feminino", href: "/feminino" },
         { label: "Infantil", href: "/infantil" },
+        { label: "Unissex", href: "/unissex" },
         { label: "Categoria", href: "/categorias" },
         { label: "Lançamentos", href: "/lancamentos" },
         { label: "Marcas", href: "/marcas" },
