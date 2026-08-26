@@ -12,4 +12,17 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Vite valida o header Host de toda requisição contra server.allowedHosts.
+  // Em ambientes de sandbox/preview, o domínio público (visto pelo navegador
+  // dentro do iframe) é reescrito por um proxy e pode não bater com o que o
+  // Vite dev server espera — nesse caso ele bloqueia a request silenciosamente
+  // ("Blocked request. This host is not allowed"), o que aparece como tela
+  // branca dentro do iframe do editor. allowedHosts: true desativa essa
+  // checagem SOMENTE no dev server (não afeta o build/produção, que não passa
+  // por essa validação).
+  vite: {
+    server: {
+      allowedHosts: true,
+    },
+  },
 });
