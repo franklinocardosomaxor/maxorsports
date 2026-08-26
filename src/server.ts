@@ -58,10 +58,22 @@ function isH3SwallowedErrorBody(body: string): boolean {
  */
 function applySecurityHeaders(request: Request, response: Response): Response {
   const url = new URL(request.url);
-  const isPreview =
-    url.hostname.endsWith(".lovable.app") ||
-    url.hostname.endsWith(".lovableproject.com") ||
-    url.hostname === "localhost";
+  // Hostname "real" pode vir mascarado por proxy/sandbox (o Host da request
+  // interna difere do domínio público que o navegador vê dentro do iframe).
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  const hostsToCheck = [url.hostname, forwardedHost].filter(
+    (value): value is string => Boolean(value),
+  );
+  const isPreview = hostsToCheck.some(
+    (hostname) =>
+      hostname.endsWith(".lovable.app") ||
+      hostname.endsWith(".lovableproject.com") ||
+      hostname.endsWith(".lovable.dev") ||
+      hostname.endsWith(".e2b.dev") ||
+      hostname.endsWith(".e2b.app") ||
+      hostname === "localhost" ||
+      hostname === "127.0.0.1",
+  );
 
   const headers = new Headers(response.headers);
   headers.set("X-Content-Type-Options", "nosniff");
