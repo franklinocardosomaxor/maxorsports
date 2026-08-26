@@ -30,32 +30,29 @@ function CatalogoSeloPage() {
   const version = useCatalogVersion();
   const viewMode = useViewMode();
 
-  // Agrupa produtos por selo
-  const groupedProducts = useMemo(() => {
-    const groups: Record<Selo, ProductWithSection[]> = {
-      destaque: [],
-      lancamento: [],
-      oferta: [],
-      "mais-vendido": [],
-      normal: [],
-    };
+  // Catálogo completo: TODAS as variações visíveis, agrupadas por MARCA (não por selo).
+  const brandGroups = useMemo(() => {
+    const map = new Map<string, ProductWithSection[]>();
 
     ALL_PRODUCTS.forEach((p) => {
-      if (p.selo && groups[p.selo]) {
-        groups[p.selo].push(p);
-      }
+      const brand = canonicalBrandName(p.brand) ?? (p.brand?.trim() || "Outras marcas");
+      const list = map.get(brand);
+      if (list) list.push(p);
+      else map.set(brand, [p]);
     });
 
-    return {
-      destaque: groupProductsByModel(groups.destaque),
-      lancamento: groupProductsByModel(groups.lancamento),
-      oferta: groupProductsByModel(groups.oferta),
-      "mais-vendido": groupProductsByModel(groups["mais-vendido"]),
-      normal: groupProductsByModel(groups.normal),
-    } satisfies Record<Selo, ProductWithSection[]>;
+    const order = new Map(BRAND_NAMES.map((n, i) => [n, i]));
+    return Array.from(map.entries())
+      .map(([brand, products]) => ({ brand, products }))
+      .sort((a, b) => {
+        const oa = order.get(a.brand) ?? Number.MAX_SAFE_INTEGER;
+        const ob = order.get(b.brand) ?? Number.MAX_SAFE_INTEGER;
+        if (oa !== ob) return oa - ob;
+        return a.brand.localeCompare(b.brand, "pt-BR");
+      });
   }, [version]);
 
-  const totalCount = Object.values(groupedProducts).reduce((sum, group) => sum + group.length, 0);
+  const totalCount = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
 
   return (
     <div className="min-h-screen bg-navy pt-24 pb-20">
@@ -67,72 +64,75 @@ function CatalogoSeloPage() {
           <span className="text-foreground font-bold">Catálogo Completo</span>
         </nav>
 
-        <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <h1 className="font-display text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-white">
-                Explorar <span className="text-[color:var(--cyan-brand)]">Catálogo</span>
-              </h1>
-              <p className="mt-2 text-muted-foreground max-w-xl">
-                Confira todos os nossos produtos divididos por categorias de destaque e novidades. Utilize os filtros para encontrar o modelo ideal por marca, gênero ou faixa de preço.
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-bold text-white/40">{totalCount} PRODUTOS</span>
-              <ViewModeToggle />
-            </div>
+        <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="font-display text-4xl md:text-6xl font-black uppercase italic tracking-tighter text-foreground">
+              Explorar <span className="text-[color:var(--cyan-brand)]">Catálogo</span>
+            </h1>
+            <p className="mt-2 text-muted-foreground max-w-xl">
+              Catálogo completo, separado por marca. Cada cor cadastrada aparece como um item — aqui você vê tudo o que está disponível.
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-bold text-muted-foreground">{totalCount} PRODUTOS</span>
+            <ViewModeToggle />
           </div>
         </header>
 
+        {/* Índice de marcas */}
+        {brandGroups.length > 0 && (
+          <div className="mb-12 flex flex-wrap gap-2 border-y border-border/40 py-4">
+            {brandGroups.map(({ brand, products }) => (
+              <a
+                key={brand}
+                href={`#${brandAnchor(brand)}`}
+                className="rounded-full border border-border/60 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground transition hover:brightness-110 hover:text-foreground hover:border-[color:var(--cyan-brand)]"
+              >
+                {brand} <span className="text-[color:var(--cyan-brand)]">{products.length}</span>
+              </a>
+            ))}
+          </div>
+        )}
+
         {totalCount === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="h-20 w-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
-              <Grid2X2 className="h-10 w-10 text-white/20" />
+            <div className="h-20 w-20 rounded-full bg-card flex items-center justify-center mb-6">
+              <Grid2X2 className="h-10 w-10 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Nenhum produto encontrado</h3>
+            <h3 className="text-xl font-bold text-foreground mb-2">Nenhum produto encontrado</h3>
             <p className="text-muted-foreground">O catálogo está sendo sincronizado com o CRM.</p>
           </div>
         ) : (
           <div className="space-y-20">
-            {SELOS_ORDER.map((selo) => {
-              const products = groupedProducts[selo];
-              if (products.length === 0) return null;
-
-              const label = SELO_LABEL[selo] || "Geral";
-              const accentColor = selo === 'oferta' ? 'var(--cyan-brand)' : 
-                                 selo === 'lancamento' ? 'var(--lime-brand)' : 
-                                 selo === 'destaque' ? 'var(--mint-brand)' : 
-                                 'var(--offwhite-brand)';
-
-              return (
-                <section key={selo} id={selo} className="scroll-mt-32 mb-12 last:mb-0">
-                  <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-8 w-1.5 rounded-full" style={{ backgroundColor: accentColor }}></div>
-                      <h2 className="font-display text-2xl md:text-3xl font-bold uppercase italic tracking-tight text-white">
-                        {label}
-                      </h2>
-                    </div>
-                    <span className="text-xs font-bold text-white/30 uppercase tracking-widest">
-                      {products.length} itens
-                    </span>
+            {brandGroups.map(({ brand, products }) => (
+              <section key={brand} id={brandAnchor(brand)} className="scroll-mt-32 mb-12 last:mb-0">
+                <div className="flex items-center justify-between mb-8 border-b border-border/40 pb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="h-8 w-1.5 rounded-full" style={{ backgroundColor: "var(--cyan-brand)" }} />
+                    <h2 className="font-display text-2xl md:text-3xl font-bold uppercase italic tracking-tight text-foreground">
+                      {brand}
+                    </h2>
                   </div>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                    {products.length} itens
+                  </span>
+                </div>
 
-                  <div className={viewModeContainerClass(viewMode)}>
-                    {products.map((product) =>
-                      viewMode === "list" ? (
-                        <ProductListRow key={product.id} product={product} />
-                      ) : (
-                        <ProductMiniCard key={product.id} product={product} />
-                      ),
-                    )}
-                  </div>
-                </section>
-              );
-            })}
+                <div className={viewModeContainerClass(viewMode)}>
+                  {products.map((product) =>
+                    viewMode === "list" ? (
+                      <ProductListRow key={product.id} product={product} />
+                    ) : (
+                      <ProductMiniCard key={product.id} product={product} />
+                    ),
+                  )}
+                </div>
+              </section>
+            ))}
           </div>
         )}
       </div>
+
     </div>
   );
 }
