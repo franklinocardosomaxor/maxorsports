@@ -2,11 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Boxes, Kanban, Plug, Loader2, Image as ImageIcon, Upload, X,
-  Megaphone, RefreshCw, Eye, EyeOff,
+  Megaphone, RefreshCw, Eye, EyeOff, CreditCard,
 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadCampaignImage, type SiteCampaign } from "@/lib/campaign.functions";
+import { refreshSiteSettings } from "@/hooks/use-site-settings";
 
 export const Route = createFileRoute("/maxorcrm/")({
   ssr: false,
@@ -94,8 +95,121 @@ function Overview() {
         ))}
       </section>
 
+      <InstallmentsManager />
+
       <CampaignManager />
     </div>
+  );
+}
+
+/**
+ * Parcelamento exibido no site (ex.: "ou 3x de R$ …"). Editável pelo painel;
+ * o site recalcula o valor da parcela automaticamente.
+ */
+function InstallmentsManager() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [settingsId, setSettingsId] = useState<string | null>(null);
+  const [parcelas, setParcelas] = useState(3);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [sample, setSample] = useState(599.9);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("id, installments_max")
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!alive) return;
+      if (data) {
+        setSettingsId(data.id as string);
+        setParcelas(Number(data.installments_max) || 3);
+      }
+      setLoading(false);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const save = async () => {
+    const n = Math.min(24, Math.max(1, Math.round(parcelas)));
+    setSaving(true);
+    setFeedback(null);
+    const { error } = settingsId
+      ? await supabase.from("site_settings").update({ installments_max: n }).eq("id", settingsId)
+      : await supabase.from("site_settings").insert([{ installments_max: n }]);
+    setSaving(false);
+    setParcelas(n);
+    if (!error) refreshSiteSettings();
+    setFeedback(error ? `Erro ao salvar: ${error.message}` : `Site passa a exibir ${n}x.`);
+  };
+
+  const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+  return (
+    <section className="rounded-2xl border border-border bg-card p-6">
+      <h2 className="flex items-center gap-2 font-display text-lg font-black uppercase text-offwhite">
+        <CreditCard className="h-5 w-5 text-[color:var(--cyan-brand)]" /> Parcelamento do Site
+      </h2>
+      <p className="mt-1 text-xs text-foreground/60">
+        Define em quantas vezes o site anuncia os produtos. O valor da parcela continua sendo
+        calculado automaticamente (preço ÷ número de parcelas).
+      </p>
+
+      {loading ? (
+        <Loader2 className="mt-4 h-4 w-4 animate-spin text-foreground/60" />
+      ) : (
+        <div className="mt-4 flex flex-wrap items-end gap-4">
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-foreground/60">
+              Máximo de parcelas
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={24}
+              value={parcelas}
+              onChange={(e) => setParcelas(Number(e.target.value))}
+              className="w-28 rounded-lg border border-border bg-navy px-3 py-2 text-offwhite outline-none focus:border-[color:var(--cyan-brand)]"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-foreground/60">
+              Simular com preço
+            </span>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={sample}
+              onChange={(e) => setSample(Number(e.target.value))}
+              className="w-36 rounded-lg border border-border bg-navy px-3 py-2 text-offwhite outline-none focus:border-[color:var(--cyan-brand)]"
+            />
+          </label>
+
+          <p className="rounded-lg border border-border bg-navy px-3 py-2 text-sm text-[color:var(--mint-brand)]">
+            ou {Math.max(1, Math.round(parcelas) || 1)}x de{" "}
+            {brl(sample / Math.max(1, Math.round(parcelas) || 1))}
+          </p>
+
+          <button
+            type="button"
+            onClick={save}
+            disabled={saving}
+            className="rounded-lg bg-[color:var(--cyan-brand)] px-4 py-2 text-sm font-bold uppercase text-navy transition hover:brightness-110 disabled:opacity-60"
+          >
+            {saving ? "Salvando…" : "Salvar parcelamento"}
+          </button>
+        </div>
+      )}
+
+      {feedback && <p className="mt-3 text-xs text-foreground/75">{feedback}</p>}
+    </section>
   );
 }
 

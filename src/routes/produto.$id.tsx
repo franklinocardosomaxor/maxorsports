@@ -8,6 +8,7 @@ import { Shell } from "@/components/site/Shell";
 import { brl, type ProductWithSection } from "@/lib/catalog";
 import { getProductPageData } from "@/lib/product-page.functions";
 import { useCart } from "@/lib/cart";
+import { useInstallments } from "@/hooks/use-site-settings";
 
 const WHATSAPP_NUMBER = "5577999599009";
 
@@ -105,6 +106,7 @@ function ProductPage() {
   const { product, variants } = Route.useLoaderData() as { product: ProductWithSection; variants: ProductWithSection[] };
   const navigate = useNavigate();
   const cart = useCart();
+  const parcelas = useInstallments();
 
   const [selectedColor, setSelectedColor] = useState<string>(product.colors[0] ?? "#000");
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
@@ -228,7 +230,7 @@ function ProductPage() {
                 )}
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                à vista no PIX · ou em 10x de {brl(product.price / 10)} sem juros
+                à vista no PIX · ou em {parcelas}x de {brl(product.price / parcelas)} sem juros
               </p>
             </div>
 
