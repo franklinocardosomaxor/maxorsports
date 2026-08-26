@@ -506,6 +506,14 @@ export function getSectionProducts(section: ProductWithSection["section"]) {
   });
 }
 
+/**
+ * Vitrine própria de unissex: cada variação de cor listada individualmente,
+ * sem alterar a regra que já os exibe em masculino e feminino.
+ */
+export function getUnisexProducts() {
+  return ALL_PRODUCTS.filter(isUnisexProduct);
+}
+
 /** Produtos de uma marca (sempre vindos do CRM). */
 export function getBrandProducts(slug: string) {
   const def = getBrandDef(slug);

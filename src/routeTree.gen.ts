@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnissexRouteImport } from './routes/unissex'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as OfertasRouteImport } from './routes/ofertas'
 import { Route as MinhaContaRouteImport } from './routes/minha-conta'
@@ -46,6 +47,11 @@ import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public
 import { Route as ApiPublicCrmProductsRouteImport } from './routes/api/public/crm/products'
 import { Route as ApiPublicCrmImageSplatRouteImport } from './routes/api/public/crm/image.$'
 
+const UnissexRoute = UnissexRouteImport.update({
+  id: '/unissex',
+  path: '/unissex',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -247,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unissex': typeof UnissexRoute
   '/admin/crm': typeof AdminCrmRoute
   '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
@@ -284,6 +291,7 @@ export interface FileRoutesByTo {
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unissex': typeof UnissexRoute
   '/admin/crm': typeof AdminCrmRoute
   '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
@@ -323,6 +331,7 @@ export interface FileRoutesById {
   '/minha-conta': typeof MinhaContaRoute
   '/ofertas': typeof OfertasRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/unissex': typeof UnissexRoute
   '/admin/crm': typeof AdminCrmRoute
   '/blog/guia-tenis-nike': typeof BlogGuiaTenisNikeRoute
   '/colecao/feminino': typeof ColecaoFemininoRoute
@@ -363,6 +372,7 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/ofertas'
     | '/sitemap.xml'
+    | '/unissex'
     | '/admin/crm'
     | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
@@ -400,6 +410,7 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/ofertas'
     | '/sitemap.xml'
+    | '/unissex'
     | '/admin/crm'
     | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
@@ -438,6 +449,7 @@ export interface FileRouteTypes {
     | '/minha-conta'
     | '/ofertas'
     | '/sitemap.xml'
+    | '/unissex'
     | '/admin/crm'
     | '/blog/guia-tenis-nike'
     | '/colecao/feminino'
@@ -477,6 +489,7 @@ export interface RootRouteChildren {
   MinhaContaRoute: typeof MinhaContaRoute
   OfertasRoute: typeof OfertasRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  UnissexRoute: typeof UnissexRoute
   AdminCrmRoute: typeof AdminCrmRoute
   BlogGuiaTenisNikeRoute: typeof BlogGuiaTenisNikeRoute
   ColecaoFemininoRoute: typeof ColecaoFemininoRoute
@@ -495,6 +508,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unissex': {
+      id: '/unissex'
+      path: '/unissex'
+      fullPath: '/unissex'
+      preLoaderRoute: typeof UnissexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -787,6 +807,7 @@ const rootRouteChildren: RootRouteChildren = {
   MinhaContaRoute: MinhaContaRoute,
   OfertasRoute: OfertasRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  UnissexRoute: UnissexRoute,
   AdminCrmRoute: AdminCrmRoute,
   BlogGuiaTenisNikeRoute: BlogGuiaTenisNikeRoute,
   ColecaoFemininoRoute: ColecaoFemininoRoute,
