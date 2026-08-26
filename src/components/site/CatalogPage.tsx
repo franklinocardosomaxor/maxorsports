@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, SlidersHorizontal, Heart, X } from "lucide-react";
 import { Shell } from "./Shell";
+import { useInstallments } from "@/hooks/use-site-settings";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "./view-mode";
 
 export type CatalogProduct = {
@@ -373,6 +374,7 @@ function CheckRow({
 }
 
 function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
+  const parcelas = useInstallments();
   const off = p.old ? Math.round(((p.old - p.price) / p.old) * 100) : 0;
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition hover:-translate-y-1 hover:shadow-xl">
@@ -419,7 +421,7 @@ function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
               </span>
             )}
           </div>
-          <p className="text-[11px] text-muted-foreground">ou 10x de {brl(p.price / 10)}</p>
+          <p className="text-[11px] text-muted-foreground">ou {parcelas}x de {brl(p.price / parcelas)}</p>
         </div>
         <div className="flex items-center gap-1 pt-2">
           {p.colors.slice(0, 4).map((c, i) => (

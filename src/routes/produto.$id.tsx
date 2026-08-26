@@ -228,7 +228,7 @@ function ProductPage() {
                 )}
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                à vista no PIX · ou em 10x de {brl(product.price / 10)} sem juros
+                à vista no PIX · ou em {parcelas}x de {brl(product.price / parcelas)} sem juros
               </p>
             </div>
 

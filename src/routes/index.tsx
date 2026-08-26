@@ -407,7 +407,7 @@ function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
             R$ {product.price.toFixed(2).replace(".", ",")}
           </div>
           <div className={`text-[11px] ${dark ? "text-offwhite/60" : "text-muted-foreground"}`}>
-            ou 10x de R$ {(product.price / 10).toFixed(2).replace(".", ",")}
+            ou {parcelas}x de R$ {(product.price / parcelas).toFixed(2).replace(".", ",")}
           </div>
         </div>
       </div>
