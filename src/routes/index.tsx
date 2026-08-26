@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import atletasVideo from "@/assets/atletas-correndo.mp4.asset.json";
+import { useInstallments } from "@/hooks/use-site-settings";
 
 import {
   Search,
@@ -366,6 +367,7 @@ function ProductCarousel({
 
 
 function ProductCard({ product, dark }: { product: Product; dark?: boolean }) {
+  const parcelas = useInstallments();
   const discount = product.old ? Math.round((1 - product.price / product.old) * 100) : 0;
   return (
     <Link
