@@ -33,12 +33,16 @@ function Overview() {
   useEffect(() => {
     let active = true;
     (async () => {
-      const [p, pv, c, d, a] = await Promise.all([
+      const [p, pv, c, d, a, fr, fp] = await Promise.all([
         supabase.from("products").select("id", { count: "exact", head: true }),
         supabase.from("products").select("id", { count: "exact", head: true }).eq("site_visible", true),
         supabase.from("contacts").select("id", { count: "exact", head: true }),
         supabase.from("deals").select("id", { count: "exact", head: true }),
         supabase.from("activities").select("id", { count: "exact", head: true }),
+        supabase.from("finance_entries").select("id", { count: "exact", head: true })
+          .eq("kind", "receivable").eq("status", "open"),
+        supabase.from("finance_entries").select("id", { count: "exact", head: true })
+          .eq("kind", "payable").eq("status", "open"),
       ]);
       if (!active) return;
       setCounts({
@@ -47,7 +51,10 @@ function Overview() {
         contatos: c.count ?? 0,
         negocios: d.count ?? 0,
         atividades: a.count ?? 0,
+        aReceber: fr.count ?? 0,
+        aPagar: fp.count ?? 0,
       });
+
     })();
     return () => {
       active = false;
