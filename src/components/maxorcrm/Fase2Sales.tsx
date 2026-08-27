@@ -136,30 +136,31 @@ export function Fase2Sales() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="flex items-center gap-2 text-xl font-black uppercase text-offwhite">
-          <Kanban className="text-[color:var(--cyan-brand)]" size={24} /> Vendas · Comercial
+        <h1 className="flex items-center gap-2 text-lg font-black uppercase text-offwhite sm:text-xl">
+          <Kanban className="shrink-0 text-[color:var(--cyan-brand)]" size={24} /> Vendas · Comercial
         </h1>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           <button
             onClick={() => { setOpenDeal(null); setDealModal(true); }}
-            className="flex items-center gap-2 rounded-xl bg-[color:var(--cyan-brand)] px-5 py-2.5 font-bold text-navy transition hover:brightness-110"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[color:var(--cyan-brand)] px-4 py-2.5 text-sm font-bold text-navy transition hover:brightness-110 sm:px-5 sm:text-base"
           >
             <Plus size={18} /> Novo Negócio
           </button>
           <button
             onClick={() => setContactModal(true)}
-            className="flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 font-bold text-offwhite transition hover:brightness-110"
+            className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-bold text-offwhite transition hover:brightness-110 sm:px-5 sm:text-base"
           >
             <Users size={18} /> Novo Contato
           </button>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatBox label="Em aberto" value={brl(totals.open)} tone="cyan" />
         <StatBox label="Ganho" value={brl(totals.won)} tone="mint" />
         <StatBox label="Negócios" value={String(totals.count)} tone="lime" />
       </div>
+
 
       <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4">
         <div className="inline-flex rounded-xl border border-border bg-background p-1">
