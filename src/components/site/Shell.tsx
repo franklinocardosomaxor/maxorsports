@@ -752,6 +752,18 @@ function Footer() {
 
       </div>
       <div className="border-t border-white/5">
+        <div className="mx-auto max-w-7xl px-4 py-4">
+          <details className="group/faq">
+            <summary className="cursor-pointer list-none text-[11px] font-display uppercase tracking-widest text-offwhite/50 hover:text-offwhite">
+              FAQ / Termos mais buscados
+            </summary>
+            <p className="mt-3 text-[10px] leading-relaxed text-offwhite/35">
+              {FOOTER_KEYWORDS}
+            </p>
+          </details>
+        </div>
+      </div>
+      <div className="border-t border-white/5">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-offwhite/50 md:flex-row">
           <span>© {new Date().getFullYear()} {COMPANY_NAME} — CNPJ {COMPANY_CNPJ}. Todos os direitos reservados.</span>
           <span className="font-display uppercase tracking-widest">Performance com seu estilo e personalidade</span>
