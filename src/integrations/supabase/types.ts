@@ -263,6 +263,88 @@ export type Database = {
           },
         ]
       }
+      finance_entries: {
+        Row: {
+          amount_brl: number
+          category: string | null
+          counterparty: string | null
+          created_at: string
+          deal_id: string | null
+          description: string
+          due_date: string
+          id: string
+          kind: string
+          method: string | null
+          notes: string | null
+          org_id: string
+          owner_id: string | null
+          paid_at: string | null
+          product_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_brl?: number
+          category?: string | null
+          counterparty?: string | null
+          created_at?: string
+          deal_id?: string | null
+          description: string
+          due_date: string
+          id?: string
+          kind: string
+          method?: string | null
+          notes?: string | null
+          org_id: string
+          owner_id?: string | null
+          paid_at?: string | null
+          product_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_brl?: number
+          category?: string | null
+          counterparty?: string | null
+          created_at?: string
+          deal_id?: string | null
+          description?: string
+          due_date?: string
+          id?: string
+          kind?: string
+          method?: string | null
+          notes?: string | null
+          org_id?: string
+          owner_id?: string | null
+          paid_at?: string | null
+          product_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_entries_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_entries_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_entries_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organizations: {
         Row: {
           created_at: string
