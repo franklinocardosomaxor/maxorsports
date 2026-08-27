@@ -112,10 +112,13 @@ function scoreProduct(p: CatalogProduct, model: string[], context: string[]) {
  * Ranqueia exigindo acerto no MODELO. Marca/categoria só desempatam —
  * nunca criam um resultado sozinhas.
  */
-async function rank(terms: string[], limit = 12): Promise<ProductHit[]> {
-  if (!terms.length) return [];
-  const model = modelTokens(terms);
-  const context = terms.filter((t) => !model.includes(t));
+async function rankSplit(
+  modelRaw: string[],
+  contextRaw: string[],
+  limit = 12,
+): Promise<ProductHit[]> {
+  const model = modelTokens(modelRaw);
+  const context = Array.from(new Set([...contextRaw, ...modelRaw.filter((t) => !model.includes(t))]));
 
   // Busca só por marca (ex: "Nike"): lista a marca inteira.
   if (!model.length) {
@@ -133,6 +136,12 @@ async function rank(terms: string[], limit = 12): Promise<ProductHit[]> {
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 }
+
+async function rank(terms: string[], limit = 12): Promise<ProductHit[]> {
+  if (!terms.length) return [];
+  return rankSplit(terms, [], limit);
+}
+
 
 // -------------------- Search by name --------------------
 
