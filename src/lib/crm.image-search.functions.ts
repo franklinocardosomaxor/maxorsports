@@ -19,6 +19,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { CatalogProduct } from "@/components/site/CatalogPage";
+import { BRAND_NAMES } from "@/lib/brands";
+
 
 export type ProductHit = CatalogProduct & { score: number };
 
