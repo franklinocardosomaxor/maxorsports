@@ -385,7 +385,9 @@ function NotFoundBalloon({
             Não encontramos <span className="font-semibold text-[color:var(--lime-brand)]">{term}</span> no nosso site.{" "}
           </>
         )}
-        Mande uma imagem ou nome do modelo para nosso email ou clica no botão do WhatsApp que vamos buscar e retornar pra você se teremos ou não o item procurado.
+        {fromImage
+          ? "Clica no botão do WhatsApp de atendimento e anexa essa mesma foto na conversa: consultamos o modelo com nosso fornecedor e retornamos se conseguimos trazer pra você."
+          : "Mande uma imagem ou nome do modelo para nosso email ou clica no botão do WhatsApp que vamos buscar e retornar pra você se teremos ou não o item procurado."}
       </div>
       <a
         href={waHref}
