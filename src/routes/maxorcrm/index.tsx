@@ -69,12 +69,13 @@ function Overview() {
     },
     {
       to: "/maxorcrm/fase-3" as const,
-      icon: Plug,
-      title: "Financeiro (Fase 3)",
-      desc: "Operação financeira, fluxo de caixa e atividades do sistema.",
-      stat: counts && `${counts.atividades} atividades`,
+      icon: Wallet,
+      title: "Financeiro",
+      desc: "Contas a pagar e a receber, vencimentos, saldo previsto e fluxo de caixa.",
+      stat: counts && `${counts.aReceber} a receber · ${counts.aPagar} a pagar`,
     },
   ];
+
 
   return (
     <div className="space-y-6">
