@@ -28,12 +28,15 @@ Nova tabela `public.finance_entries`, escopada por `org_id`:
 - Ação rápida "Marcar como pago" (grava a data de pagamento).
 - Visual e responsividade idênticos às Fases 1 e 2 (dark Navy, cards, tabela que colapsa no celular).
 
-### 3. Integração leve com Vendas
+### 3. Painel financeiro no início do MaxorCRM
+- No painel inicial (`/maxorcrm`), um bloco "Resumo financeiro" com: a receber no mês, a pagar no mês, saldo previsto, total vencido e os próximos vencimentos.
+- Mini gráfico de barras entradas x saídas dos últimos 6 meses.
+- Atalho direto para o módulo Financeiro.
+
+### 4. Integração leve com Vendas
 - Ao lançar uma conta a receber, é possível vincular a um negócio existente (opcional).
 - Nada do fluxo de vendas atual é alterado.
 
-## Fora de escopo
-- Nenhuma alteração no site público, no checkout, no catálogo ou na estrutura de menus.
 - Sem integração bancária, sem conciliação automática, sem emissão de boleto.
 
 ## Detalhes técnicos
