@@ -340,6 +340,7 @@ function SearchDropdown({ state, onClose }: { state: SearchState; onClose: () =>
         {(state.kind === "empty" || state.kind === "error") && (
           <NotFoundBalloon
             term={state.term}
+            fromImage={state.kind === "empty" ? state.fromImage : false}
             error={state.kind === "error" ? state.message : undefined}
             onClose={onClose}
           />
