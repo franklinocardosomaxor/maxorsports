@@ -517,31 +517,32 @@ export function Fase1Catalog() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <h1 className="text-xl font-black uppercase text-offwhite flex items-center gap-2">
-            <Package className="text-[color:var(--cyan-brand)]" size={24} /> Estoque · Catálogo de Produtos
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <h1 className="text-lg sm:text-xl font-black uppercase text-offwhite flex min-w-0 items-center gap-2">
+            <Package className="shrink-0 text-[color:var(--cyan-brand)]" size={24} /> <span className="min-w-0">Estoque · Catálogo</span>
         </h1>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 bg-[color:var(--cyan-brand)] text-navy font-bold px-5 py-2.5 rounded-xl hover:brightness-110 transition"
+          className="flex shrink-0 items-center justify-center gap-2 bg-[color:var(--cyan-brand)] text-navy font-bold px-5 py-2.5 rounded-xl hover:brightness-110 transition"
         >
           <Plus size={18} /> Novo Produto
         </button>
       </div>
 
-      <div className="bg-card border border-border p-4 rounded-2xl flex items-center gap-4">
-        <Search className="text-foreground/50" size={18} />
+      <div className="bg-card border border-border p-3 sm:p-4 rounded-2xl flex items-center gap-2 sm:gap-4">
+        <Search className="shrink-0 text-foreground/50" size={18} />
         <input
           type="text"
-          placeholder="Buscar por SKU, nome do produto ou marca..."
+          placeholder="Buscar por SKU, nome ou marca..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:border-[color:var(--cyan-brand)] focus:outline-none"
+          className="min-w-0 flex-1 bg-background border border-border rounded-xl px-3 sm:px-4 py-2.5 text-sm focus:border-[color:var(--cyan-brand)] focus:outline-none"
         />
-        <button onClick={fetchProducts} className="p-2.5 bg-background rounded-xl hover:bg-border transition">
+        <button onClick={fetchProducts} className="shrink-0 p-2.5 bg-background rounded-xl hover:bg-border transition">
           <RefreshCw size={18} className="text-foreground/60" />
         </button>
       </div>
+
 
       <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xl">
         <table className="w-full text-left text-sm text-foreground/70">
