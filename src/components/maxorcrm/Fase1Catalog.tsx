@@ -548,12 +548,12 @@ export function Fase1Catalog() {
         <table className="w-full text-left text-sm text-foreground/70">
           <thead className="bg-background text-xs font-semibold uppercase text-foreground/50 border-b border-border">
             <tr>
-              <th className="p-4">SKU / Foto</th>
-              <th className="p-4">Produto / Marca</th>
-              <th className="p-4">Preço</th>
-              <th className="p-4">Vitrine</th>
-              <th className="p-4">Selo</th>
-              <th className="p-4 text-right">Ações</th>
+              <th className="p-3 sm:p-4">SKU / Foto</th>
+              <th className="p-3 sm:p-4">Produto / Marca</th>
+              <th className="hidden p-4 md:table-cell">Preço</th>
+              <th className="hidden p-4 md:table-cell">Vitrine</th>
+              <th className="hidden p-4 lg:table-cell">Selo</th>
+              <th className="p-3 sm:p-4 text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -565,10 +565,10 @@ export function Fase1Catalog() {
               products
                 .filter(p => (p.name || p.name_prod || '').toLowerCase().includes(search.toLowerCase()) || (p.sku || '').toLowerCase().includes(search.toLowerCase()))
                 .map(prod => (
-                  <tr key={prod.id} className="hover:bg-border/50 transition">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-background rounded-xl border border-border overflow-hidden flex items-center justify-center">
+                  <tr key={prod.id} className="hover:bg-border/50 transition align-top">
+                    <td className="p-3 sm:p-4">
+                      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+                        <div className="w-12 h-12 shrink-0 bg-background rounded-xl border border-border overflow-hidden flex items-center justify-center">
                           {prod.img || (prod.imagens && prod.imagens[0]?.url_imagem) ? (
                             <img src={prod.img || prod.imagens[0]?.url_imagem} alt="" className="w-full h-full object-cover" />
                           ) : (
@@ -578,32 +578,48 @@ export function Fase1Catalog() {
                         <span className="font-mono text-xs font-bold text-[color:var(--cyan-brand)]">{prod.sku}</span>
                       </div>
                     </td>
-                    <td className="p-4">
+                    <td className="p-3 sm:p-4">
                       <div className="font-bold text-offwhite">{prod.name_prod || prod.name}</div>
                       <div className="text-xs text-foreground/50">{prod.brand || prod.marca_prod} • {prod.category || prod.categoria_prod}</div>
+                      {/* Resumo compacto no celular */}
+                      <div className="mt-2 flex flex-wrap items-center gap-2 md:hidden">
+                        <span className="text-xs font-bold text-[color:var(--mint-brand)]">
+                          R$ {Number(prod.price || prod.valor_dec || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                        <span className={`text-[10px] font-bold uppercase ${prod.site_visible ? "text-[color:var(--mint-brand)]" : "text-rose-400"}`}>
+                          {prod.site_visible ? "Ativo" : "Oculto"}
+                        </span>
+                        <span className="text-[10px] font-bold text-purple-300 uppercase px-2 py-0.5 rounded border border-border">
+                          {prod.tag || prod.badge_text || "Normal"}
+                        </span>
+                      </div>
                     </td>
-                    <td className="p-4 font-bold text-[color:var(--mint-brand)]">
+                    <td className="hidden p-4 font-bold text-[color:var(--mint-brand)] md:table-cell">
                       R$ {Number(prod.price || prod.valor_dec || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
-                    <td className="p-4">
+                    <td className="hidden p-4 md:table-cell">
                       {prod.site_visible ? (
                         <span className="text-[10px] font-bold text-[color:var(--mint-brand)] uppercase">Ativo</span>
                       ) : (
                         <span className="text-[10px] font-bold text-rose-400 uppercase">Oculto</span>
                       )}
                     </td>
-                    <td className="p-4">
+                    <td className="hidden p-4 lg:table-cell">
                       <span className="text-[10px] font-bold text-purple-300 uppercase px-2 py-0.5 rounded border border-border">
                         {prod.tag || prod.badge_text || "Normal"}
                       </span>
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-3 sm:p-4 text-right">
                       <button disabled={loadingProductId === prod.id} onClick={() => handleOpenModal(prod)} className="p-2 bg-background hover:bg-border rounded-lg text-foreground/60 transition disabled:opacity-50">
                         {loadingProductId === prod.id ? <RefreshCw size={16} className="animate-spin" /> : <Edit size={16} />}
                       </button>
                     </td>
                   </tr>
                 ))
+            )}
+          </tbody>
+        </table>
+
             )}
           </tbody>
         </table>
