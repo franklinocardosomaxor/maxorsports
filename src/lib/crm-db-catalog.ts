@@ -39,7 +39,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, site_visible, brand_visible",
+      "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, site_visible, brand_visible, genero, gender",
     )
     .eq("site_visible", true)
     .order("updated_at", { ascending: false });
