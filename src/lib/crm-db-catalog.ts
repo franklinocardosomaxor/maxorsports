@@ -73,6 +73,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
       backorder: row.backorder,
       site_visible: row.site_visible,
       brand_visible: row.brand_visible ?? true,
+      genero: row.genero ?? row.gender ?? undefined,
     } satisfies Record<string, unknown>;
   });
 }
