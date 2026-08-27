@@ -31,6 +31,9 @@ export type DbProduct = {
   color_variant: string | null;
   site_visible: boolean;
   brand_visible: boolean | null;
+  /** Gênero cadastrado no CRM — soberano sobre a seção para unissex. */
+  genero: string | null;
+  gender: string | null;
 };
 
 /** Busca os produtos publicados no banco compartilhado. */
