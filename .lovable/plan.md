@@ -37,6 +37,8 @@ Nova tabela `public.finance_entries`, escopada por `org_id`:
 - Ao lançar uma conta a receber, é possível vincular a um negócio existente (opcional).
 - Nada do fluxo de vendas atual é alterado.
 
+## Fora de escopo
+- Nenhuma alteração no site público, no checkout, no catálogo ou na estrutura de menus.
 - Sem integração bancária, sem conciliação automática, sem emissão de boleto.
 
 ## Detalhes técnicos
