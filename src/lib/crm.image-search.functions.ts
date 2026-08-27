@@ -101,7 +101,9 @@ function scoreProduct(p: CatalogProduct, model: string[], context: string[]) {
       s += 6;
     }
   }
-  if (!hits) return 0;
+  // Todos os termos do modelo precisam bater — meio-modelo não vale.
+  if (hits < model.length) return 0;
+
 
   const ctxHay = tokenize(`${p.brand} ${p.category}`);
   for (const t of context) if (ctxHay.includes(t)) s += 2;
