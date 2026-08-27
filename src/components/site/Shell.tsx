@@ -353,14 +353,18 @@ function SearchDropdown({ state, onClose }: { state: SearchState; onClose: () =>
 function NotFoundBalloon({
   term,
   error,
+  fromImage,
   onClose,
 }: {
   term: string;
   error?: string;
+  fromImage?: boolean;
   onClose: () => void;
 }) {
   const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `${WHATSAPP_MSG} (Referência: ${term})`,
+    fromImage
+      ? `${WHATSAPP_MSG} Vou enviar aqui a foto do modelo que procurei no site. (Referência: ${term})`
+      : `${WHATSAPP_MSG} (Referência: ${term})`,
   )}`;
   const mailHref = `mailto:contato@maxorsports.com.br?subject=${encodeURIComponent(
     "Busca de modelo — Maxor Sports",
