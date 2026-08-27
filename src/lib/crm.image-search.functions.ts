@@ -163,14 +163,19 @@ export const searchByImage = createServerFn({ method: "POST" })
       vision = { colors: [], keywords: [] };
     }
 
-    // 2) Monta termos de busca a partir da visão e rankeia no catálogo.
-    const terms = tokenize(
-      [
-        vision.brand ?? "",
-        vision.model ?? "",
-        vision.category ?? "",
-        ...(vision.keywords ?? []),
-      ].join(" "),
+    // 2) Monta termos de busca a partir da visão + do texto digitado e rankeia.
+    const terms = Array.from(
+      new Set([
+        ...tokenize(
+          [
+            vision.brand ?? "",
+            vision.model ?? "",
+            vision.category ?? "",
+            ...(vision.keywords ?? []),
+          ].join(" "),
+        ),
+        ...tokenize(data.query ?? ""),
+      ]),
     );
     const results = await rank(terms);
 
