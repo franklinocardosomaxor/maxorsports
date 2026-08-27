@@ -197,7 +197,7 @@ type SearchState =
   | { kind: "idle" }
   | { kind: "loading"; label: string }
   | { kind: "results"; term: string; hits: ProductHit[] }
-  | { kind: "empty"; term: string }
+  | { kind: "empty"; term: string; fromImage?: boolean }
   | { kind: "error"; term: string; message: string };
 
 function Header() {
@@ -222,15 +222,24 @@ function Header() {
   };
 
   const submitImage = async (dataUrl: string, fileName: string) => {
+    const typed = query.trim();
     setState({ kind: "loading", label: "Analisando imagem…" });
     try {
-      const r = await runImage({ data: { imageDataUrl: dataUrl } });
+      const r = await runImage({
+        data: { imageDataUrl: dataUrl, ...(typed ? { query: typed } : {}) },
+      });
       const term =
-        [r.vision.brand, r.vision.model].filter(Boolean).join(" ") || fileName;
-      if (r.count === 0) setState({ kind: "empty", term });
+        [r.vision.brand, r.vision.model].filter(Boolean).join(" ") ||
+        typed ||
+        fileName;
+      if (r.count === 0) setState({ kind: "empty", term, fromImage: true });
       else setState({ kind: "results", term, hits: r.results });
     } catch (err) {
-      setState({ kind: "error", term: fileName, message: (err as Error).message });
+      setState({
+        kind: "error",
+        term: typed || fileName,
+        message: (err as Error).message,
+      });
     }
   };
 
@@ -445,7 +454,6 @@ function ImageSearch({ onImage }: { onImage: (dataUrl: string, fileName: string)
         type="file"
         aria-label="Enviar imagem para buscar o tênis"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={onPick}
       />
