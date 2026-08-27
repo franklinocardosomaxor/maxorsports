@@ -275,7 +275,7 @@ function KanbanBoard({
   }
 
   return (
-    <div className="grid gap-4 overflow-x-auto md:grid-cols-3 xl:grid-cols-6">
+    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
       {stages.map((s) => {
         const items = deals.filter((d) => d.stage_id === s.id);
         const total = items.reduce((sum, d) => sum + Number(d.value_brl || 0), 0);
@@ -492,10 +492,10 @@ function DealModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-navy/80 p-4 backdrop-blur-sm">
-      <form onSubmit={save} className="my-8 w-full max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 grid place-items-start overflow-y-auto bg-navy/80 p-2 backdrop-blur-sm sm:place-items-center sm:p-4">
+      <form onSubmit={save} className="my-4 w-full max-w-3xl rounded-2xl border border-border bg-card p-4 shadow-2xl sm:my-8 sm:p-6">
         <div className="flex items-center justify-between border-b border-border pb-4">
-          <h2 className="font-display text-xl font-black uppercase text-offwhite">
+          <h2 className="font-display text-base font-black uppercase text-offwhite sm:text-xl">
             {deal ? "Editar negócio" : "Novo negócio"}
           </h2>
           <button type="button" onClick={onClose} aria-label="Fechar" className="rounded-lg p-2 text-foreground/60 hover:bg-background">
@@ -688,10 +688,10 @@ function ContactModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-navy/80 p-4 backdrop-blur-sm">
-      <form onSubmit={save} className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-navy/80 p-2 backdrop-blur-sm sm:p-4">
+      <form onSubmit={save} className="my-4 w-full max-w-lg rounded-2xl border border-border bg-card p-4 shadow-2xl sm:p-6">
         <div className="flex items-center justify-between border-b border-border pb-4">
-          <h2 className="font-display text-xl font-black uppercase text-offwhite">Novo contato</h2>
+          <h2 className="font-display text-base font-black uppercase text-offwhite sm:text-xl">Novo contato</h2>
           <button type="button" onClick={onClose} aria-label="Fechar" className="rounded-lg p-2 text-foreground/60 hover:bg-background">
             <X size={18} />
           </button>
