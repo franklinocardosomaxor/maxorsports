@@ -107,6 +107,8 @@ export const searchByImage = createServerFn({ method: "POST" })
     z.object({
       // data URL: "data:image/jpeg;base64,...."
       imageDataUrl: z.string().min(32).max(8_000_000),
+      // texto digitado na barra de busca (opcional) — soma aos termos da visão
+      query: z.string().trim().max(120).optional(),
     }).parse(data),
   )
   .handler(async ({ data }) => {
