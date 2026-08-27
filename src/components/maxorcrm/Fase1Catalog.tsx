@@ -619,10 +619,6 @@ export function Fase1Catalog() {
             )}
           </tbody>
         </table>
-
-            )}
-          </tbody>
-        </table>
       </div>
 
       {modalOpen && (
