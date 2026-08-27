@@ -23,7 +23,7 @@ import {
 } from "@/lib/catalog";
 
 const COLUMNS =
-  "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, site_visible, brand_visible";
+  "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, site_visible, brand_visible, genero, gender";
 
 /** Cliente público (anon) para leitura server-side — RLS `products_public_read` se aplica. */
 function createPublicClient() {
@@ -69,6 +69,8 @@ type DbRow = {
   color_variant: string | null;
   site_visible: boolean;
   brand_visible: boolean | null;
+  genero: string | null;
+  gender: string | null;
 };
 
 /** Mesmo mapeamento linha→registro usado pelo sync do cliente (crm-db-catalog.ts). */
@@ -94,6 +96,7 @@ function mapRow(row: DbRow): Record<string, unknown> {
     backorder: row.backorder,
     site_visible: row.site_visible,
     brand_visible: row.brand_visible ?? true,
+    genero: row.genero ?? row.gender ?? undefined,
   };
 }
 
