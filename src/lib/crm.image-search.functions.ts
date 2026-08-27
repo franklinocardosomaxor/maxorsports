@@ -101,18 +101,21 @@ function scoreProduct(p: CatalogProduct, model: string[], context: string[]) {
       s += 6;
     }
   }
-  // Todos os termos do modelo precisam bater — meio-modelo não vale.
-  if (hits < model.length) return 0;
+  // Precisa casar com pelo menos um termo do modelo (cor não conta).
+  if (hits === 0) return { score: 0, hits: 0 };
 
+  // Cobertura total do modelo vale bônus (match exato de modelo).
+  if (hits === model.length) s += 6;
 
   const ctxHay = tokenize(`${p.brand} ${p.category}`);
   for (const t of context) if (ctxHay.includes(t)) s += 2;
-  return s;
+  return { score: s, hits };
 }
 
 /**
  * Ranqueia exigindo acerto no MODELO. Marca/categoria só desempatam —
- * nunca criam um resultado sozinhas.
+ * nunca criam um resultado sozinhas. Variações de cor do mesmo modelo
+ * entram mesmo quando a cor da foto não existe no catálogo.
  */
 async function rankSplit(
   modelRaw: string[],
@@ -132,12 +135,27 @@ async function rankSplit(
       .slice(0, limit);
   }
 
-  return (await pool())
-    .map((p) => ({ ...p, score: scoreProduct(p, model, context) }))
-    .filter((p) => p.score > 0)
+  const brands = context.filter(isBrandToken);
+  let scored = (await pool())
+    .map((p) => ({ p, ...scoreProduct(p, model, context) }))
+    .filter((r) => r.score > 0);
+
+  // Se a marca foi reconhecida e existe no catálogo, não misturar marcas.
+  if (brands.length) {
+    const sameBrand = scored.filter((r) => brands.some((b) => tokenize(r.p.brand).includes(b)));
+    if (sameBrand.length) scored = sameBrand;
+  }
+
+  // Mantém apenas os que casam melhor com o modelo (evita "primos" fracos).
+  const best = Math.max(...scored.map((r) => r.hits));
+  scored = scored.filter((r) => r.hits === best);
+
+  return scored
     .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
+    .slice(0, limit)
+    .map((r) => ({ ...r.p, score: r.score }));
 }
+
 
 async function rank(terms: string[], limit = 12): Promise<ProductHit[]> {
   if (!terms.length) return [];
