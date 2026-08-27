@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
-  Boxes, Kanban, Plug, Loader2, Image as ImageIcon, Upload, X,
+  Boxes, Kanban, Loader2, Image as ImageIcon, Upload, X,
   Megaphone, RefreshCw, Eye, EyeOff, CreditCard,
+  Wallet, TrendingUp, TrendingDown, AlertTriangle, ArrowRight,
 } from "lucide-react";
+
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadCampaignImage, type SiteCampaign } from "@/lib/campaign.functions";
@@ -31,12 +33,16 @@ function Overview() {
   useEffect(() => {
     let active = true;
     (async () => {
-      const [p, pv, c, d, a] = await Promise.all([
+      const [p, pv, c, d, a, fr, fp] = await Promise.all([
         supabase.from("products").select("id", { count: "exact", head: true }),
         supabase.from("products").select("id", { count: "exact", head: true }).eq("site_visible", true),
         supabase.from("contacts").select("id", { count: "exact", head: true }),
         supabase.from("deals").select("id", { count: "exact", head: true }),
         supabase.from("activities").select("id", { count: "exact", head: true }),
+        supabase.from("finance_entries").select("id", { count: "exact", head: true })
+          .eq("kind", "receivable").eq("status", "open"),
+        supabase.from("finance_entries").select("id", { count: "exact", head: true })
+          .eq("kind", "payable").eq("status", "open"),
       ]);
       if (!active) return;
       setCounts({
@@ -45,7 +51,10 @@ function Overview() {
         contatos: c.count ?? 0,
         negocios: d.count ?? 0,
         atividades: a.count ?? 0,
+        aReceber: fr.count ?? 0,
+        aPagar: fp.count ?? 0,
       });
+
     })();
     return () => {
       active = false;
@@ -69,12 +78,13 @@ function Overview() {
     },
     {
       to: "/maxorcrm/fase-3" as const,
-      icon: Plug,
-      title: "Financeiro (Fase 3)",
-      desc: "Operação financeira, fluxo de caixa e atividades do sistema.",
-      stat: counts && `${counts.atividades} atividades`,
+      icon: Wallet,
+      title: "Financeiro",
+      desc: "Contas a pagar e a receber, vencimentos, saldo previsto e fluxo de caixa.",
+      stat: counts && `${counts.aReceber} a receber · ${counts.aPagar} a pagar`,
     },
   ];
+
 
   return (
     <div className="space-y-6">
@@ -95,9 +105,12 @@ function Overview() {
         ))}
       </section>
 
+      <FinanceOverview />
+
       <InstallmentsManager />
 
       <CampaignManager />
+
     </div>
   );
 }
@@ -445,6 +458,154 @@ function CampaignManager() {
             )}
           </div>
         </div>
+      )}
+    </section>
+  );
+}
+
+/**
+ * Resumo financeiro do painel inicial: totais em aberto do mês, vencidos,
+ * próximos vencimentos e um comparativo simples de entradas x saídas.
+ */
+function FinanceOverview() {
+  type Row = {
+    id: string; kind: "payable" | "receivable"; description: string;
+    amount_brl: number; due_date: string; paid_at: string | null; status: string;
+  };
+  const [rows, setRows] = useState<Row[] | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const { data } = await supabase
+        .from("finance_entries")
+        .select("id, kind, description, amount_brl, due_date, paid_at, status")
+        .order("due_date", { ascending: true })
+        .limit(1000);
+      if (active) setRows((data ?? []) as Row[]);
+    })();
+    return () => { active = false; };
+  }, []);
+
+  const money = (n: number) =>
+    `R$ ${Number(n || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const today = new Date().toISOString().slice(0, 10);
+  const monthKey = today.slice(0, 7);
+
+  const list = rows ?? [];
+  const open = list.filter((r) => r.status === "open");
+  const receberMes = open.filter((r) => r.kind === "receivable" && r.due_date.startsWith(monthKey))
+    .reduce((s, r) => s + Number(r.amount_brl || 0), 0);
+  const pagarMes = open.filter((r) => r.kind === "payable" && r.due_date.startsWith(monthKey))
+    .reduce((s, r) => s + Number(r.amount_brl || 0), 0);
+  const vencido = open.filter((r) => r.due_date < today).reduce((s, r) => s + Number(r.amount_brl || 0), 0);
+  const proximos = open.filter((r) => r.due_date >= today).slice(0, 5);
+
+  // Últimos 6 meses: entradas x saídas (pelo vencimento).
+  const months: { key: string; label: string; in: number; out: number }[] = [];
+  const base = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(base.getFullYear(), base.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    months.push({
+      key,
+      label: d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", ""),
+      in: list.filter((r) => r.kind === "receivable" && r.status !== "canceled" && r.due_date.startsWith(key))
+        .reduce((s, r) => s + Number(r.amount_brl || 0), 0),
+      out: list.filter((r) => r.kind === "payable" && r.status !== "canceled" && r.due_date.startsWith(key))
+        .reduce((s, r) => s + Number(r.amount_brl || 0), 0),
+    });
+  }
+  const max = Math.max(1, ...months.map((m) => Math.max(m.in, m.out)));
+
+  const stats = [
+    { icon: TrendingUp, label: "A receber no mês", value: money(receberMes), color: "text-[color:var(--mint-brand)]" },
+    { icon: TrendingDown, label: "A pagar no mês", value: money(pagarMes), color: "text-[color:var(--lime-brand)]" },
+    { icon: Wallet, label: "Saldo previsto", value: money(receberMes - pagarMes), color: "text-[color:var(--cyan-brand)]" },
+    { icon: AlertTriangle, label: "Vencidos", value: money(vencido), color: "text-destructive" },
+  ];
+
+  return (
+    <section className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="flex items-center gap-2 font-display text-lg font-black uppercase text-offwhite">
+          <Wallet className="h-5 w-5 text-[color:var(--cyan-brand)]" /> Resumo financeiro
+        </h2>
+        <Link
+          to="/maxorcrm/fase-3"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-foreground/75 transition hover:brightness-110"
+        >
+          Abrir financeiro <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
+      </div>
+
+      {rows === null ? (
+        <p className="mt-5 flex items-center gap-2 text-sm text-foreground/60">
+          <Loader2 className="h-4 w-4 animate-spin" /> Carregando…
+        </p>
+      ) : (
+        <>
+          <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {stats.map(({ icon: Icon, label, value, color }) => (
+              <div key={label} className="rounded-xl border border-border bg-background p-4">
+                <Icon className={`h-5 w-5 ${color}`} />
+                <p className="mt-2 text-[11px] uppercase tracking-wider text-foreground/55">{label}</p>
+                <p className="mt-1 font-display text-base font-black text-offwhite sm:text-lg">{value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 grid gap-5 lg:grid-cols-2">
+            <div>
+              <p className="text-[11px] uppercase tracking-wider text-foreground/55">
+                Entradas x saídas (6 meses)
+              </p>
+              <div className="mt-3 flex h-32 items-end gap-3">
+                {months.map((m) => (
+                  <div key={m.key} className="flex flex-1 flex-col items-center gap-1">
+                    <div className="flex h-24 w-full items-end justify-center gap-1">
+                      <span
+                        title={`Entradas ${money(m.in)}`}
+                        className="w-1/2 rounded-t bg-[color:var(--mint-brand)]/80"
+                        style={{ height: `${Math.max(2, (m.in / max) * 100)}%` }}
+                      />
+                      <span
+                        title={`Saídas ${money(m.out)}`}
+                        className="w-1/2 rounded-t bg-[color:var(--lime-brand)]/70"
+                        style={{ height: `${Math.max(2, (m.out / max) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] uppercase text-foreground/50">{m.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[11px] uppercase tracking-wider text-foreground/55">Próximos vencimentos</p>
+              {proximos.length === 0 ? (
+                <p className="mt-3 text-sm text-foreground/60">Nenhuma conta em aberto.</p>
+              ) : (
+                <ul className="mt-3 space-y-2">
+                  {proximos.map((r) => (
+                    <li key={r.id} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background px-3 py-2">
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm text-offwhite">{r.description}</span>
+                        <span className="text-[11px] text-foreground/55">
+                          {r.kind === "receivable" ? "A receber" : "A pagar"} · vence{" "}
+                          {new Date(`${r.due_date}T12:00:00`).toLocaleDateString("pt-BR")}
+                        </span>
+                      </span>
+                      <span className={`shrink-0 text-sm font-bold ${r.kind === "receivable" ? "text-[color:var(--mint-brand)]" : "text-[color:var(--lime-brand)]"}`}>
+                        {money(r.amount_brl)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </>
       )}
     </section>
   );
