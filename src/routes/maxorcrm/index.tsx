@@ -105,9 +105,12 @@ function Overview() {
         ))}
       </section>
 
+      <FinanceOverview />
+
       <InstallmentsManager />
 
       <CampaignManager />
+
     </div>
   );
 }
