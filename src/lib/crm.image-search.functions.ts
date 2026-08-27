@@ -19,6 +19,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { CatalogProduct } from "@/components/site/CatalogPage";
+import { BRAND_NAMES } from "@/lib/brands";
+
 
 export type ProductHit = CatalogProduct & { score: number };
 
@@ -61,24 +63,87 @@ function tokenize(s: string) {
     .filter((t) => t.length > 1);
 }
 
-function scoreProduct(p: CatalogProduct, terms: string[]) {
-  const hay = tokenize(`${p.name} ${p.brand} ${p.category}`);
+/** Termos genéricos que nunca identificam um modelo. */
+const GENERIC_TERMS = new Set([
+  "tenis", "tennis", "sapato", "calcado", "shoe", "shoes", "sneaker", "sneakers",
+  "masculino", "feminino", "unissex", "infantil", "corrida", "running", "casual",
+  "trail", "chuteira", "esportivo", "esporte", "novo", "original",
+]);
+
+function isBrandToken(t: string) {
+  return BRAND_NAMES.some((b) => tokenize(b).includes(t));
+}
+
+/** Só sobram tokens que podem representar o MODELO. */
+function modelTokens(terms: string[]) {
+  return terms.filter((t) => !GENERIC_TERMS.has(t) && !isBrandToken(t));
+}
+
+function nameTokens(p: CatalogProduct) {
+  const brandSet = new Set(tokenize(p.brand));
+  return tokenize(p.name).filter((t) => !brandSet.has(t));
+}
+
+/** Match forte: palavra inteira ou variação simples (plural/sufixo). */
+function strongMatch(hay: string[], t: string) {
+  if (hay.includes(t)) return true;
+  if (t.length < 4) return false;
+  return hay.some((h) => h.length >= 4 && (h.startsWith(t) || t.startsWith(h)));
+}
+
+function scoreProduct(p: CatalogProduct, model: string[], context: string[]) {
+  const nameHay = nameTokens(p);
+  let hits = 0;
   let s = 0;
-  for (const t of terms) {
-    if (hay.includes(t)) s += 3;
-    else if (hay.some((h) => h.includes(t) || t.includes(h))) s += 1;
+  for (const t of model) {
+    if (strongMatch(nameHay, t)) {
+      hits += 1;
+      s += 6;
+    }
   }
+  // Todos os termos do modelo precisam bater — meio-modelo não vale.
+  if (hits < model.length) return 0;
+
+
+  const ctxHay = tokenize(`${p.brand} ${p.category}`);
+  for (const t of context) if (ctxHay.includes(t)) s += 2;
   return s;
 }
 
-async function rank(terms: string[], limit = 12): Promise<ProductHit[]> {
-  if (!terms.length) return [];
+/**
+ * Ranqueia exigindo acerto no MODELO. Marca/categoria só desempatam —
+ * nunca criam um resultado sozinhas.
+ */
+async function rankSplit(
+  modelRaw: string[],
+  contextRaw: string[],
+  limit = 12,
+): Promise<ProductHit[]> {
+  const model = modelTokens(modelRaw);
+  const context = Array.from(new Set([...contextRaw, ...modelRaw.filter((t) => !model.includes(t))]));
+
+  // Busca só por marca (ex: "Nike"): lista a marca inteira.
+  if (!model.length) {
+    const brands = context.filter(isBrandToken);
+    if (!brands.length) return [];
+    return (await pool())
+      .filter((p) => brands.some((b) => tokenize(p.brand).includes(b)))
+      .map((p) => ({ ...p, score: 1 }))
+      .slice(0, limit);
+  }
+
   return (await pool())
-    .map((p) => ({ ...p, score: scoreProduct(p, terms) }))
+    .map((p) => ({ ...p, score: scoreProduct(p, model, context) }))
     .filter((p) => p.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 }
+
+async function rank(terms: string[], limit = 12): Promise<ProductHit[]> {
+  if (!terms.length) return [];
+  return rankSplit(terms, [], limit);
+}
+
 
 // -------------------- Search by name --------------------
 
@@ -91,6 +156,7 @@ export const searchByName = createServerFn({ method: "POST" })
     const results = await rank(terms);
     return { query: data.query, count: results.length, results };
   });
+
 
 // -------------------- Search by image --------------------
 
@@ -163,21 +229,24 @@ export const searchByImage = createServerFn({ method: "POST" })
       vision = { colors: [], keywords: [] };
     }
 
-    // 2) Monta termos de busca a partir da visão + do texto digitado e rankeia.
-    const terms = Array.from(
-      new Set([
-        ...tokenize(
+    // 2) O MODELO manda: marca/categoria/cores são apenas contexto.
+    const modelRaw = Array.from(
+      new Set([...tokenize(vision.model ?? ""), ...tokenize(data.query ?? "")]),
+    );
+    const contextRaw = Array.from(
+      new Set(
+        tokenize(
           [
             vision.brand ?? "",
-            vision.model ?? "",
             vision.category ?? "",
+            ...(vision.colors ?? []),
             ...(vision.keywords ?? []),
           ].join(" "),
         ),
-        ...tokenize(data.query ?? ""),
-      ]),
+      ),
     );
-    const results = await rank(terms);
+    const results = await rankSplit(modelRaw, contextRaw);
+
 
     return {
       vision,
