@@ -197,7 +197,7 @@ type SearchState =
   | { kind: "idle" }
   | { kind: "loading"; label: string }
   | { kind: "results"; term: string; hits: ProductHit[] }
-  | { kind: "empty"; term: string }
+  | { kind: "empty"; term: string; fromImage?: boolean }
   | { kind: "error"; term: string; message: string };
 
 function Header() {
@@ -222,15 +222,24 @@ function Header() {
   };
 
   const submitImage = async (dataUrl: string, fileName: string) => {
+    const typed = query.trim();
     setState({ kind: "loading", label: "Analisando imagem…" });
     try {
-      const r = await runImage({ data: { imageDataUrl: dataUrl } });
+      const r = await runImage({
+        data: { imageDataUrl: dataUrl, ...(typed ? { query: typed } : {}) },
+      });
       const term =
-        [r.vision.brand, r.vision.model].filter(Boolean).join(" ") || fileName;
-      if (r.count === 0) setState({ kind: "empty", term });
+        [r.vision.brand, r.vision.model].filter(Boolean).join(" ") ||
+        typed ||
+        fileName;
+      if (r.count === 0) setState({ kind: "empty", term, fromImage: true });
       else setState({ kind: "results", term, hits: r.results });
     } catch (err) {
-      setState({ kind: "error", term: fileName, message: (err as Error).message });
+      setState({
+        kind: "error",
+        term: typed || fileName,
+        message: (err as Error).message,
+      });
     }
   };
 
@@ -331,6 +340,7 @@ function SearchDropdown({ state, onClose }: { state: SearchState; onClose: () =>
         {(state.kind === "empty" || state.kind === "error") && (
           <NotFoundBalloon
             term={state.term}
+            fromImage={state.kind === "empty" ? state.fromImage : false}
             error={state.kind === "error" ? state.message : undefined}
             onClose={onClose}
           />
@@ -343,14 +353,18 @@ function SearchDropdown({ state, onClose }: { state: SearchState; onClose: () =>
 function NotFoundBalloon({
   term,
   error,
+  fromImage,
   onClose,
 }: {
   term: string;
   error?: string;
+  fromImage?: boolean;
   onClose: () => void;
 }) {
   const waHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    `${WHATSAPP_MSG} (Referência: ${term})`,
+    fromImage
+      ? `${WHATSAPP_MSG} Vou enviar aqui a foto do modelo que procurei no site. (Referência: ${term})`
+      : `${WHATSAPP_MSG} (Referência: ${term})`,
   )}`;
   const mailHref = `mailto:contato@maxorsports.com.br?subject=${encodeURIComponent(
     "Busca de modelo — Maxor Sports",
@@ -371,7 +385,9 @@ function NotFoundBalloon({
             Não encontramos <span className="font-semibold text-[color:var(--lime-brand)]">{term}</span> no nosso site.{" "}
           </>
         )}
-        Mande uma imagem ou nome do modelo para nosso email ou clica no botão do WhatsApp que vamos buscar e retornar pra você se teremos ou não o item procurado.
+        {fromImage
+          ? "Clica no botão do WhatsApp de atendimento e anexa essa mesma foto na conversa: consultamos o modelo com nosso fornecedor e retornamos se conseguimos trazer pra você."
+          : "Mande uma imagem ou nome do modelo para nosso email ou clica no botão do WhatsApp que vamos buscar e retornar pra você se teremos ou não o item procurado."}
       </div>
       <a
         href={waHref}
@@ -445,7 +461,6 @@ function ImageSearch({ onImage }: { onImage: (dataUrl: string, fileName: string)
         type="file"
         aria-label="Enviar imagem para buscar o tênis"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={onPick}
       />
