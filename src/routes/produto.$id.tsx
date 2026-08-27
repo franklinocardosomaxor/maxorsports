@@ -346,7 +346,7 @@ function ProductPage() {
               href={waHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] py-3 text-sm font-bold uppercase tracking-widest text-white hover:brightness-110"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 py-3 text-center text-xs font-bold uppercase tracking-widest text-white hover:brightness-110 sm:text-sm"
             >
               Falar sobre esse modelo no WhatsApp
             </a>

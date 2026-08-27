@@ -136,30 +136,31 @@ export function Fase2Sales() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <h1 className="flex items-center gap-2 text-xl font-black uppercase text-offwhite">
-          <Kanban className="text-[color:var(--cyan-brand)]" size={24} /> Vendas · Comercial
+        <h1 className="flex items-center gap-2 text-lg font-black uppercase text-offwhite sm:text-xl">
+          <Kanban className="shrink-0 text-[color:var(--cyan-brand)]" size={24} /> Vendas · Comercial
         </h1>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
           <button
             onClick={() => { setOpenDeal(null); setDealModal(true); }}
-            className="flex items-center gap-2 rounded-xl bg-[color:var(--cyan-brand)] px-5 py-2.5 font-bold text-navy transition hover:brightness-110"
+            className="flex items-center justify-center gap-2 rounded-xl bg-[color:var(--cyan-brand)] px-4 py-2.5 text-sm font-bold text-navy transition hover:brightness-110 sm:px-5 sm:text-base"
           >
             <Plus size={18} /> Novo Negócio
           </button>
           <button
             onClick={() => setContactModal(true)}
-            className="flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-2.5 font-bold text-offwhite transition hover:brightness-110"
+            className="flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-bold text-offwhite transition hover:brightness-110 sm:px-5 sm:text-base"
           >
             <Users size={18} /> Novo Contato
           </button>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatBox label="Em aberto" value={brl(totals.open)} tone="cyan" />
         <StatBox label="Ganho" value={brl(totals.won)} tone="mint" />
         <StatBox label="Negócios" value={String(totals.count)} tone="lime" />
       </div>
+
 
       <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4">
         <div className="inline-flex rounded-xl border border-border bg-background p-1">
@@ -274,7 +275,7 @@ function KanbanBoard({
   }
 
   return (
-    <div className="grid gap-4 overflow-x-auto md:grid-cols-3 xl:grid-cols-6">
+    <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
       {stages.map((s) => {
         const items = deals.filter((d) => d.stage_id === s.id);
         const total = items.reduce((sum, d) => sum + Number(d.value_brl || 0), 0);
@@ -491,10 +492,10 @@ function DealModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-navy/80 p-4 backdrop-blur-sm">
-      <form onSubmit={save} className="my-8 w-full max-w-3xl rounded-2xl border border-border bg-card p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 grid place-items-start overflow-y-auto bg-navy/80 p-2 backdrop-blur-sm sm:place-items-center sm:p-4">
+      <form onSubmit={save} className="my-4 w-full max-w-3xl rounded-2xl border border-border bg-card p-4 shadow-2xl sm:my-8 sm:p-6">
         <div className="flex items-center justify-between border-b border-border pb-4">
-          <h2 className="font-display text-xl font-black uppercase text-offwhite">
+          <h2 className="font-display text-base font-black uppercase text-offwhite sm:text-xl">
             {deal ? "Editar negócio" : "Novo negócio"}
           </h2>
           <button type="button" onClick={onClose} aria-label="Fechar" className="rounded-lg p-2 text-foreground/60 hover:bg-background">
@@ -687,10 +688,10 @@ function ContactModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-navy/80 p-4 backdrop-blur-sm">
-      <form onSubmit={save} className="w-full max-w-lg rounded-2xl border border-border bg-card p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-navy/80 p-2 backdrop-blur-sm sm:p-4">
+      <form onSubmit={save} className="my-4 w-full max-w-lg rounded-2xl border border-border bg-card p-4 shadow-2xl sm:p-6">
         <div className="flex items-center justify-between border-b border-border pb-4">
-          <h2 className="font-display text-xl font-black uppercase text-offwhite">Novo contato</h2>
+          <h2 className="font-display text-base font-black uppercase text-offwhite sm:text-xl">Novo contato</h2>
           <button type="button" onClick={onClose} aria-label="Fechar" className="rounded-lg p-2 text-foreground/60 hover:bg-background">
             <X size={18} />
           </button>

@@ -517,42 +517,43 @@ export function Fase1Catalog() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <h1 className="text-xl font-black uppercase text-offwhite flex items-center gap-2">
-            <Package className="text-[color:var(--cyan-brand)]" size={24} /> Estoque · Catálogo de Produtos
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <h1 className="text-lg sm:text-xl font-black uppercase text-offwhite flex min-w-0 items-center gap-2">
+            <Package className="shrink-0 text-[color:var(--cyan-brand)]" size={24} /> <span className="min-w-0">Estoque · Catálogo</span>
         </h1>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 bg-[color:var(--cyan-brand)] text-navy font-bold px-5 py-2.5 rounded-xl hover:brightness-110 transition"
+          className="flex shrink-0 items-center justify-center gap-2 bg-[color:var(--cyan-brand)] text-navy font-bold px-5 py-2.5 rounded-xl hover:brightness-110 transition"
         >
           <Plus size={18} /> Novo Produto
         </button>
       </div>
 
-      <div className="bg-card border border-border p-4 rounded-2xl flex items-center gap-4">
-        <Search className="text-foreground/50" size={18} />
+      <div className="bg-card border border-border p-3 sm:p-4 rounded-2xl flex items-center gap-2 sm:gap-4">
+        <Search className="shrink-0 text-foreground/50" size={18} />
         <input
           type="text"
-          placeholder="Buscar por SKU, nome do produto ou marca..."
+          placeholder="Buscar por SKU, nome ou marca..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="flex-1 bg-background border border-border rounded-xl px-4 py-2.5 text-sm focus:border-[color:var(--cyan-brand)] focus:outline-none"
+          className="min-w-0 flex-1 bg-background border border-border rounded-xl px-3 sm:px-4 py-2.5 text-sm focus:border-[color:var(--cyan-brand)] focus:outline-none"
         />
-        <button onClick={fetchProducts} className="p-2.5 bg-background rounded-xl hover:bg-border transition">
+        <button onClick={fetchProducts} className="shrink-0 p-2.5 bg-background rounded-xl hover:bg-border transition">
           <RefreshCw size={18} className="text-foreground/60" />
         </button>
       </div>
+
 
       <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-xl">
         <table className="w-full text-left text-sm text-foreground/70">
           <thead className="bg-background text-xs font-semibold uppercase text-foreground/50 border-b border-border">
             <tr>
-              <th className="p-4">SKU / Foto</th>
-              <th className="p-4">Produto / Marca</th>
-              <th className="p-4">Preço</th>
-              <th className="p-4">Vitrine</th>
-              <th className="p-4">Selo</th>
-              <th className="p-4 text-right">Ações</th>
+              <th className="p-3 sm:p-4">SKU / Foto</th>
+              <th className="p-3 sm:p-4">Produto / Marca</th>
+              <th className="hidden p-4 md:table-cell">Preço</th>
+              <th className="hidden p-4 md:table-cell">Vitrine</th>
+              <th className="hidden p-4 lg:table-cell">Selo</th>
+              <th className="p-3 sm:p-4 text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -564,10 +565,10 @@ export function Fase1Catalog() {
               products
                 .filter(p => (p.name || p.name_prod || '').toLowerCase().includes(search.toLowerCase()) || (p.sku || '').toLowerCase().includes(search.toLowerCase()))
                 .map(prod => (
-                  <tr key={prod.id} className="hover:bg-border/50 transition">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-background rounded-xl border border-border overflow-hidden flex items-center justify-center">
+                  <tr key={prod.id} className="hover:bg-border/50 transition align-top">
+                    <td className="p-3 sm:p-4">
+                      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
+                        <div className="w-12 h-12 shrink-0 bg-background rounded-xl border border-border overflow-hidden flex items-center justify-center">
                           {prod.img || (prod.imagens && prod.imagens[0]?.url_imagem) ? (
                             <img src={prod.img || prod.imagens[0]?.url_imagem} alt="" className="w-full h-full object-cover" />
                           ) : (
@@ -577,26 +578,38 @@ export function Fase1Catalog() {
                         <span className="font-mono text-xs font-bold text-[color:var(--cyan-brand)]">{prod.sku}</span>
                       </div>
                     </td>
-                    <td className="p-4">
+                    <td className="p-3 sm:p-4">
                       <div className="font-bold text-offwhite">{prod.name_prod || prod.name}</div>
                       <div className="text-xs text-foreground/50">{prod.brand || prod.marca_prod} • {prod.category || prod.categoria_prod}</div>
+                      {/* Resumo compacto no celular */}
+                      <div className="mt-2 flex flex-wrap items-center gap-2 md:hidden">
+                        <span className="text-xs font-bold text-[color:var(--mint-brand)]">
+                          R$ {Number(prod.price || prod.valor_dec || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </span>
+                        <span className={`text-[10px] font-bold uppercase ${prod.site_visible ? "text-[color:var(--mint-brand)]" : "text-rose-400"}`}>
+                          {prod.site_visible ? "Ativo" : "Oculto"}
+                        </span>
+                        <span className="text-[10px] font-bold text-purple-300 uppercase px-2 py-0.5 rounded border border-border">
+                          {prod.tag || prod.badge_text || "Normal"}
+                        </span>
+                      </div>
                     </td>
-                    <td className="p-4 font-bold text-[color:var(--mint-brand)]">
+                    <td className="hidden p-4 font-bold text-[color:var(--mint-brand)] md:table-cell">
                       R$ {Number(prod.price || prod.valor_dec || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                     </td>
-                    <td className="p-4">
+                    <td className="hidden p-4 md:table-cell">
                       {prod.site_visible ? (
                         <span className="text-[10px] font-bold text-[color:var(--mint-brand)] uppercase">Ativo</span>
                       ) : (
                         <span className="text-[10px] font-bold text-rose-400 uppercase">Oculto</span>
                       )}
                     </td>
-                    <td className="p-4">
+                    <td className="hidden p-4 lg:table-cell">
                       <span className="text-[10px] font-bold text-purple-300 uppercase px-2 py-0.5 rounded border border-border">
                         {prod.tag || prod.badge_text || "Normal"}
                       </span>
                     </td>
-                    <td className="p-4 text-right">
+                    <td className="p-3 sm:p-4 text-right">
                       <button disabled={loadingProductId === prod.id} onClick={() => handleOpenModal(prod)} className="p-2 bg-background hover:bg-border rounded-lg text-foreground/60 transition disabled:opacity-50">
                         {loadingProductId === prod.id ? <RefreshCw size={16} className="animate-spin" /> : <Edit size={16} />}
                       </button>
@@ -609,8 +622,8 @@ export function Fase1Catalog() {
       </div>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-3xl max-w-4xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-card border border-border rounded-2xl sm:rounded-3xl max-w-4xl w-full p-4 sm:p-6 space-y-6 shadow-2xl max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <h3 className="font-bold text-offwhite">{editingId ? "Editar" : "Cadastrar"} — SKU: {form.sku}</h3>
               <button onClick={() => setModalOpen(false)} className="text-foreground/50 hover:text-offwhite"><X size={20} /></button>

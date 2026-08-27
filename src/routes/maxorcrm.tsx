@@ -98,26 +98,27 @@ function MaxorCrmLayout() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8">
+    <main className="min-h-screen bg-background px-3 py-6 sm:px-4 sm:py-8">
       <div className="mx-auto max-w-6xl">
-        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-5">
-          <div>
-            <Link to="/maxorcrm" className="font-display text-3xl font-black uppercase tracking-wide text-offwhite">
+        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border pb-5 sm:flex sm:flex-wrap sm:justify-between sm:gap-4">
+          <div className="min-w-0">
+            <Link to="/maxorcrm" className="font-display text-2xl font-black uppercase tracking-wide text-offwhite sm:text-3xl">
               Maxor<span className="text-[color:var(--cyan-brand)]">CRM</span>
             </Link>
-            <p className="mt-1 flex items-center gap-2 text-xs text-foreground/60">
-              <ShieldCheck className="h-4 w-4 text-[color:var(--mint-brand)]" /> {email} · super-admin
+            <p className="mt-1 flex items-center gap-2 text-[11px] text-foreground/60 sm:text-xs">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-[color:var(--mint-brand)]" />
+              <span className="truncate">{email} · super-admin</span>
             </p>
           </div>
           <button
             onClick={signOut}
-            className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-xs uppercase tracking-wider text-foreground/80 transition hover:text-offwhite"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs uppercase tracking-wider text-foreground/80 transition hover:text-offwhite sm:px-4"
           >
-            <LogOut className="h-4 w-4" /> Sair
+            <LogOut className="h-4 w-4" /> <span className="hidden sm:inline">Sair</span>
           </button>
         </header>
 
-        <nav className="mt-5 flex flex-wrap gap-2">
+        <nav className="-mx-3 mt-5 flex gap-2 overflow-x-auto px-3 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
           {FASES.map(({ to, label, icon: Icon }) => (
             <Link
               key={to}
@@ -126,12 +127,13 @@ function MaxorCrmLayout() {
                 className:
                   "border-[color:var(--cyan-brand)] text-[color:var(--cyan-brand)] bg-[color:var(--cyan-brand)]/10",
               }}
-              className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-xs font-bold uppercase tracking-wider text-foreground/75 transition hover:brightness-110"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-foreground/75 transition hover:brightness-110 sm:px-4 sm:text-xs"
             >
-              <Icon className="h-4 w-4" /> {label}
+              <Icon className="h-4 w-4 shrink-0" /> {label}
             </Link>
           ))}
         </nav>
+
 
         <div className="mt-7">
           <Outlet />
