@@ -227,21 +227,24 @@ export const searchByImage = createServerFn({ method: "POST" })
       vision = { colors: [], keywords: [] };
     }
 
-    // 2) Monta termos de busca a partir da visão + do texto digitado e rankeia.
-    const terms = Array.from(
-      new Set([
-        ...tokenize(
+    // 2) O MODELO manda: marca/categoria/cores são apenas contexto.
+    const modelRaw = Array.from(
+      new Set([...tokenize(vision.model ?? ""), ...tokenize(data.query ?? "")]),
+    );
+    const contextRaw = Array.from(
+      new Set(
+        tokenize(
           [
             vision.brand ?? "",
-            vision.model ?? "",
             vision.category ?? "",
+            ...(vision.colors ?? []),
             ...(vision.keywords ?? []),
           ].join(" "),
         ),
-        ...tokenize(data.query ?? ""),
-      ]),
+      ),
     );
-    const results = await rank(terms);
+    const results = await rankSplit(modelRaw, contextRaw);
+
 
     return {
       vision,
