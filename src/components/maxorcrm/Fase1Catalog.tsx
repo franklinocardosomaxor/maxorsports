@@ -832,10 +832,15 @@ export function Fase1Catalog() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <label className="text-xs font-bold text-foreground/50 uppercase">Marca *</label>
-                      <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-foreground/60 cursor-pointer">
+                  <TaxonomySelect
+                    label="Marca"
+                    kind="brand"
+                    value={form.marca_prod}
+                    options={brandOptions}
+                    onChange={(next) => setForm({ ...form, marca_prod: next })}
+                    onCreate={handleCreateTaxonomy}
+                    extraHeader={
+                      <label className="flex cursor-pointer items-center gap-1.5 text-[10px] font-bold uppercase text-foreground/60">
                         <input
                           type="checkbox"
                           checked={form.brandVisible}
@@ -844,38 +849,25 @@ export function Fase1Catalog() {
                         />
                         Exibir
                       </label>
-                    </div>
-                    <select
-                      required
-                      value={form.marca_prod}
-                      onChange={e => setForm({ ...form, marca_prod: e.target.value })}
-                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
-                    >
-                      {BRAND_NAMES.map(b => (
-                        <option key={b} value={b}>{b}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-foreground/50 uppercase">Categoria *</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.categoria_prod}
-                      onChange={e => setForm({ ...form, categoria_prod: e.target.value })}
-                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-foreground/50 uppercase">Tipo de Produto *</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.tipo_prod}
-                      onChange={e => setForm({ ...form, tipo_prod: e.target.value })}
-                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
-                    />
-                  </div>
+                    }
+                  />
+                  <TaxonomySelect
+                    label="Categoria"
+                    kind="category"
+                    value={form.categoria_prod}
+                    options={categoryOptions}
+                    onChange={(next) => setForm({ ...form, categoria_prod: next })}
+                    onCreate={handleCreateTaxonomy}
+                  />
+                  <TaxonomySelect
+                    label="Tipo de Produto"
+                    kind="type"
+                    value={form.tipo_prod}
+                    options={typeOptions}
+                    onChange={(next) => setForm({ ...form, tipo_prod: next })}
+                    onCreate={handleCreateTaxonomy}
+                  />
+
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-foreground/50 uppercase">Gênero</label>
                     <select
