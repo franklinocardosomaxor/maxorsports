@@ -18,6 +18,8 @@ export type CatalogProduct = {
   /** Galeria de fotos cadastradas no CRM (a primeira é a capa). */
   images?: string[];
   colors: string[];
+  /** Nome da variação de cor cadastrada no CRM (ex.: "Rosa Claro / Rosa Escuro"). */
+  colorVariant?: string;
   sizes: number[];
   /** Checkbox "Lançamento" do cadastro do produto no CRM. */
   launch?: boolean;
