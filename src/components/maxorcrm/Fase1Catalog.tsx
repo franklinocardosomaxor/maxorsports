@@ -10,6 +10,12 @@ import { uploadProductImage } from "@/lib/product-images.functions";
 import { deriveModelGroup } from "@/lib/catalog";
 // Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
 import { BRAND_NAMES } from "@/lib/brands";
+import {
+  listTaxonomy,
+  createTaxonomyItem,
+  type TaxonomyItem,
+  type TaxonomyKind,
+} from "@/lib/crm.taxonomy.functions";
 
 type ProductImage = {
   id: string;
@@ -158,6 +164,125 @@ export function CurrencyInput({ value, onChange, placeholder = "0,00", className
   );
 }
 
+/** Select com cadastro rápido (+) de marca / categoria / tipo. */
+function TaxonomySelect({
+  label,
+  kind,
+  value,
+  options,
+  onChange,
+  onCreate,
+  extraHeader,
+}: {
+  label: string;
+  kind: TaxonomyKind;
+  value: string;
+  options: string[];
+  onChange: (next: string) => void;
+  onCreate: (kind: TaxonomyKind, name: string) => Promise<void>;
+  extraHeader?: React.ReactNode;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const list = useMemo(() => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const item of [...options, value]) {
+      const clean = cleanText(item);
+      if (!clean) continue;
+      const key = clean.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(clean);
+    }
+    return out.sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [options, value]);
+
+  const submit = async () => {
+    const name = cleanText(draft);
+    if (!name) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await onCreate(kind, name);
+      onChange(name);
+      setDraft("");
+      setAdding(false);
+    } catch (err: any) {
+      setError(err?.message || "Não foi possível cadastrar.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <label className="flex items-center gap-1.5 text-xs font-bold uppercase text-foreground/50">
+          {label}
+          <button
+            type="button"
+            onClick={() => setAdding((v) => !v)}
+            title={`Cadastrar nova ${label.toLowerCase()}`}
+            aria-label={`Cadastrar nova ${label.toLowerCase()}`}
+            className="grid h-4 w-4 place-items-center rounded border border-[color:var(--cyan-brand)]/60 text-[color:var(--cyan-brand)] transition hover:brightness-110"
+          >
+            <Plus className="h-3 w-3" />
+          </button>
+        </label>
+        {extraHeader}
+      </div>
+
+      {adding ? (
+        <div className="space-y-1">
+          <div className="flex gap-2">
+            <input
+              autoFocus
+              type="text"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void submit();
+                }
+                if (e.key === "Escape") setAdding(false);
+              }}
+              placeholder={`Nova ${label.toLowerCase()}`}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm"
+            />
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void submit()}
+              className="rounded-xl border border-[color:var(--mint-brand)] px-3 text-xs font-bold uppercase text-[color:var(--mint-brand)] transition hover:brightness-110 disabled:opacity-50"
+            >
+              OK
+            </button>
+          </div>
+          {error && <p className="text-[11px] text-destructive">{error}</p>}
+        </div>
+      ) : (
+        <select
+          required
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm"
+        >
+          {list.map((item) => (
+            <option key={item} value={item}>
+              {item}
+            </option>
+          ))}
+        </select>
+      )}
+    </div>
+  );
+}
+
 export function Fase1Catalog() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -169,6 +294,9 @@ export function Fase1Catalog() {
   const [loadingProductId, setLoadingProductId] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const uploadImage = useServerFn(uploadProductImage);
+  const fetchTaxonomy = useServerFn(listTaxonomy);
+  const addTaxonomy = useServerFn(createTaxonomyItem);
+  const [taxonomy, setTaxonomy] = useState<TaxonomyItem[]>([]);
 
   const emptyForm = {
     sku: "",
@@ -235,8 +363,55 @@ export function Fase1Catalog() {
     setLoading(false);
   };
 
+  const loadTaxonomy = async () => {
+    try {
+      setTaxonomy(await fetchTaxonomy());
+    } catch {
+      setTaxonomy([]);
+    }
+  };
+
+  const handleCreateTaxonomy = async (kind: TaxonomyKind, name: string) => {
+    const item = await addTaxonomy({ data: { kind, name } });
+    setTaxonomy((prev) => (prev.some((t) => t.id === item.id) ? prev : [...prev, item]));
+  };
+
+  const taxonomyOptions = (kind: TaxonomyKind, fromProducts: string[]) => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const name of [
+      ...taxonomy.filter((t) => t.kind === kind).map((t) => t.name),
+      ...fromProducts,
+    ]) {
+      const clean = cleanText(name);
+      if (!clean) continue;
+      const key = clean.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(clean);
+    }
+    return out;
+  };
+
+  const brandOptions = useMemo(
+    () =>
+      taxonomyOptions("brand", [
+        ...BRAND_NAMES,
+        ...products.map((p) => cleanText(p.marca_prod || p.brand)),
+      ]),
+    [taxonomy, products],
+  );
+
+  const categoryOptions = useMemo(
+    () => taxonomyOptions("category", products.map((p) => cleanText(p.categoria_prod || p.category))),
+    [taxonomy, products],
+  );
+
+  const typeOptions = useMemo(() => taxonomyOptions("type", []), [taxonomy]);
+
   useEffect(() => {
     fetchProducts();
+    void loadTaxonomy();
   }, []);
 
   const handleOpenModal = async (prod: any = null) => {
@@ -657,10 +832,15 @@ export function Fase1Catalog() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <label className="text-xs font-bold text-foreground/50 uppercase">Marca *</label>
-                      <label className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-foreground/60 cursor-pointer">
+                  <TaxonomySelect
+                    label="Marca"
+                    kind="brand"
+                    value={form.marca_prod}
+                    options={brandOptions}
+                    onChange={(next) => setForm({ ...form, marca_prod: next })}
+                    onCreate={handleCreateTaxonomy}
+                    extraHeader={
+                      <label className="flex cursor-pointer items-center gap-1.5 text-[10px] font-bold uppercase text-foreground/60">
                         <input
                           type="checkbox"
                           checked={form.brandVisible}
@@ -669,38 +849,25 @@ export function Fase1Catalog() {
                         />
                         Exibir
                       </label>
-                    </div>
-                    <select
-                      required
-                      value={form.marca_prod}
-                      onChange={e => setForm({ ...form, marca_prod: e.target.value })}
-                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
-                    >
-                      {BRAND_NAMES.map(b => (
-                        <option key={b} value={b}>{b}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-foreground/50 uppercase">Categoria *</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.categoria_prod}
-                      onChange={e => setForm({ ...form, categoria_prod: e.target.value })}
-                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-foreground/50 uppercase">Tipo de Produto *</label>
-                    <input
-                      type="text"
-                      required
-                      value={form.tipo_prod}
-                      onChange={e => setForm({ ...form, tipo_prod: e.target.value })}
-                      className="w-full bg-background border border-border rounded-xl px-4 py-2.5 text-sm"
-                    />
-                  </div>
+                    }
+                  />
+                  <TaxonomySelect
+                    label="Categoria"
+                    kind="category"
+                    value={form.categoria_prod}
+                    options={categoryOptions}
+                    onChange={(next) => setForm({ ...form, categoria_prod: next })}
+                    onCreate={handleCreateTaxonomy}
+                  />
+                  <TaxonomySelect
+                    label="Tipo de Produto"
+                    kind="type"
+                    value={form.tipo_prod}
+                    options={typeOptions}
+                    onChange={(next) => setForm({ ...form, tipo_prod: next })}
+                    onCreate={handleCreateTaxonomy}
+                  />
+
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-foreground/50 uppercase">Gênero</label>
                     <select
