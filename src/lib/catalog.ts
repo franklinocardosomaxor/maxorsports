@@ -366,7 +366,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     selo: selo ?? undefined,
     img,
     images: images.length > 0 ? images : undefined,
-    colors: Array.isArray(raw.colors) ? (raw.colors as unknown[]).map(String) : ["#0F1720"],
+    colors: deriveSwatches(raw.colors, colorVariant),
     sizes: Array.isArray(raw.sizes) ? (raw.sizes as unknown[]).map((s) => num(s)) : [],
     launch: selo === "lancamento",
     section: inferSection(raw),
