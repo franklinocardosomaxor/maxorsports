@@ -88,7 +88,6 @@ const BASE: Record<string, string> = {
   purple: "#7A4BD1",
   lavender: "#C9BCEB",
   violet: "#8B5CF6",
-  pink: "#EC4899",
   ceramic: "#E7DCC8",
   sand: "#DCCBA7",
   khaki: "#B7A272",
