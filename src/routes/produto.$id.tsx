@@ -6,6 +6,7 @@ import { listMyFavoriteIds, toggleFavorite } from "@/lib/favorites.functions";
 import { ChevronRight, Heart, ShieldCheck, Truck, RotateCw } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
 import { brl, type ProductWithSection } from "@/lib/catalog";
+import { swatchBackground } from "@/lib/color-swatches";
 import { getProductPageData } from "@/lib/product-page.functions";
 import { useCart } from "@/lib/cart";
 import { useInstallments } from "@/hooks/use-site-settings";
