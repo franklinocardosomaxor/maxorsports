@@ -7,6 +7,18 @@ import {
   productMatchesBrand,
   type BrandDirectoryEntry,
 } from "@/lib/brands";
+import { parseColorSwatches } from "@/lib/color-swatches";
+
+/**
+ * Bolinhas de cor do produto. Respeita hex reais já cadastrados no CRM e,
+ * quando o valor é placeholder ou texto, deriva da variação de cor.
+ */
+function deriveSwatches(rawColors: unknown, colorVariant: string): string[] {
+  const list = Array.isArray(rawColors) ? (rawColors as unknown[]).map(String) : [];
+  const fromColors = parseColorSwatches(list);
+  if (fromColors.length > 0) return fromColors;
+  return parseColorSwatches(colorVariant);
+}
 
 export { brandSlug };
 
