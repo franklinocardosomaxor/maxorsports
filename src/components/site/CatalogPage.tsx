@@ -18,6 +18,8 @@ export type CatalogProduct = {
   /** Galeria de fotos cadastradas no CRM (a primeira é a capa). */
   images?: string[];
   colors: string[];
+  /** Nome da variação de cor cadastrada no CRM (ex.: "Rosa Claro / Rosa Escuro"). */
+  colorVariant?: string;
   sizes: number[];
   /** Checkbox "Lançamento" do cadastro do produto no CRM. */
   launch?: boolean;
@@ -423,19 +425,21 @@ function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
           </div>
           <p className="text-[11px] text-muted-foreground">ou {parcelas}x de {brl(p.price / parcelas)}</p>
         </div>
-        <div className="flex items-center gap-1 pt-2">
-          {p.colors.slice(0, 4).map((c, i) => (
-            <span
-              key={i}
-              className="h-4 w-4 rounded-full border border-border"
-              style={{ background: c }}
-              aria-hidden
-            />
-          ))}
-          {p.colors.length > 4 && (
-            <span className="text-[10px] text-muted-foreground">+{p.colors.length - 4}</span>
-          )}
-        </div>
+        {p.colors.length > 0 && (
+          <div className="flex items-center gap-1 pt-2" title={p.colorVariant ?? undefined}>
+            {p.colors.slice(0, 4).map((c, i) => (
+              <span
+                key={i}
+                className="h-4 w-4 rounded-full border border-border"
+                style={{ background: c }}
+                aria-hidden
+              />
+            ))}
+            {p.colors.length > 4 && (
+              <span className="text-[10px] text-muted-foreground">+{p.colors.length - 4}</span>
+            )}
+          </div>
+        )}
       </Link>
     </article>
   );

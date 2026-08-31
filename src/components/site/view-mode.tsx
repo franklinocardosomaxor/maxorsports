@@ -125,16 +125,18 @@ export function ProductListRow({ product }: { product: CatalogProduct }) {
         <div className="truncate font-display text-sm font-bold uppercase tracking-wide text-offwhite sm:text-base">
           {product.name}
         </div>
-        <div className="mt-1 flex gap-1.5">
-          {product.colors.slice(0, 5).map((c, i) => (
-            <span
-              key={`${c}-${i}`}
-              className="h-3 w-3 rounded-full border border-black/10"
-              style={{ background: c }}
-              aria-hidden
-            />
-          ))}
-        </div>
+        {product.colors.length > 0 && (
+          <div className="mt-1 flex gap-1.5" title={product.colorVariant ?? undefined}>
+            {product.colors.slice(0, 5).map((c, i) => (
+              <span
+                key={`${c}-${i}`}
+                className="h-3 w-3 rounded-full border border-black/10"
+                style={{ background: c }}
+                aria-hidden
+              />
+            ))}
+          </div>
+        )}
       </div>
       <div className="shrink-0 text-right">
         {product.old && (

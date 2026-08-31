@@ -6,6 +6,7 @@ import { listMyFavoriteIds, toggleFavorite } from "@/lib/favorites.functions";
 import { ChevronRight, Heart, ShieldCheck, Truck, RotateCw } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
 import { brl, type ProductWithSection } from "@/lib/catalog";
+import { swatchBackground } from "@/lib/color-swatches";
 import { getProductPageData } from "@/lib/product-page.functions";
 import { useCart } from "@/lib/cart";
 import { useInstallments } from "@/hooks/use-site-settings";
@@ -247,7 +248,7 @@ function ProductPage() {
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {variants.map((v) => {
                   const isCurrent = v.id === product.id;
-                  const swatch = v.colors[0] ?? "#111";
+                  const swatch = swatchBackground(v.colors);
                   return (
                     <Link
                       key={v.id}
@@ -262,11 +263,13 @@ function ProductPage() {
                     >
                       <span className="relative block aspect-square overflow-hidden rounded-lg border border-border bg-background">
                         <img src={v.img} alt={v.colorVariant ?? v.name} loading="lazy" decoding="async" className="h-full w-full object-contain p-1" />
-                        <span
-                          className="absolute bottom-1 right-1 h-4 w-4 rounded-full border border-border"
-                          style={{ background: swatch }}
-                          aria-hidden
-                        />
+                        {swatch && (
+                          <span
+                            className="absolute bottom-1 right-1 h-4 w-4 rounded-full border border-border"
+                            style={{ background: swatch }}
+                            aria-hidden
+                          />
+                        )}
                       </span>
                       <span className="min-w-0">
                         <span className="block truncate text-offwhite">{v.colorVariant ?? "Cor disponível"}</span>

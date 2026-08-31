@@ -33,11 +33,13 @@ export function ProductMiniCard({ product }: { product: ProductWithSection }) {
           {product.brand} · {product.category}
         </div>
         <div className="font-display text-sm font-bold uppercase tracking-wide">{product.name}</div>
-        <div className="flex gap-1.5">
-          {product.colors.map((c) => (
-            <span key={c} className="h-3.5 w-3.5 rounded-full border border-black/10" style={{ background: c }} />
-          ))}
-        </div>
+        {product.colors.length > 0 && (
+          <div className="flex gap-1.5" title={product.colorVariant ?? undefined}>
+            {product.colors.slice(0, 4).map((c) => (
+              <span key={c} className="h-3.5 w-3.5 rounded-full border border-black/10" style={{ background: c }} />
+            ))}
+          </div>
+        )}
         <div className="mt-auto">
           {product.old && (
             <div className="text-xs text-muted-foreground line-through">{brl(product.old)}</div>

@@ -7,6 +7,18 @@ import {
   productMatchesBrand,
   type BrandDirectoryEntry,
 } from "@/lib/brands";
+import { parseColorSwatches } from "@/lib/color-swatches";
+
+/**
+ * Bolinhas de cor do produto. Respeita hex reais já cadastrados no CRM e,
+ * quando o valor é placeholder ou texto, deriva da variação de cor.
+ */
+function deriveSwatches(rawColors: unknown, colorVariant: string): string[] {
+  const list = Array.isArray(rawColors) ? (rawColors as unknown[]).map(String) : [];
+  const fromColors = parseColorSwatches(list);
+  if (fromColors.length > 0) return fromColors;
+  return parseColorSwatches(colorVariant);
+}
 
 export { brandSlug };
 
@@ -366,7 +378,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     selo: selo ?? undefined,
     img,
     images: images.length > 0 ? images : undefined,
-    colors: Array.isArray(raw.colors) ? (raw.colors as unknown[]).map(String) : ["#0F1720"],
+    colors: deriveSwatches(raw.colors, colorVariant),
     sizes: Array.isArray(raw.sizes) ? (raw.sizes as unknown[]).map((s) => num(s)) : [],
     launch: selo === "lancamento",
     section: inferSection(raw),
