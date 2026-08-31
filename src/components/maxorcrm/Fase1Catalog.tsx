@@ -294,6 +294,9 @@ export function Fase1Catalog() {
   const [loadingProductId, setLoadingProductId] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
   const uploadImage = useServerFn(uploadProductImage);
+  const fetchTaxonomy = useServerFn(listTaxonomy);
+  const addTaxonomy = useServerFn(createTaxonomyItem);
+  const [taxonomy, setTaxonomy] = useState<TaxonomyItem[]>([]);
 
   const emptyForm = {
     sku: "",
