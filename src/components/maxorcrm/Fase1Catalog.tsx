@@ -363,8 +363,55 @@ export function Fase1Catalog() {
     setLoading(false);
   };
 
+  const loadTaxonomy = async () => {
+    try {
+      setTaxonomy(await fetchTaxonomy());
+    } catch {
+      setTaxonomy([]);
+    }
+  };
+
+  const handleCreateTaxonomy = async (kind: TaxonomyKind, name: string) => {
+    const item = await addTaxonomy({ data: { kind, name } });
+    setTaxonomy((prev) => (prev.some((t) => t.id === item.id) ? prev : [...prev, item]));
+  };
+
+  const taxonomyOptions = (kind: TaxonomyKind, fromProducts: string[]) => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const name of [
+      ...taxonomy.filter((t) => t.kind === kind).map((t) => t.name),
+      ...fromProducts,
+    ]) {
+      const clean = cleanText(name);
+      if (!clean) continue;
+      const key = clean.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(clean);
+    }
+    return out;
+  };
+
+  const brandOptions = useMemo(
+    () =>
+      taxonomyOptions("brand", [
+        ...BRAND_NAMES,
+        ...products.map((p) => cleanText(p.marca_prod || p.brand)),
+      ]),
+    [taxonomy, products],
+  );
+
+  const categoryOptions = useMemo(
+    () => taxonomyOptions("category", products.map((p) => cleanText(p.categoria_prod || p.category))),
+    [taxonomy, products],
+  );
+
+  const typeOptions = useMemo(() => taxonomyOptions("type", []), [taxonomy]);
+
   useEffect(() => {
     fetchProducts();
+    void loadTaxonomy();
   }, []);
 
   const handleOpenModal = async (prod: any = null) => {
