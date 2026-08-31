@@ -247,7 +247,7 @@ function ProductPage() {
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {variants.map((v) => {
                   const isCurrent = v.id === product.id;
-                  const swatch = v.colors[0] ?? "#111";
+                  const swatch = swatchBackground(v.colors);
                   return (
                     <Link
                       key={v.id}
