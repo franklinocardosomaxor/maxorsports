@@ -10,6 +10,12 @@ import { uploadProductImage } from "@/lib/product-images.functions";
 import { deriveModelGroup } from "@/lib/catalog";
 // Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
 import { BRAND_NAMES } from "@/lib/brands";
+import {
+  listTaxonomy,
+  createTaxonomyItem,
+  type TaxonomyItem,
+  type TaxonomyKind,
+} from "@/lib/crm.taxonomy.functions";
 
 type ProductImage = {
   id: string;
