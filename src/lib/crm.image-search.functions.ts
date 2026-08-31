@@ -121,12 +121,14 @@ async function rankSplit(
   modelRaw: string[],
   contextRaw: string[],
   limit = 12,
+  opts: { brandFallback?: boolean } = {},
 ): Promise<ProductHit[]> {
   const model = modelTokens(modelRaw);
   const context = Array.from(new Set([...contextRaw, ...modelRaw.filter((t) => !model.includes(t))]));
 
-  // Busca só por marca (ex: "Nike"): lista a marca inteira.
   if (!model.length) {
+    // Busca só por marca (ex: "Nike"): só lista a marca quando permitido.
+    if (!opts.brandFallback) return [];
     const brands = context.filter(isBrandToken);
     if (!brands.length) return [];
     return (await pool())

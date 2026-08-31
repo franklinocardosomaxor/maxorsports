@@ -270,8 +270,8 @@ function Header() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por nome, marca ou modelo…"
-              aria-label="Buscar tênis por nome, marca ou modelo"
+              placeholder="Buscar pelo nome do tênis…"
+              aria-label="Buscar tênis pelo nome"
               className="w-full bg-transparent py-2.5 pl-9 pr-3 text-sm text-offwhite placeholder:text-offwhite/50 outline-none md:py-3"
             />
 
