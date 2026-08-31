@@ -356,7 +356,7 @@ function ProductPage() {
               <h3 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Sobre o produto</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 O <strong>{product.name}</strong> da {product.brand} é a escolha certa para {product.category.toLowerCase()}.
-                Curadoria Maxor Sports: importado sob demanda direto da fonte, garantia de originalidade e atendimento
+                Curadoria Maxor Sports: importado sob demanda direto da fonte, Garantia Premium e atendimento
                 pessoal com o agente Maxor até a entrega.
               </p>
               <ul className="mt-4 grid gap-2 text-xs text-offwhite sm:grid-cols-2">

@@ -258,7 +258,7 @@ function BenefitsStrip() {
   const items = [
     { icon: Truck, title: "Frete grátis", sub: "Nas compras acima de R$ 299" },
     { icon: CreditCard, title: "Aceitamos cartão de crédito", sub: "Nos principais cartões" },
-    { icon: RotateCcw, title: "Troca até 7 dias", sub: "Após a compra" },
+    { icon: RotateCcw, title: "Troca até 7 dias", sub: "Após o recebimento" },
     { icon: ShieldCheck, title: "Qualidade garantida", sub: "Curadoria Maxor" },
   ];
 
