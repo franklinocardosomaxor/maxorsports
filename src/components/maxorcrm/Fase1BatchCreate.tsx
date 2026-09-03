@@ -297,6 +297,18 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
         const principal = v.images.find((i) => i.principal)?.url || v.images[0]?.url || "";
         const gallery = [...v.images].sort((a, b) => Number(b.principal) - Number(a.principal)).map((i) => i.url);
         const name = `${clean(base.name)} - ${clean(v.color)}`;
+        // Cada cor é um produto INDEPENDENTE: agrupamento próprio (modelo + cor +
+        // gênero) para o site exibir um card separado por cor.
+        const modelGroup = deriveModelGroup(
+          name,
+          "",
+          base.brand,
+          `${clean(base.modelGroup) || clean(base.name)} ${clean(v.color)} ${v.genero}`,
+        );
+        const [gradeMin, gradeMax] = gradeFor(v.genero, infantilGrade);
+        const numMin = Number(v.numMin || gradeMin);
+        const numMax = Number(v.numMax || gradeMax);
+
         return {
           org_id: orgId,
           sku: `${prefix}-${slugify(v.color) || index + 1}`,
