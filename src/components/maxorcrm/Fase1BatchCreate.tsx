@@ -600,7 +600,11 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                         <select
                           className={inputCls}
                           value={v.genero}
-                          onChange={(e) => patchVar(v.id, { genero: e.target.value })}
+                          onChange={(e) => {
+                            const genero = e.target.value;
+                            const [min, max] = gradeFor(genero, infantilGrade);
+                            patchVar(v.id, { genero, numMin: min, numMax: max });
+                          }}
                         >
                           {GENDERS.map((g) => (
                             <option key={g} value={g}>
@@ -609,6 +613,25 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                           ))}
                         </select>
                       </label>
+                      <label className="w-[92px] space-y-1">
+                        <span className={labelCls}>Num. mín.</span>
+                        <input
+                          type="number"
+                          className={inputCls}
+                          value={v.numMin}
+                          onChange={(e) => patchVar(v.id, { numMin: Number(e.target.value || 0) })}
+                        />
+                      </label>
+                      <label className="w-[92px] space-y-1">
+                        <span className={labelCls}>Num. máx.</span>
+                        <input
+                          type="number"
+                          className={inputCls}
+                          value={v.numMax}
+                          onChange={(e) => patchVar(v.id, { numMax: Number(e.target.value || 0) })}
+                        />
+                      </label>
+
                       <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-[color:var(--cyan-brand)] px-3 py-2 text-xs font-bold text-[color:var(--cyan-brand)] hover:brightness-110">
                         <Upload size={14} /> Imagens
                         <input
