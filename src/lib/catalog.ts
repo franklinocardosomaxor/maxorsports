@@ -477,12 +477,13 @@ export function groupProductsByModel(products: ReadonlyArray<ProductWithSection>
     .sort((a, b) => a.index - b.index)
     .map(({ items }) => {
       const rep = items[0];
-      const colors = Array.from(new Set(items.flatMap((p) => p.colors).filter(Boolean)));
+      // As bolinhas mostram só as cores da variação exibida na foto — nunca a
+      // soma das variações do modelo (isso trocava a cor do card).
       const images = Array.from(new Set(items.flatMap((p) => [p.img, ...(p.images ?? [])]).filter(Boolean)));
       return {
         ...rep,
         name: rep.modelId || rep.name,
-        colors: colors.length > 0 ? colors : rep.colors,
+        colors: rep.colors,
         images: images.length > 0 ? images : rep.images,
         variantCount: items.length,
       };

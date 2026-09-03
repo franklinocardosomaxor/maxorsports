@@ -9,6 +9,16 @@
 
 const PLACEHOLDER = new Set(["#0f1720", "#000", "#000000", "#111"]);
 
+/** Palavras que aparecem nas descrições mas não são cor. */
+const STOPWORDS = new Set([
+  "com","de","da","do","e","detalhe","detalhes","ponto","pontos","sola","solado",
+  "tons","tom","acentos","accents","accent","metallic","metalico","metalica",
+  "hiper","hyper","bright","light","dark","deep","soft","core","cloud","summit",
+  "w","edition","edicao","nike","adidas","on","puma","asics","air","zoom","cut","ep",
+  "shock","glow","foam","shimmer","varsity","university","racer","medium","one",
+  "wonder","fluorescente","claro","clara","escuro","escura","medio","media",
+]);
+
 const BASE: Record<string, string> = {
   preto: "#111111",
   branco: "#F7F8F5",
@@ -92,6 +102,55 @@ const BASE: Record<string, string> = {
   sand: "#DCCBA7",
   khaki: "#B7A272",
   olive: "#6B7238",
+  // termos reais do catálogo Maxor
+  ruby: "#9B111E",
+  burgundy: "#6E1B22",
+  sage: "#9CAF88",
+  cinder: "#5A554F",
+  glacier: "#CFE3EC",
+  ice: "#E4F1F6",
+  flax: "#D9C08B",
+  phantom: "#DCD6CB",
+  alloy: "#8C8F92",
+  obsidian: "#2B2F36",
+  anthracite: "#3B3D40",
+  antracite: "#3B3D40",
+  gunmetal: "#4C5157",
+  ash: "#B2B2AC",
+  stucco: "#A79286",
+  mauve: "#9C7C8C",
+  indigo: "#3A3F8F",
+  ivory: "#F2EADF",
+  rose: "#E3A0A9",
+  crimson: "#B0202A",
+  carmesim: "#B0202A",
+  fuchsia: "#D2379B",
+  fucsia: "#D2379B",
+  maize: "#F4D35E",
+  flame: "#E2542C",
+  jade: "#2FA37A",
+  lima: "#C7F500",
+  earth: "#6B5B4B",
+  fir: "#2F4A3A",
+  fauna: "#6B4B37",
+  drift: "#CFC6B8",
+  silt: "#8C6A5D",
+  smoke: "#8E9298",
+  smoky: "#8E9298",
+  bone: "#E4DACA",
+  concord: "#33256B",
+  cactus: "#7C8A5B",
+  electric: "#1E6BFF",
+  tech: "#2A4E9B",
+  halo: "#D6DBE0",
+  glint: "#5E8FB5",
+  lapis: "#2A4B9B",
+  "azul lapis": "#2A4B9B",
+  chocolate: "#4E342E",
+  terracota: "#B4553A",
+  petroleo: "#0F4C5C",
+  aqua: "#7FD8DE",
+  vinho2: "#5E1A25",
 };
 
 function strip(s: string): string {
