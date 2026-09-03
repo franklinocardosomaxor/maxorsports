@@ -157,18 +157,25 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
     marginPercent: 0,
     importCostIncluded: false,
     price: 0,
-    numMin: 37,
-    numMax: 44,
+    numMin: 28,
+    numMax: 34,
     stock: 0,
     venderSemEstoque: true,
     siteVisible: true,
     brandVisible: true,
-    tag: "Normal",
   });
 
+  const infantilGrade: [number, number] = [Number(base.numMin || 28), Number(base.numMax || 34)];
+
+  const newVariation = (genero = "Masculino", fallback: [number, number] = [28, 34]): Variation => {
+    const [min, max] = gradeFor(genero, fallback);
+    return { id: rid("var"), color: "", genero, numMin: min, numMax: max, images: [] };
+  };
+
   const [variations, setVariations] = useState<Variation[]>([
-    { id: rid("var"), color: "", genero: "Masculino", images: [] },
+    { id: rid("var"), color: "", genero: "Masculino", numMin: 38, numMax: 44, images: [] },
   ]);
+
 
   useEffect(() => {
     if (!open) return;
