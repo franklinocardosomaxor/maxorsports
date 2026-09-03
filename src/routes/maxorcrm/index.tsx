@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Boxes, Kanban, Loader2, Image as ImageIcon, Upload, X,
   Megaphone, RefreshCw, Eye, EyeOff, CreditCard,
-  Wallet, TrendingUp, TrendingDown, AlertTriangle, ArrowRight,
+  Wallet, TrendingUp, TrendingDown, AlertTriangle, ArrowRight, Truck,
 } from "lucide-react";
 
 import { useServerFn } from "@tanstack/react-start";
