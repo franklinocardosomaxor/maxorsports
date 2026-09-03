@@ -334,8 +334,9 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
           valor_dec: Number(base.price || 0),
           old_price: null,
           discount_price: 0,
-          num_cal_min: Number(base.numMin || 37),
-          num_cal_max: Number(base.numMax || 44),
+          num_cal_min: numMin,
+          num_cal_max: numMax,
+
           stock: Number(base.stock || 0),
           qtde_est: Number(base.stock || 0),
           vender_sem_estoque: Boolean(base.venderSemEstoque),
