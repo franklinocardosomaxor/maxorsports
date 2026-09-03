@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { getCatalogVersion, subscribeCatalog, mergeCrmProducts } from "@/lib/catalog";
 import { fetchDbProducts } from "@/lib/crm-db-catalog";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,9 +97,15 @@ export function useCrmSync(enabled = true): CrmSyncStatus {
   return status;
 }
 
-/** Re-renderiza o componente sempre que o catálogo local muda. */
+/**
+ * Re-renderiza o componente sempre que o catálogo local muda.
+ *
+ * Usa `useSyncExternalStore` de propósito: com `useState` + `useEffect` o React
+ * tratava a chegada do catálogo como atualização de baixa prioridade e, no
+ * primeiro carregamento (hidratação), a tela ficava congelada em "0 produtos"
+ * até o visitante clicar em algo. Com o store externo a atualização é aplicada
+ * na hora, em qualquer página.
+ */
 export function useCatalogVersion() {
-  const [v, setV] = useState(getCatalogVersion);
-  useEffect(() => subscribeCatalog(() => setV(getCatalogVersion())), []);
-  return v;
+  return useSyncExternalStore(subscribeCatalog, getCatalogVersion, () => 0);
 }
