@@ -11,6 +11,7 @@ import {
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { useIdleMount } from "@/hooks/use-idle-mount";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "../lib/cart";
 import { useCrmSync } from "../hooks/use-crm-sync";
@@ -65,8 +66,9 @@ function DomMutationSafety() {
 }
 
 function SplashCursorClient() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // Só depois da hidratação: o laço WebGL do cursor impedia o React de
+  // terminar de hidratar o conteúdo da página.
+  const mounted = useIdleMount(900);
   if (!mounted) return null;
   return (
     <Suspense fallback={null}>
@@ -219,7 +221,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <CartProvider>
         <DomMutationSafety />
-        {false && <SplashCursorClient />}
+        {!isCrmArea && <SplashCursorClient />}
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </CartProvider>

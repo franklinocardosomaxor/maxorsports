@@ -18,14 +18,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { brandSlug } from "@/lib/brands";
 import { getBrandDirectory } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
+import { useIdleMount } from "@/hooks/use-idle-mount";
 import { BRANDS } from "./brands-data";
 import { CampaignModal } from "./CampaignModal";
 
 const Aurora = lazy(() => import("./Aurora"));
 
 function HeaderAurora() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // Só depois da hidratação: o laço de animação do Aurora impedia o React de
+  // terminar de hidratar o conteúdo da página.
+  const mounted = useIdleMount();
   if (!mounted) return null;
   return (
     <div className="pointer-events-none absolute inset-0 z-0 opacity-70">
@@ -247,7 +249,7 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 overflow-hidden border-b border-white/10 bg-navy text-offwhite backdrop-blur">
-      <></>
+      <HeaderAurora />
       <div className="relative z-10 mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-4">
         
         <a href="/" className="flex shrink-0 items-center gap-2">
