@@ -230,6 +230,125 @@ function InstallmentsManager() {
 }
 
 /**
+ * Frete por categoria — define o frete de todos os produtos de uma categoria
+ * de uma só vez e recalcula o preço final mantendo a margem de cada produto.
+ */
+function ShippingManager() {
+  const listStats = useServerFn(listShippingByCategory);
+  const applyShipping = useServerFn(applyShippingByCategory);
+
+  const [stats, setStats] = useState<ShippingCategoryStat[] | null>(null);
+  const [category, setCategory] = useState<string>(ALL_CATEGORIES);
+  const [shipping, setShipping] = useState<number>(0);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+
+  const reload = async () => {
+    try {
+      setStats(await listStats());
+    } catch (e) {
+      setFeedback(e instanceof Error ? e.message : "Falha ao carregar categorias");
+      setStats([]);
+    }
+  };
+
+  useEffect(() => {
+    void reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const total = (stats ?? []).reduce((s, c) => s + c.total, 0);
+  const current = stats?.find((s) => s.category === category);
+  const affected = category === ALL_CATEGORIES ? total : current?.total ?? 0;
+
+  const apply = async () => {
+    const value = Math.max(0, Number(shipping) || 0);
+    const label = category === ALL_CATEGORIES ? "todos os produtos" : `a categoria "${category}"`;
+    if (!window.confirm(`Aplicar frete de ${brl(value)} em ${label} (${affected} produto(s))?`)) return;
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const res = await applyShipping({ data: { category, shipping: value } });
+      setFeedback(`${res.updated} produto(s) atualizados com frete de ${brl(res.shipping)}.`);
+      await reload();
+    } catch (e) {
+      setFeedback(e instanceof Error ? e.message : "Falha ao aplicar o frete");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className="rounded-2xl border border-border bg-card p-6">
+      <h2 className="flex items-center gap-2 font-display text-lg font-black uppercase text-offwhite">
+        <Truck className="h-5 w-5 text-[color:var(--cyan-brand)]" /> Frete por Categoria
+      </h2>
+      <p className="mt-1 text-xs text-foreground/60">
+        Define o frete de todos os produtos de uma categoria de uma vez. O preço de venda é
+        recalculado mantendo a margem cadastrada em cada produto.
+      </p>
+
+      {stats === null ? (
+        <Loader2 className="mt-4 h-4 w-4 animate-spin text-foreground/60" />
+      ) : (
+        <div className="mt-4 flex flex-wrap items-end gap-4">
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-foreground/60">
+              Categoria
+            </span>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-52 rounded-lg border border-border bg-navy px-3 py-2 text-offwhite outline-none focus:border-[color:var(--cyan-brand)]"
+            >
+              <option value={ALL_CATEGORIES}>Todos os produtos ({total})</option>
+              {stats.map((s) => (
+                <option key={s.category} value={s.category}>
+                  {s.category} ({s.total})
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-foreground/60">
+              Novo frete (R$)
+            </span>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={shipping}
+              onChange={(e) => setShipping(Number(e.target.value))}
+              className="w-36 rounded-lg border border-border bg-navy px-3 py-2 text-offwhite outline-none focus:border-[color:var(--cyan-brand)]"
+            />
+          </label>
+
+          <p className="rounded-lg border border-border bg-navy px-3 py-2 text-sm text-[color:var(--mint-brand)]">
+            {affected} produto(s)
+            {current && (
+              <> · frete atual {brl(current.minShipping)}–{brl(current.maxShipping)}</>
+            )}
+          </p>
+
+          <button
+            type="button"
+            onClick={() => void apply()}
+            disabled={saving || affected === 0}
+            className="rounded-lg bg-[color:var(--cyan-brand)] px-4 py-2 text-sm font-bold uppercase text-navy transition hover:brightness-110 disabled:opacity-60"
+          >
+            {saving ? "Aplicando…" : "Aplicar frete"}
+          </button>
+        </div>
+      )}
+
+      {feedback && <p className="mt-3 text-xs text-foreground/75">{feedback}</p>}
+    </section>
+  );
+}
+
+/**
  * Banner de abertura do site — o admin sobe até 3 imagens, escreve os textos
  * e decide se a campanha aparece (modal) quando o cliente abre o site.
  */
