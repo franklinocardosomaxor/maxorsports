@@ -131,10 +131,23 @@ export type BrandDirectoryEntry = BrandDef & {
  */
 export function buildBrandDirectory(
   products: ReadonlyArray<BrandMatchProduct & { brand_visible?: boolean }>,
+  // Função opcional que agrupa produtos em MODELOS (ex.: groupProductsByModel
+  // de src/lib/catalog.ts). Quando informada, a contagem de cada marca passa
+  // a refletir a quantidade de MODELOS (o mesmo número de cards que aparece
+  // dentro da página da marca), não de produtos brutos por variante de cor.
+  // Sem isso, uma marca com poucos modelos mas muitas cores por modelo
+  // (ex.: Adidas) exibia uma contagem maior no menu/`/marcas` do que a
+  // quantidade real de cards ao abrir a página.
+  groupByModel?: (items: ReadonlyArray<BrandMatchProduct>) => ReadonlyArray<unknown>,
 ): BrandDirectoryEntry[] {
   const visible = products.filter((p) => p.brand_visible !== false);
   const counts = new Map<string, number>();
   const extras = new Map<string, BrandDirectoryEntry>();
+
+  const countFor = (slug: string, items: BrandMatchProduct[]): number =>
+    groupByModel ? groupByModel(items).length : items.length;
+
+  const byBrandSlug = new Map<string, BrandMatchProduct[]>();
 
   for (const p of visible) {
     const canonical = canonicalBrandName(p.brand);
@@ -143,24 +156,35 @@ export function buildBrandDirectory(
     if (def) {
       // Marca-categoria não conta por marca (evita dupla contagem).
       if (def.matchBy !== "category") {
-        counts.set(def.slug, (counts.get(def.slug) ?? 0) + 1);
+        const list = byBrandSlug.get(def.slug) ?? [];
+        list.push(p);
+        byBrandSlug.set(def.slug, list);
       }
       continue;
     }
     // Marca que existe só no CRM: ganha entrada própria no diretório.
     const slug = brandSlug(canonical);
     if (!slug) continue;
-    const entry =
-      extras.get(slug) ??
-      ({ slug, name: canonical, aliases: [], matchBy: "brand", fromCrm: true, count: 0 } as BrandDirectoryEntry);
-    entry.count += 1;
-    extras.set(slug, entry);
+    const list = byBrandSlug.get(slug) ?? [];
+    list.push(p);
+    byBrandSlug.set(slug, list);
+    if (!extras.has(slug)) {
+      extras.set(slug, { slug, name: canonical, aliases: [], matchBy: "brand", fromCrm: true, count: 0 } as BrandDirectoryEntry);
+    }
   }
 
-  // Marcas-categoria: contam pela CATEGORIA do produto.
+  for (const [slug, items] of byBrandSlug) {
+    counts.set(slug, countFor(slug, items));
+  }
+  for (const entry of extras.values()) {
+    entry.count = counts.get(entry.slug) ?? 0;
+  }
+
+  // Marcas-categoria: contam pela CATEGORIA do produto (modelos, se houver agrupamento).
   for (const def of BRAND_DEFS) {
     if (def.matchBy === "category") {
-      counts.set(def.slug, visible.filter((p) => productMatchesBrand(p, def)).length);
+      const items = visible.filter((p) => productMatchesBrand(p, def));
+      counts.set(def.slug, countFor(def.slug, items));
     }
   }
 

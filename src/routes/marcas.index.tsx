@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
 import { getBrandVisual } from "@/components/site/brands-data";
-import { getBrandDirectory } from "@/lib/catalog";
+import { getBrandDirectory, getBrandProducts } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/marcas/")({
@@ -56,7 +56,11 @@ function MarcasIndex() {
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {directory.map((entry) => {
             const b = getBrandVisual(entry);
-            const count = entry.count;
+            // Conta MODELOS agrupados (mesmo critério da página /marcas/$brand),
+            // não produtos brutos — evita o número aqui divergir da quantidade
+            // real de cards ao entrar na página da marca (ex.: Adidas mostrava
+            // 16 aqui e só 6 cards na página, porque cada cor virava +1).
+            const count = getBrandProducts(entry.slug).length;
             const comingSoon = count === 0;
             return (
               <Link
