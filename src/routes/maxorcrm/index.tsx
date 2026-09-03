@@ -107,7 +107,10 @@ function Overview() {
 
       <FinanceOverview />
 
-      <InstallmentsManager />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <InstallmentsManager />
+        <ShippingManager />
+      </div>
 
       <CampaignManager />
 
