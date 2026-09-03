@@ -19,7 +19,15 @@ import { BRAND_NAMES } from "@/lib/brands";
 import { listTaxonomy, type TaxonomyItem } from "@/lib/crm.taxonomy.functions";
 
 type BatchImage = { id: string; url: string; principal: boolean };
-type Variation = { id: string; color: string; genero: string; images: BatchImage[] };
+type Variation = {
+  id: string;
+  color: string;
+  genero: string;
+  numMin: number;
+  numMax: number;
+  images: BatchImage[];
+};
+
 
 const clean = (v: unknown) => String(v ?? "").trim();
 const rid = (p: string) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
