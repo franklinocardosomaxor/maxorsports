@@ -120,20 +120,51 @@ const inputCls =
   "w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-offwhite focus:border-[color:var(--cyan-brand)] focus:outline-none";
 const labelCls = "text-[11px] font-bold uppercase tracking-wide text-foreground/50";
 
-function MoneyInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+/** Mesmo campo monetário do cadastro individual (Fase1Catalog). */
+function MoneyInput({
+  value,
+  onChange,
+  placeholder = "0,00",
+  className = "",
+  prefix = "R$ ",
+}: { value: number; onChange: (val: number) => void; placeholder?: string; className?: string; prefix?: string }) {
+  const formatDisplay = (val: number) => {
+    if (val === null || val === undefined || val === 0) return "";
+    return val.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const [displayValue, setDisplayValue] = useState(formatDisplay(value));
+
+  useEffect(() => {
+    setDisplayValue(formatDisplay(value));
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    if (!raw) {
+      setDisplayValue("");
+      onChange(0);
+      return;
+    }
+    const numeric = parseFloat(raw) / 100;
+    setDisplayValue(numeric.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    onChange(numeric);
+  };
+
   return (
-    <input
-      inputMode="decimal"
-      className={inputCls}
-      value={value ? String(value).replace(".", ",") : ""}
-      placeholder="0,00"
-      onChange={(e) => {
-        const raw = e.target.value.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
-        onChange(Number(raw || 0));
-      }}
-    />
+    <div className="relative flex items-center">
+      {prefix && <span className="absolute left-3.5 text-xs font-bold text-foreground/50 select-none">{prefix}</span>}
+      <input
+        type="text"
+        value={displayValue}
+        onChange={handleChange}
+        placeholder={placeholder}
+        className={`w-full rounded-xl border border-border bg-background text-sm text-offwhite focus:border-[color:var(--cyan-brand)] focus:outline-none ${prefix ? "pl-11 pr-3.5 py-2.5" : "px-3.5 py-2.5"} ${className}`}
+      />
+    </div>
   );
 }
+
 
 export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   const [open, setOpen] = useState(false);
@@ -205,8 +236,15 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   const typeOptions = useMemo(() => options("type", ["Tênis de Corrida"]), [taxonomy]);
 
   const extra = base.importCostIncluded ? importTaxFor(base.costSupplier) : 0;
+  /** Preço Venda Final = (Custo + Frete + [Importação]) × (1 + Margem/100) */
   const recalcPrice = (cost: number, ship: number, margin: number, ex: number) =>
     round2((cost + ship + ex) * (1 + margin / 100));
+  /** Margem % = (Preço / (Custo + Frete + [Importação]) - 1) × 100 */
+  const recalcMargin = (cost: number, ship: number, price: number, ex: number) => {
+    const b = cost + ship + ex;
+    if (b <= 0) return 0;
+    return round2((price / b - 1) * 100);
+  };
 
   const setCost = (v: number) =>
     setBase((b) => ({
@@ -218,12 +256,18 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
     setBase((b) => ({ ...b, shippingCost: v, price: recalcPrice(b.costSupplier, v, b.marginPercent, extra) }));
   const setMargin = (v: number) =>
     setBase((b) => ({ ...b, marginPercent: v, price: recalcPrice(b.costSupplier, b.shippingCost, v, extra) }));
+  const setFinalPrice = (v: number) =>
+    setBase((b) => ({ ...b, price: v, marginPercent: recalcMargin(b.costSupplier, b.shippingCost, v, extra) }));
   const setImportIncluded = (on: boolean) =>
     setBase((b) => ({
       ...b,
       importCostIncluded: on,
       price: recalcPrice(b.costSupplier, b.shippingCost, b.marginPercent, on ? importTaxFor(b.costSupplier) : 0),
     }));
+
+  const importTax = importTaxFor(base.costSupplier);
+  const lucroBruto = round2(base.price - (base.costSupplier + base.shippingCost + extra));
+
 
   const patchVar = (id: string, patch: Partial<Variation>) =>
     setVariations((list) => list.map((v) => (v.id === id ? { ...v, ...patch } : v)));
@@ -477,37 +521,60 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
-                    <span className={labelCls}>Custo fornecedor</span>
+                    <span className={labelCls}>Custo fornecedor (R$)</span>
                     <MoneyInput value={base.costSupplier} onChange={setCost} />
                   </label>
                   <label className="space-y-1">
-                    <span className={labelCls}>Frete</span>
+                    <span className={labelCls}>Valor envio/frete (R$)</span>
                     <MoneyInput value={base.shippingCost} onChange={setShipping} />
                   </label>
                   <label className="space-y-1">
-                    <span className={labelCls}>Margem (%)</span>
-                    <input
-                      inputMode="decimal"
-                      className={inputCls}
-                      value={base.marginPercent || ""}
-                      onChange={(e) => setMargin(Number(e.target.value.replace(",", ".") || 0))}
-                    />
+                    <span className={labelCls}>Margem de venda (%)</span>
+                    <MoneyInput value={base.marginPercent} onChange={setMargin} prefix="% " />
                   </label>
                   <label className="space-y-1">
-                    <span className={labelCls}>Preço final</span>
-                    <MoneyInput value={base.price} onChange={(v) => setBase((b) => ({ ...b, price: v }))} />
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-[color:var(--mint-brand)]">
+                      Preço venda final (R$)
+                    </span>
+                    <MoneyInput value={base.price} onChange={setFinalPrice} />
                   </label>
                 </div>
 
-                <label className="flex items-center gap-2 text-xs text-foreground/70">
-                  <input
-                    type="checkbox"
-                    checked={base.importCostIncluded}
-                    onChange={(e) => setImportIncluded(e.target.checked)}
-                  />
-                  Somar imposto de importação estimado (R${" "}
-                  {importTaxFor(base.costSupplier).toLocaleString("pt-BR")}) no custo
-                </label>
+                {/* IMPOSTO DE IMPORTAÇÃO — igual ao cadastro individual */}
+                <div className="flex flex-col gap-3 rounded-xl border border-[color:var(--cyan-brand)]/30 bg-[color:var(--cyan-brand)]/5 px-4 py-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[color:var(--cyan-brand)]">
+                      Imposto de Importação (sugerido)
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-foreground/50">
+                      VA × 60% + ICMS 17% por dentro + R$ 15 · arredondado pra cima
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-5">
+                    <span className="font-display text-xl font-black text-offwhite">
+                      R$ {importTax.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={base.importCostIncluded}
+                        onChange={(e) => setImportIncluded(e.target.checked)}
+                        className="accent-[color:var(--mint-brand)]"
+                      />
+                      <span className="text-[11px] font-bold uppercase text-foreground/70">Somar no custo</span>
+                    </label>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-foreground/50">
+                  Lucro bruto estimado:{" "}
+                  <span className={lucroBruto >= 0 ? "font-bold text-[color:var(--mint-brand)]" : "font-bold text-rose-400"}>
+                    R$ {lucroBruto.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>{" "}
+                  · Fórmula: (Custo + Frete{base.importCostIncluded ? " + Importação" : ""}) × (1 + Margem/100)
+                </p>
+
+
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
