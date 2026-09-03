@@ -521,37 +521,60 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
-                    <span className={labelCls}>Custo fornecedor</span>
+                    <span className={labelCls}>Custo fornecedor (R$)</span>
                     <MoneyInput value={base.costSupplier} onChange={setCost} />
                   </label>
                   <label className="space-y-1">
-                    <span className={labelCls}>Frete</span>
+                    <span className={labelCls}>Valor envio/frete (R$)</span>
                     <MoneyInput value={base.shippingCost} onChange={setShipping} />
                   </label>
                   <label className="space-y-1">
-                    <span className={labelCls}>Margem (%)</span>
-                    <input
-                      inputMode="decimal"
-                      className={inputCls}
-                      value={base.marginPercent || ""}
-                      onChange={(e) => setMargin(Number(e.target.value.replace(",", ".") || 0))}
-                    />
+                    <span className={labelCls}>Margem de venda (%)</span>
+                    <MoneyInput value={base.marginPercent} onChange={setMargin} prefix="% " />
                   </label>
                   <label className="space-y-1">
-                    <span className={labelCls}>Preço final</span>
-                    <MoneyInput value={base.price} onChange={(v) => setBase((b) => ({ ...b, price: v }))} />
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-[color:var(--mint-brand)]">
+                      Preço venda final (R$)
+                    </span>
+                    <MoneyInput value={base.price} onChange={setFinalPrice} />
                   </label>
                 </div>
 
-                <label className="flex items-center gap-2 text-xs text-foreground/70">
-                  <input
-                    type="checkbox"
-                    checked={base.importCostIncluded}
-                    onChange={(e) => setImportIncluded(e.target.checked)}
-                  />
-                  Somar imposto de importação estimado (R${" "}
-                  {importTaxFor(base.costSupplier).toLocaleString("pt-BR")}) no custo
-                </label>
+                {/* IMPOSTO DE IMPORTAÇÃO — igual ao cadastro individual */}
+                <div className="flex flex-col gap-3 rounded-xl border border-[color:var(--cyan-brand)]/30 bg-[color:var(--cyan-brand)]/5 px-4 py-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[color:var(--cyan-brand)]">
+                      Imposto de Importação (sugerido)
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-foreground/50">
+                      VA × 60% + ICMS 17% por dentro + R$ 15 · arredondado pra cima
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-5">
+                    <span className="font-display text-xl font-black text-offwhite">
+                      R$ {importTax.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                    <label className="flex cursor-pointer items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={base.importCostIncluded}
+                        onChange={(e) => setImportIncluded(e.target.checked)}
+                        className="accent-[color:var(--mint-brand)]"
+                      />
+                      <span className="text-[11px] font-bold uppercase text-foreground/70">Somar no custo</span>
+                    </label>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-foreground/50">
+                  Lucro bruto estimado:{" "}
+                  <span className={lucroBruto >= 0 ? "font-bold text-[color:var(--mint-brand)]" : "font-bold text-rose-400"}>
+                    R$ {lucroBruto.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>{" "}
+                  · Fórmula: (Custo + Frete{base.importCostIncluded ? " + Importação" : ""}) × (1 + Margem/100)
+                </p>
+
+
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
