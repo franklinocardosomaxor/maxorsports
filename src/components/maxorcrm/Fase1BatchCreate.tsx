@@ -92,7 +92,29 @@ const imageFileToUploadDataUrl = async (file: File) => {
 };
 
 const GENDERS = ["Masculino", "Feminino", "Infantil", "Unissex"];
-const TAGS = ["Normal", "Destaque", "Lançamento", "Mais Vendido", "Oferta", "Nenhum"];
+
+/**
+ * Grade padrão por gênero, válida para todo o site (tênis, chuteiras, roupas).
+ * Infantil não tem padrão: usa a numeração digitada no bloco comum.
+ */
+const GRADE_POR_GENERO: Record<string, [number, number]> = {
+  masculino: [38, 44],
+  feminino: [34, 39],
+  unissex: [34, 44],
+};
+
+const gradeFor = (genero: string, fallback: [number, number]): [number, number] => {
+  const g = genero.toLowerCase();
+  if (g.includes("fem")) return GRADE_POR_GENERO.feminino;
+  if (g.includes("unis")) return GRADE_POR_GENERO.unissex;
+  if (g.includes("inf")) return fallback;
+  if (g.includes("masc")) return GRADE_POR_GENERO.masculino;
+  return fallback;
+};
+
+/** Selo fixo do cadastro em lote — a troca é feita depois, na edição individual. */
+const LOTE_TAG = "Normal";
+
 
 const inputCls =
   "w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-offwhite focus:border-[color:var(--cyan-brand)] focus:outline-none";
