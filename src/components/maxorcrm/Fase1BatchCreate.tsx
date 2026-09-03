@@ -282,13 +282,10 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
       const orgId = await getMyOrgId();
       if (!orgId) throw new Error("Não foi possível identificar sua organização no CRM. Faça login novamente.");
 
-      const isHidden = !base.tag || base.tag.toLowerCase() === "nenhum";
-      const finalTag = isHidden ? "Nenhum" : base.tag;
-      const siteVisible = isHidden ? false : Boolean(base.siteVisible);
-      const isOferta = /ofert|promo/.test(finalTag.toLowerCase());
+      const finalTag = LOTE_TAG;
+      const siteVisible = Boolean(base.siteVisible);
       const prefix = clean(base.skuPrefix) || `MXR-${Date.now().toString(36).toUpperCase()}`;
-      // Vínculo das cores: mesmo model_group para todos os produtos do lote.
-      const modelGroup = deriveModelGroup(base.name, "", base.brand, base.modelGroup || base.name);
+
 
       const rows = filled.map((v, index) => {
         const generoLc = v.genero.toLowerCase();
