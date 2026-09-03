@@ -549,7 +549,12 @@ export function getBrandProducts(slug: string) {
  * Menu Tênis, /marcas, /marcas/$slug e o carrossel da Home leem daqui.
  */
 export function getBrandDirectory(): BrandDirectoryEntry[] {
-  return buildBrandDirectory(ALL_PRODUCTS);
+  // A contagem é feita em MODELOS agrupados — exatamente o número de cards que
+  // aparece em /marcas/<slug> e no Explorar Catálogo (sem divergência).
+  return buildBrandDirectory(
+    ALL_PRODUCTS,
+    (items) => groupProductsByModel(items as ReadonlyArray<ProductWithSection>),
+  );
 }
 
 

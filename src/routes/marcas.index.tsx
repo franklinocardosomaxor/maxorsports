@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
 import { getBrandVisual } from "@/components/site/brands-data";
-import { getBrandDirectory, getBrandProducts } from "@/lib/catalog";
+import { getBrandDirectory } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/marcas/")({
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/marcas/")({
 
 function MarcasIndex() {
   // Re-renderiza quando o CRM sincroniza: contagens e marcas novas sobem sozinhas.
-  useCatalogVersion();
+  const version = useCatalogVersion();
   // Diretório vivo: lista estática + marcas do CRM (src/lib/brands.ts).
   const directory = getBrandDirectory();
   return (
@@ -53,14 +53,13 @@ function MarcasIndex() {
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-10">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div key={version} className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {directory.map((entry) => {
             const b = getBrandVisual(entry);
-            // Conta MODELOS agrupados (mesmo critério da página /marcas/$brand),
-            // não produtos brutos — evita o número aqui divergir da quantidade
-            // real de cards ao entrar na página da marca (ex.: Adidas mostrava
-            // 16 aqui e só 6 cards na página, porque cada cor virava +1).
-            const count = getBrandProducts(entry.slug).length;
+            // Fonte única da contagem: o diretório vivo já conta MODELOS
+            // agrupados (mesmo número de cards da página da marca e do
+            // Explorar Catálogo) — nada é recontado aqui.
+            const count = entry.count;
             const comingSoon = count === 0;
             return (
               <Link

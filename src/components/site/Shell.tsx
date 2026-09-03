@@ -247,7 +247,7 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 overflow-hidden border-b border-white/10 bg-navy text-offwhite backdrop-blur">
-      <HeaderAurora />
+      <></>
       <div className="relative z-10 mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:gap-4">
         
         <a href="/" className="flex shrink-0 items-center gap-2">

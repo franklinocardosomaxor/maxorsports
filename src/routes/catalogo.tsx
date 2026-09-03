@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ALL_PRODUCTS, type ProductWithSection } from "@/lib/catalog";
-import { BRAND_NAMES, canonicalBrandName } from "@/lib/brands";
+import { getBrandDirectory, getBrandProducts, type ProductWithSection } from "@/lib/catalog";
+
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
@@ -30,27 +30,21 @@ function CatalogoSeloPage() {
   const version = useCatalogVersion();
   const viewMode = useViewMode();
 
-  // Catálogo completo: TODAS as variações visíveis, agrupadas por MARCA (não por selo).
+  // Catálogo completo agrupado por MARCA usando exatamente a mesma fonte do
+  // menu e de /marcas: diretório vivo + getBrandProducts (modelos agrupados).
+  // Assim a contagem aqui, no card da marca e dentro da página da marca é
+  // sempre idêntica. Marcas-categoria (Chuteiras) ficam fora para não duplicar
+  // produtos que já aparecem na marca real.
   const brandGroups = useMemo(() => {
-    const map = new Map<string, ProductWithSection[]>();
-
-    ALL_PRODUCTS.forEach((p) => {
-      const brand = canonicalBrandName(p.brand) ?? (p.brand?.trim() || "Outras marcas");
-      const list = map.get(brand);
-      if (list) list.push(p);
-      else map.set(brand, [p]);
-    });
-
-    const order = new Map(BRAND_NAMES.map((n, i) => [n, i]));
-    return Array.from(map.entries())
-      .map(([brand, products]) => ({ brand, products }))
-      .sort((a, b) => {
-        const oa = order.get(a.brand) ?? Number.MAX_SAFE_INTEGER;
-        const ob = order.get(b.brand) ?? Number.MAX_SAFE_INTEGER;
-        if (oa !== ob) return oa - ob;
-        return a.brand.localeCompare(b.brand, "pt-BR");
-      });
+    return getBrandDirectory()
+      .filter((entry) => entry.matchBy !== "category")
+      .map((entry) => ({
+        brand: entry.name,
+        products: getBrandProducts(entry.slug) as ProductWithSection[],
+      }))
+      .filter((g) => g.products.length > 0);
   }, [version]);
+
 
   const totalCount = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
 

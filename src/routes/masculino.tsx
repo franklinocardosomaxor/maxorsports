@@ -1,7 +1,10 @@
+import { useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { CatalogPage } from "@/components/site/CatalogPage";
 import { getSectionProducts } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
+
+if (typeof window !== "undefined") console.log("[DBG masc] module loaded");
 
 export const Route = createFileRoute("/masculino")({
   component: SectionPage,
@@ -22,6 +25,8 @@ export const Route = createFileRoute("/masculino")({
 function SectionPage() {
   useCatalogVersion();
   const products = getSectionProducts("masculino");
+  if (typeof window !== "undefined") console.log("[DBG masc] render", products.length);
+  useEffect(() => { console.log("[DBG masc] committed", products.length, document.querySelectorAll('a[href^="/produto/"]').length); });
   return (
     <CatalogPage
       activeNav="Masculino"
