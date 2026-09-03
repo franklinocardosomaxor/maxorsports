@@ -511,7 +511,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
-                    <span className={labelCls}>Numeração mín.</span>
+                    <span className={labelCls}>Numeração infantil mín.</span>
                     <input
                       type="number"
                       className={inputCls}
@@ -520,7 +520,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                     />
                   </label>
                   <label className="space-y-1">
-                    <span className={labelCls}>Numeração máx.</span>
+                    <span className={labelCls}>Numeração infantil máx.</span>
                     <input
                       type="number"
                       className={inputCls}
@@ -528,6 +528,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       onChange={(e) => setBase((b) => ({ ...b, numMax: Number(e.target.value || 0) }))}
                     />
                   </label>
+
                   <label className="space-y-1">
                     <span className={labelCls}>Estoque</span>
                     <input
