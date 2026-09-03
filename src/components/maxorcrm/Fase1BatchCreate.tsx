@@ -1,11 +1,12 @@
 /**
  * Cadastro em lote (MaxorCRM · Fase 1).
  *
- * Uma única ficha de dados/custos/numeração é preenchida uma vez e cada bloco de
- * cor (com suas imagens e gênero próprios) vira um produto individual no catálogo.
- * Todos os produtos gerados compartilham o mesmo `model_group`, que é exatamente
- * o que faz o site vincular as cores do mesmo modelo.
+ * Uma única ficha de dados/custos é preenchida uma vez e cada bloco de cor
+ * (com suas imagens, gênero e numeração próprios) vira um produto INDEPENDENTE
+ * no catálogo — cada cor tem seu próprio `model_group`, então o site exibe um
+ * card separado por cor. O selo nasce sempre "Normal"; troque na edição.
  */
+
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
