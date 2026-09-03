@@ -1,11 +1,12 @@
 /**
  * Cadastro em lote (MaxorCRM · Fase 1).
  *
- * Uma única ficha de dados/custos/numeração é preenchida uma vez e cada bloco de
- * cor (com suas imagens e gênero próprios) vira um produto individual no catálogo.
- * Todos os produtos gerados compartilham o mesmo `model_group`, que é exatamente
- * o que faz o site vincular as cores do mesmo modelo.
+ * Uma única ficha de dados/custos é preenchida uma vez e cada bloco de cor
+ * (com suas imagens, gênero e numeração próprios) vira um produto INDEPENDENTE
+ * no catálogo — cada cor tem seu próprio `model_group`, então o site exibe um
+ * card separado por cor. O selo nasce sempre "Normal"; troque na edição.
  */
+
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -18,7 +19,15 @@ import { BRAND_NAMES } from "@/lib/brands";
 import { listTaxonomy, type TaxonomyItem } from "@/lib/crm.taxonomy.functions";
 
 type BatchImage = { id: string; url: string; principal: boolean };
-type Variation = { id: string; color: string; genero: string; images: BatchImage[] };
+type Variation = {
+  id: string;
+  color: string;
+  genero: string;
+  numMin: number;
+  numMax: number;
+  images: BatchImage[];
+};
+
 
 const clean = (v: unknown) => String(v ?? "").trim();
 const rid = (p: string) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
@@ -83,7 +92,29 @@ const imageFileToUploadDataUrl = async (file: File) => {
 };
 
 const GENDERS = ["Masculino", "Feminino", "Infantil", "Unissex"];
-const TAGS = ["Normal", "Destaque", "Lançamento", "Mais Vendido", "Oferta", "Nenhum"];
+
+/**
+ * Grade padrão por gênero, válida para todo o site (tênis, chuteiras, roupas).
+ * Infantil não tem padrão: usa a numeração digitada no bloco comum.
+ */
+const GRADE_POR_GENERO: Record<string, [number, number]> = {
+  masculino: [38, 44],
+  feminino: [34, 39],
+  unissex: [34, 44],
+};
+
+const gradeFor = (genero: string, fallback: [number, number]): [number, number] => {
+  const g = genero.toLowerCase();
+  if (g.includes("fem")) return GRADE_POR_GENERO.feminino;
+  if (g.includes("unis")) return GRADE_POR_GENERO.unissex;
+  if (g.includes("inf")) return fallback;
+  if (g.includes("masc")) return GRADE_POR_GENERO.masculino;
+  return fallback;
+};
+
+/** Selo fixo do cadastro em lote — a troca é feita depois, na edição individual. */
+const LOTE_TAG = "Normal";
+
 
 const inputCls =
   "w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-offwhite focus:border-[color:var(--cyan-brand)] focus:outline-none";
@@ -126,18 +157,25 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
     marginPercent: 0,
     importCostIncluded: false,
     price: 0,
-    numMin: 37,
-    numMax: 44,
+    numMin: 28,
+    numMax: 34,
     stock: 0,
     venderSemEstoque: true,
     siteVisible: true,
     brandVisible: true,
-    tag: "Normal",
   });
 
+  const infantilGrade: [number, number] = [Number(base.numMin || 28), Number(base.numMax || 34)];
+
+  const newVariation = (genero = "Masculino", fallback: [number, number] = [28, 34]): Variation => {
+    const [min, max] = gradeFor(genero, fallback);
+    return { id: rid("var"), color: "", genero, numMin: min, numMax: max, images: [] };
+  };
+
   const [variations, setVariations] = useState<Variation[]>([
-    { id: rid("var"), color: "", genero: "Masculino", images: [] },
+    { id: rid("var"), color: "", genero: "Masculino", numMin: 38, numMax: 44, images: [] },
   ]);
+
 
   useEffect(() => {
     if (!open) return;
@@ -191,7 +229,8 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
     setVariations((list) => list.map((v) => (v.id === id ? { ...v, ...patch } : v)));
 
   const addVariation = () =>
-    setVariations((list) => [...list, { id: rid("var"), color: "", genero: list[0]?.genero ?? "Masculino", images: [] }]);
+    setVariations((list) => [...list, newVariation(list.at(-1)?.genero ?? "Masculino", infantilGrade)]);
+
 
   const removeVariation = (id: string) =>
     setVariations((list) => (list.length <= 1 ? list : list.filter((v) => v.id !== id)));
@@ -226,7 +265,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
   const resetAll = () => {
     setBase((b) => ({ ...b, skuPrefix: "", name: "", modelGroup: "", description: "" }));
-    setVariations([{ id: rid("var"), color: "", genero: "Masculino", images: [] }]);
+    setVariations([newVariation("Masculino", infantilGrade)]);
     setProgress("");
   };
 
@@ -243,13 +282,10 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
       const orgId = await getMyOrgId();
       if (!orgId) throw new Error("Não foi possível identificar sua organização no CRM. Faça login novamente.");
 
-      const isHidden = !base.tag || base.tag.toLowerCase() === "nenhum";
-      const finalTag = isHidden ? "Nenhum" : base.tag;
-      const siteVisible = isHidden ? false : Boolean(base.siteVisible);
-      const isOferta = /ofert|promo/.test(finalTag.toLowerCase());
+      const finalTag = LOTE_TAG;
+      const siteVisible = Boolean(base.siteVisible);
       const prefix = clean(base.skuPrefix) || `MXR-${Date.now().toString(36).toUpperCase()}`;
-      // Vínculo das cores: mesmo model_group para todos os produtos do lote.
-      const modelGroup = deriveModelGroup(base.name, "", base.brand, base.modelGroup || base.name);
+
 
       const rows = filled.map((v, index) => {
         const generoLc = v.genero.toLowerCase();
@@ -261,6 +297,18 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
         const principal = v.images.find((i) => i.principal)?.url || v.images[0]?.url || "";
         const gallery = [...v.images].sort((a, b) => Number(b.principal) - Number(a.principal)).map((i) => i.url);
         const name = `${clean(base.name)} - ${clean(v.color)}`;
+        // Cada cor é um produto INDEPENDENTE: agrupamento próprio (modelo + cor +
+        // gênero) para o site exibir um card separado por cor.
+        const modelGroup = deriveModelGroup(
+          name,
+          "",
+          base.brand,
+          `${clean(base.modelGroup) || clean(base.name)} ${clean(v.color)} ${v.genero}`,
+        );
+        const [gradeMin, gradeMax] = gradeFor(v.genero, infantilGrade);
+        const numMin = Number(v.numMin || gradeMin);
+        const numMax = Number(v.numMax || gradeMax);
+
         return {
           org_id: orgId,
           sku: `${prefix}-${slugify(v.color) || index + 1}`,
@@ -274,7 +322,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
           tipo_prod: base.type,
           gender: v.genero,
           genero: v.genero,
-          section: isOferta ? "ofertas" : section,
+          section,
           model_group: modelGroup,
           color_variant: clean(v.color),
           cost_supplier: Number(base.costSupplier || 0),
@@ -286,8 +334,9 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
           valor_dec: Number(base.price || 0),
           old_price: null,
           discount_price: 0,
-          num_cal_min: Number(base.numMin || 37),
-          num_cal_max: Number(base.numMax || 44),
+          num_cal_min: numMin,
+          num_cal_max: numMax,
+
           stock: Number(base.stock || 0),
           qtde_est: Number(base.stock || 0),
           vender_sem_estoque: Boolean(base.venderSemEstoque),
@@ -416,21 +465,15 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       ))}
                     </select>
                   </label>
-                  <label className="space-y-1">
+                  <div className="space-y-1">
                     <span className={labelCls}>Selo</span>
-                    <select
-                      className={inputCls}
-                      value={base.tag}
-                      onChange={(e) => setBase((b) => ({ ...b, tag: e.target.value }))}
-                    >
-                      {TAGS.map((o) => (
-                        <option key={o} value={o}>
-                          {o}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                    <p className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground/70">
+                      {LOTE_TAG} · troque depois na edição do produto
+                    </p>
+                  </div>
                 </div>
+
+
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
@@ -468,7 +511,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
-                    <span className={labelCls}>Numeração mín.</span>
+                    <span className={labelCls}>Numeração infantil mín.</span>
                     <input
                       type="number"
                       className={inputCls}
@@ -477,7 +520,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                     />
                   </label>
                   <label className="space-y-1">
-                    <span className={labelCls}>Numeração máx.</span>
+                    <span className={labelCls}>Numeração infantil máx.</span>
                     <input
                       type="number"
                       className={inputCls}
@@ -485,6 +528,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       onChange={(e) => setBase((b) => ({ ...b, numMax: Number(e.target.value || 0) }))}
                     />
                   </label>
+
                   <label className="space-y-1">
                     <span className={labelCls}>Estoque</span>
                     <input
@@ -556,7 +600,11 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                         <select
                           className={inputCls}
                           value={v.genero}
-                          onChange={(e) => patchVar(v.id, { genero: e.target.value })}
+                          onChange={(e) => {
+                            const genero = e.target.value;
+                            const [min, max] = gradeFor(genero, infantilGrade);
+                            patchVar(v.id, { genero, numMin: min, numMax: max });
+                          }}
                         >
                           {GENDERS.map((g) => (
                             <option key={g} value={g}>
@@ -565,6 +613,25 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                           ))}
                         </select>
                       </label>
+                      <label className="w-[92px] space-y-1">
+                        <span className={labelCls}>Num. mín.</span>
+                        <input
+                          type="number"
+                          className={inputCls}
+                          value={v.numMin}
+                          onChange={(e) => patchVar(v.id, { numMin: Number(e.target.value || 0) })}
+                        />
+                      </label>
+                      <label className="w-[92px] space-y-1">
+                        <span className={labelCls}>Num. máx.</span>
+                        <input
+                          type="number"
+                          className={inputCls}
+                          value={v.numMax}
+                          onChange={(e) => patchVar(v.id, { numMax: Number(e.target.value || 0) })}
+                        />
+                      </label>
+
                       <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-[color:var(--cyan-brand)] px-3 py-2 text-xs font-bold text-[color:var(--cyan-brand)] hover:brightness-110">
                         <Upload size={14} /> Imagens
                         <input
@@ -631,7 +698,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
             <div className="flex flex-col gap-3 border-t border-border p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <span className="text-xs text-foreground/60">
-                {variations.length} produto(s) serão criados e vinculados como o mesmo modelo.
+                {variations.length} produto(s) independentes serão criados — um card por cor no site.
               </span>
               <div className="flex gap-2">
                 <button
