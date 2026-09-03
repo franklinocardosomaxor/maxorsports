@@ -698,7 +698,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
             <div className="flex flex-col gap-3 border-t border-border p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <span className="text-xs text-foreground/60">
-                {variations.length} produto(s) serão criados e vinculados como o mesmo modelo.
+                {variations.length} produto(s) independentes serão criados — um card por cor no site.
               </span>
               <div className="flex gap-2">
                 <button
