@@ -236,8 +236,15 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   const typeOptions = useMemo(() => options("type", ["Tênis de Corrida"]), [taxonomy]);
 
   const extra = base.importCostIncluded ? importTaxFor(base.costSupplier) : 0;
+  /** Preço Venda Final = (Custo + Frete + [Importação]) × (1 + Margem/100) */
   const recalcPrice = (cost: number, ship: number, margin: number, ex: number) =>
     round2((cost + ship + ex) * (1 + margin / 100));
+  /** Margem % = (Preço / (Custo + Frete + [Importação]) - 1) × 100 */
+  const recalcMargin = (cost: number, ship: number, price: number, ex: number) => {
+    const b = cost + ship + ex;
+    if (b <= 0) return 0;
+    return round2((price / b - 1) * 100);
+  };
 
   const setCost = (v: number) =>
     setBase((b) => ({
@@ -249,12 +256,18 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
     setBase((b) => ({ ...b, shippingCost: v, price: recalcPrice(b.costSupplier, v, b.marginPercent, extra) }));
   const setMargin = (v: number) =>
     setBase((b) => ({ ...b, marginPercent: v, price: recalcPrice(b.costSupplier, b.shippingCost, v, extra) }));
+  const setFinalPrice = (v: number) =>
+    setBase((b) => ({ ...b, price: v, marginPercent: recalcMargin(b.costSupplier, b.shippingCost, v, extra) }));
   const setImportIncluded = (on: boolean) =>
     setBase((b) => ({
       ...b,
       importCostIncluded: on,
       price: recalcPrice(b.costSupplier, b.shippingCost, b.marginPercent, on ? importTaxFor(b.costSupplier) : 0),
     }));
+
+  const importTax = importTaxFor(base.costSupplier);
+  const lucroBruto = round2(base.price - (base.costSupplier + base.shippingCost + extra));
+
 
   const patchVar = (id: string, patch: Partial<Variation>) =>
     setVariations((list) => list.map((v) => (v.id === id ? { ...v, ...patch } : v)));
