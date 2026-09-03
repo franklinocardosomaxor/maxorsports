@@ -1,4 +1,3 @@
-import { flushSync } from "react-dom";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { getCatalogVersion, subscribeCatalog, mergeCrmProducts } from "@/lib/catalog";
 import { fetchDbProducts } from "@/lib/crm-db-catalog";
@@ -48,9 +47,7 @@ export function useCrmSync(enabled = true): CrmSyncStatus {
       const rows = await fetchDbProducts();
       if (!aliveRef.current) return;
       // setCrmProducts garante a limpeza do estado anterior e aplicação das regras de gating
-      // flushSync: sem isso o React agendava a chegada do catálogo em prioridade
-      // ociosa e a primeira renderização da página ficava presa em "0 produtos".
-      flushSync(() => mergeCrmProducts(rows));
+      mergeCrmProducts(rows);
       setStatus({ loading: false, loaded: true, error: null });
     } catch (err) {
       if (!aliveRef.current) return;
