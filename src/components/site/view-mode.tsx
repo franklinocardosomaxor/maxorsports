@@ -70,7 +70,7 @@ export function ViewModeToggle() {
     <div
       role="group"
       aria-label="Modo de visualização dos produtos"
-      className="flex items-center overflow-hidden rounded-md border border-border"
+      className="flex shrink-0 items-center overflow-hidden rounded-md border border-border"
     >
       {MODES.map(({ id, label, Icon }) => {
         const on = mode === id;
@@ -82,7 +82,7 @@ export function ViewModeToggle() {
             aria-label={label}
             aria-pressed={on}
             onClick={() => setViewMode(id)}
-            className={`grid h-9 w-9 place-items-center transition ${
+            className={`grid h-8 w-8 place-items-center transition sm:h-9 sm:w-9 ${
               on
                 ? "bg-[color:var(--cyan-brand)] text-navy"
                 : "bg-transparent text-muted-foreground hover:text-offwhite"

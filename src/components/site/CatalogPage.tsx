@@ -240,7 +240,7 @@ export function CatalogPage({
               style={{ borderColor: accentColor, color: accentColor }}
             >
               <SlidersHorizontal className="h-4 w-4 shrink-0" />
-              <span className="hidden xs:inline">Filtros</span>
+              <span>Filtros</span>
               {activeCount > 0 && (
                 <span
                   className="rounded-full px-1.5 text-xs text-offwhite"
