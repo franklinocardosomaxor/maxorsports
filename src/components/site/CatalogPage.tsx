@@ -4,6 +4,7 @@ import { ChevronRight, SlidersHorizontal, Heart, X } from "lucide-react";
 import { Shell } from "./Shell";
 import { useInstallments } from "@/hooks/use-site-settings";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "./view-mode";
+import { formatCatalogCount } from "@/lib/catalog";
 
 export type CatalogProduct = {
   id: string;
@@ -21,6 +22,8 @@ export type CatalogProduct = {
   /** Nome da variação de cor cadastrada no CRM (ex.: "Rosa Claro / Rosa Escuro"). */
   colorVariant?: string;
   sizes: number[];
+  /** Quantas variações de cor este card agrupa (quando a vitrine agrupa modelos). */
+  variantCount?: number;
   /** Checkbox "Lançamento" do cadastro do produto no CRM. */
   launch?: boolean;
 };
@@ -72,6 +75,13 @@ export function CatalogPage({
 
   const accentColor = ACCENT_VAR[theme.accent];
 
+  // Numerações reais desta vitrine (vindas do CRM). Evita mostrar a faixa
+  // masculina fixa em páginas femininas/infantis.
+  const sizeOptions = useMemo(() => {
+    const found = Array.from(new Set(products.flatMap((p) => p.sizes ?? []))).filter((s) => s > 0);
+    return found.length > 0 ? found.sort((a, b) => a - b) : SIZE_OPTIONS;
+  }, [products, SIZE_OPTIONS]);
+
   const filtered = useMemo(() => {
     const list = products.filter(
       (p) =>
@@ -92,6 +102,14 @@ export function CatalogPage({
       sorted.sort((a, b) => (a.tag === "Novo" ? -1 : 1) - (b.tag === "Novo" ? -1 : 1));
     return sorted;
   }, [products, selBrands, selCats, selSizes, maxPrice, sort]);
+
+  // Rótulo único: quando a vitrine agrupa modelos mostra "N modelos · M variações".
+  const countLabel = useMemo(() => {
+    const grouped = filtered.some((p) => (p.variantCount ?? 0) > 0);
+    if (!grouped) return `${filtered.length} ${filtered.length === 1 ? "produto" : "produtos"}`;
+    const variants = filtered.reduce((sum, p) => sum + (p.variantCount ?? 1), 0);
+    return formatCatalogCount(filtered.length, variants);
+  }, [filtered]);
 
   const toggle = <T,>(arr: T[], v: T, set: (x: T[]) => void) =>
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
@@ -123,7 +141,7 @@ export function CatalogPage({
       </FilterGroup>
       <FilterGroup title="Tamanho" accent={accentColor}>
         <div className="grid grid-cols-4 gap-2">
-          {SIZE_OPTIONS.map((s) => {
+          {sizeOptions.map((s) => {
             const on = selSizes.includes(s);
             return (
               <button
@@ -251,7 +269,7 @@ export function CatalogPage({
               )}
             </button>
             <span className="truncate text-xs text-muted-foreground sm:text-sm">
-              <span className="font-semibold text-foreground">{filtered.length}</span> produtos
+              <span className="font-semibold text-foreground">{countLabel}</span>
             </span>
           </div>
           <div className="flex w-full shrink-0 items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-3">
@@ -321,7 +339,7 @@ export function CatalogPage({
               className="mt-6 w-full rounded-full py-3 text-sm font-bold uppercase tracking-widest text-offwhite"
               style={{ background: accentColor }}
             >
-              Ver {filtered.length} produtos
+              Ver {countLabel}
             </button>
           </div>
         </div>

@@ -381,7 +381,7 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
     img,
     images: images.length > 0 ? images : undefined,
     colors: deriveSwatches(raw.colors, colorVariant),
-    sizes: Array.isArray(raw.sizes) ? (raw.sizes as unknown[]).map((s) => num(s)) : [],
+    sizes: sizesFromRange(raw),
     launch: selo === "lancamento",
     section: inferSection(raw),
     modelId: group || undefined,
@@ -484,10 +484,42 @@ export function groupProductsByModel(products: ReadonlyArray<ProductWithSection>
         ...rep,
         name: rep.modelId || rep.name,
         colors: rep.colors,
+        // Numeração do card = união das grades das variações do modelo.
+        sizes: Array.from(new Set(items.flatMap((p) => p.sizes))).sort((a, b) => a - b),
         images: images.length > 0 ? images : rep.images,
         variantCount: items.length,
       };
     });
+}
+
+/**
+ * Numeração real do produto.
+ * O CRM guarda a grade em `num_cal_min`/`num_cal_max`; a coluna legada `sizes`
+ * está preenchida com a mesma faixa fixa em todos os cadastros, então só é
+ * usada como último recurso.
+ */
+export function sizesFromRange(raw: Record<string, unknown>): number[] {
+  const min = num(raw.num_cal_min ?? raw.sizeMin, 0);
+  const max = num(raw.num_cal_max ?? raw.sizeMax, 0);
+  if (min > 0 && max >= min && max - min <= 40) {
+    const out: number[] = [];
+    for (let s = Math.round(min); s <= Math.round(max); s += 1) out.push(s);
+    return out;
+  }
+  return Array.isArray(raw.sizes) ? (raw.sizes as unknown[]).map((v) => num(v)).filter((v) => v > 0) : [];
+}
+
+/** Rótulo único de contagem usado em todas as vitrines do site. */
+export function formatCatalogCount(models: number, variants?: number): string {
+  const m = `${models} ${models === 1 ? "modelo" : "modelos"}`;
+  if (variants === undefined || variants <= models) return m;
+  return `${m} · ${variants} ${variants === 1 ? "variação" : "variações"}`;
+}
+
+/** Conta modelos agrupados e variações publicadas de uma lista. */
+export function countModelsAndVariants(products: ReadonlyArray<ProductWithSection>) {
+  const models = new Set(products.map((p) => productModelKey(p)));
+  return { models: models.size, variants: products.length };
 }
 
 export function getProduct(id: string): ProductWithSection | undefined {
