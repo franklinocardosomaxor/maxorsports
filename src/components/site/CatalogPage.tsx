@@ -232,15 +232,15 @@ export function CatalogPage({
 
       {/* Toolbar */}
       <div className="sticky top-[65px] z-20 border-b border-border bg-background/95 backdrop-blur">
-        <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:flex sm:justify-between">
-          <div className="flex min-w-0 items-center gap-3">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-3 py-2 sm:justify-between sm:gap-3 sm:px-4 sm:py-3">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
             <button
               onClick={() => setDrawerOpen(true)}
-              className="flex shrink-0 items-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-semibold lg:hidden"
+              className="flex shrink-0 items-center gap-1.5 rounded-md border border-border px-2.5 py-2 text-sm font-semibold lg:hidden"
               style={{ borderColor: accentColor, color: accentColor }}
             >
-              <SlidersHorizontal className="h-4 w-4" />
-              Filtros
+              <SlidersHorizontal className="h-4 w-4 shrink-0" />
+              <span>Filtros</span>
               {activeCount > 0 && (
                 <span
                   className="rounded-full px-1.5 text-xs text-offwhite"
@@ -250,18 +250,18 @@ export function CatalogPage({
                 </span>
               )}
             </button>
-            <span className="truncate text-sm text-muted-foreground">
+            <span className="truncate text-xs text-muted-foreground sm:text-sm">
               <span className="font-semibold text-foreground">{filtered.length}</span> produtos
             </span>
           </div>
-          <div className="flex shrink-0 items-center gap-3">
+          <div className="flex w-full shrink-0 items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-3">
             <ViewModeToggle />
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex min-w-0 items-center gap-2 text-sm">
               <span className="hidden text-muted-foreground sm:inline">Ordenar por</span>
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as Sort)}
-                className="rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold focus:outline-none"
+                className="min-w-0 max-w-[52vw] truncate rounded-md border border-border bg-background px-2 py-2 text-xs font-semibold focus:outline-none sm:max-w-none sm:px-3 sm:text-sm"
                 style={{ borderColor: accentColor }}
               >
                 {SORTS.map((s) => (
@@ -271,6 +271,7 @@ export function CatalogPage({
             </label>
           </div>
         </div>
+
       </div>
 
       {/* Content grid */}
