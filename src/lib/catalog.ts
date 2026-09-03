@@ -358,7 +358,9 @@ export function normalizeProduct(raw: Record<string, unknown>): ProductWithSecti
   const mainRaw = raw.img ?? images[0];
   const img = isUsableImage(mainRaw) ? String(mainRaw) : (images[0] ?? "");
 
-  const oldValue = raw.old_price ?? raw.old;
+  // Preço anterior riscado (promoção) suspenso a pedido do cliente:
+  // o site nunca exibe "de/por". Para reativar, volte a ler raw.old_price.
+  const oldValue = null;
   const colorVariant = clean(raw.color_variant ?? raw.colorVariant ?? raw.cor_variante ?? raw.cor);
   const group = deriveModelGroup(raw.name, colorVariant, raw.brand ?? raw.marca_prod, raw.model_group ?? raw.modelGroup ?? raw.modelId);
 
