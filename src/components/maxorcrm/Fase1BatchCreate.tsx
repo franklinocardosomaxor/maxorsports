@@ -465,21 +465,15 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       ))}
                     </select>
                   </label>
-                  <label className="space-y-1">
+                  <div className="space-y-1">
                     <span className={labelCls}>Selo</span>
-                    <select
-                      className={inputCls}
-                      value={base.tag}
-                      onChange={(e) => setBase((b) => ({ ...b, tag: e.target.value }))}
-                    >
-                      {TAGS.map((o) => (
-                        <option key={o} value={o}>
-                          {o}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                    <p className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground/70">
+                      {LOTE_TAG} · troque depois na edição do produto
+                    </p>
+                  </div>
                 </div>
+
+
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
