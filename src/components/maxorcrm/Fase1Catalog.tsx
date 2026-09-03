@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useServerFn } from "@tanstack/react-start";
 import { 
   Plus, Edit, Search, Eye, EyeOff, Package, 
-  DollarSign, X, Upload, Shield, RefreshCw, Star 
+  DollarSign, X, Upload, Shield, RefreshCw, Star, Layers, Trash2
 } from 'lucide-react';
 import { supabase } from "@/integrations/supabase/client";
 import { getMyOrgId } from "@/lib/maxorcrm-org";
@@ -25,6 +25,8 @@ type ProductImage = {
 };
 
 const makeImageId = (index: number) => `img_${Date.now()}_${index}_${Math.random().toString(36).slice(2, 7)}`;
+const makeVariationId = () => `var_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+const makeBatchSku = (seq: number) => `MXR-${Date.now().toString(36).toUpperCase()}${seq}`;
 
 const PRODUCT_LIST_COLUMNS =
   "id, sku, name, name_prod, brand, marca_prod, category, categoria_prod, model_group, color_variant, price, valor_dec, site_visible, tag, badge_text, img, foto_principal, created_at, status";
