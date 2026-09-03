@@ -9,6 +9,16 @@
 
 const PLACEHOLDER = new Set(["#0f1720", "#000", "#000000", "#111"]);
 
+/** Palavras que aparecem nas descrições mas não são cor. */
+const STOPWORDS = new Set([
+  "com","de","da","do","e","detalhe","detalhes","ponto","pontos","sola","solado",
+  "tons","tom","acentos","accents","accent","metallic","metalico","metalica",
+  "hiper","hyper","bright","light","dark","deep","soft","core","cloud","summit",
+  "w","edition","edicao","nike","adidas","on","puma","asics","air","zoom","cut","ep",
+  "shock","glow","foam","shimmer","varsity","university","racer","medium","one",
+  "wonder","fluorescente","claro","clara","escuro","escura","medio","media",
+]);
+
 const BASE: Record<string, string> = {
   preto: "#111111",
   branco: "#F7F8F5",
