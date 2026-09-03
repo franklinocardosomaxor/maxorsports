@@ -265,7 +265,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
   const resetAll = () => {
     setBase((b) => ({ ...b, skuPrefix: "", name: "", modelGroup: "", description: "" }));
-    setVariations([{ id: rid("var"), color: "", genero: "Masculino", images: [] }]);
+    setVariations([newVariation("Masculino", infantilGrade)]);
     setProgress("");
   };
 
