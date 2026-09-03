@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { getMyOrgId } from "@/lib/maxorcrm-org";
 import { uploadProductImage } from "@/lib/product-images.functions";
 import { deriveModelGroup } from "@/lib/catalog";
+import { Fase1BatchCreate } from "@/components/maxorcrm/Fase1BatchCreate";
+
 // Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
 import { BRAND_NAMES } from "@/lib/brands";
 import {
