@@ -10,6 +10,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadCampaignImage, type SiteCampaign } from "@/lib/campaign.functions";
 import { refreshSiteSettings } from "@/hooks/use-site-settings";
+import {
+  ALL_CATEGORIES,
+  applyShippingByCategory,
+  listShippingByCategory,
+  type ShippingCategoryStat,
+} from "@/lib/crm.shipping.functions";
 
 export const Route = createFileRoute("/maxorcrm/")({
   ssr: false,
