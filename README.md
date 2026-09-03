@@ -21,6 +21,7 @@ O repositório contém **dois sistemas no mesmo projeto**, compartilhando o mesm
 - [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md) — rotas, design system, fluxo do catálogo, marcas, checkout
 - [`docs/MAXORCRM.md`](docs/MAXORCRM.md) — módulos do CRM, cálculo de importação, banners, acessos
 - [`docs/BANCO-DE-DADOS.md`](docs/BANCO-DE-DADOS.md) — tabelas, RLS, endpoints públicos, segredos
+- [`docs/TRANSFERENCIA-EXPORTACAO.md`](docs/TRANSFERENCIA-EXPORTACAO.md) — exportar/transferir o projeto para outro perfil (GitHub, Lovable Cloud, segredos)
 - [`CONTRATO-CRM-PRODUTOS.md`](CONTRATO-CRM-PRODUTOS.md) — contrato do payload de produtos
 - [`GUIA-INTEGRACAO-CRM.md`](GUIA-INTEGRACAO-CRM.md) — integração e validação do kit
 - [`src/maxor-kit/README.md`](src/maxor-kit/README.md) — design system e componentes compartilhados
