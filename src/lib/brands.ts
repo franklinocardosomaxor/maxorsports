@@ -117,6 +117,8 @@ export function productMatchesBrand(p: BrandMatchProduct, def: BrandDef): boolea
 export type BrandDirectoryEntry = BrandDef & {
   /** Produtos visíveis do CRM associados a esta marca. */
   count: number;
+  /** Variações de cor publicadas (>= count). */
+  variantCount: number;
   /** true quando a marca existe só no CRM (fora da lista estática acima). */
   fromCrm: boolean;
 };
@@ -142,6 +144,7 @@ export function buildBrandDirectory(
 ): BrandDirectoryEntry[] {
   const visible = products.filter((p) => p.brand_visible !== false);
   const counts = new Map<string, number>();
+  const variantCounts = new Map<string, number>();
   const extras = new Map<string, BrandDirectoryEntry>();
 
   const countFor = (slug: string, items: BrandMatchProduct[]): number =>
@@ -169,15 +172,17 @@ export function buildBrandDirectory(
     list.push(p);
     byBrandSlug.set(slug, list);
     if (!extras.has(slug)) {
-      extras.set(slug, { slug, name: canonical, aliases: [], matchBy: "brand", fromCrm: true, count: 0 } as BrandDirectoryEntry);
+      extras.set(slug, { slug, name: canonical, aliases: [], matchBy: "brand", fromCrm: true, count: 0, variantCount: 0 } as BrandDirectoryEntry);
     }
   }
 
   for (const [slug, items] of byBrandSlug) {
     counts.set(slug, countFor(slug, items));
+    variantCounts.set(slug, items.length);
   }
   for (const entry of extras.values()) {
     entry.count = counts.get(entry.slug) ?? 0;
+    entry.variantCount = variantCounts.get(entry.slug) ?? 0;
   }
 
   // Marcas-categoria: contam pela CATEGORIA do produto (modelos, se houver agrupamento).
@@ -185,6 +190,7 @@ export function buildBrandDirectory(
     if (def.matchBy === "category") {
       const items = visible.filter((p) => productMatchesBrand(p, def));
       counts.set(def.slug, countFor(def.slug, items));
+      variantCounts.set(def.slug, items.length);
     }
   }
 
@@ -192,6 +198,7 @@ export function buildBrandDirectory(
     ...def,
     fromCrm: false,
     count: counts.get(def.slug) ?? 0,
+    variantCount: variantCounts.get(def.slug) ?? 0,
   }));
   const crmOnly = Array.from(extras.values()).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
   return [...base, ...crmOnly];

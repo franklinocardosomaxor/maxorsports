@@ -23,6 +23,9 @@ export type DbProduct = {
   images: string[] | null;
   colors: string[] | null;
   sizes: number[] | null;
+  /** Numeração real cadastrada no CRM. */
+  num_cal_min: number | null;
+  num_cal_max: number | null;
   stock: number;
   backorder: boolean;
   launch: boolean;
@@ -42,7 +45,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
   const { data, error } = await supabase
     .from("products")
     .select(
-      "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, site_visible, brand_visible, genero, gender",
+      "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, num_cal_min, num_cal_max, site_visible, brand_visible, genero, gender",
     )
     .eq("site_visible", true)
     .order("updated_at", { ascending: false });
@@ -67,6 +70,8 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
       images: row.images ?? undefined,
       colors: row.colors ?? undefined,
       sizes: row.sizes ?? undefined,
+      num_cal_min: row.num_cal_min ?? undefined,
+      num_cal_max: row.num_cal_max ?? undefined,
       launch: row.launch,
       description: row.description ?? undefined,
       stock: row.stock,

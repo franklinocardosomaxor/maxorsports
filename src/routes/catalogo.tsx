@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { getBrandDirectory, getBrandProducts, type ProductWithSection } from "@/lib/catalog";
+import { getBrandDirectory, getBrandProducts, formatCatalogCount, type ProductWithSection } from "@/lib/catalog";
 
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
@@ -46,7 +46,11 @@ function CatalogoSeloPage() {
   }, [version]);
 
 
-  const totalCount = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
+  const totalModels = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
+  const totalVariants = brandGroups.reduce(
+    (sum, g) => sum + g.products.reduce((n, p) => n + (p.variantCount ?? 1), 0),
+    0,
+  );
 
   return (
     <div className="min-h-screen bg-navy pt-24 pb-20">
@@ -64,11 +68,11 @@ function CatalogoSeloPage() {
               Explorar <span className="text-[color:var(--cyan-brand)]">Catálogo</span>
             </h1>
             <p className="mt-2 text-muted-foreground max-w-xl">
-              Catálogo completo, separado por marca. Cada cor cadastrada aparece como um item — aqui você vê tudo o que está disponível.
+              Catálogo completo, separado por marca. Um card por modelo; as cores cadastradas aparecem juntas dentro da página do produto.
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-bold text-muted-foreground">{totalCount} PRODUTOS</span>
+            <span className="text-sm font-bold uppercase text-muted-foreground">{formatCatalogCount(totalModels, totalVariants)}</span>
             <ViewModeToggle />
           </div>
         </header>
@@ -88,7 +92,7 @@ function CatalogoSeloPage() {
           </div>
         )}
 
-        {totalCount === 0 ? (
+        {totalModels === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="h-20 w-20 rounded-full bg-card flex items-center justify-center mb-6">
               <Grid2X2 className="h-10 w-10 text-muted-foreground" />
@@ -108,7 +112,7 @@ function CatalogoSeloPage() {
                     </h2>
                   </div>
                   <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                    {products.length} itens
+                    {formatCatalogCount(products.length, products.reduce((n, p) => n + (p.variantCount ?? 1), 0))}
                   </span>
                 </div>
 

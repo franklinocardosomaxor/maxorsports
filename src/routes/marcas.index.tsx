@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import { Shell } from "@/components/site/Shell";
 import { getBrandVisual } from "@/components/site/brands-data";
-import { getBrandDirectory } from "@/lib/catalog";
+import { getBrandDirectory, formatCatalogCount } from "@/lib/catalog";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 export const Route = createFileRoute("/marcas/")({
@@ -90,7 +90,7 @@ function MarcasIndex() {
                   )}
                 </div>
                 <div className="flex items-center justify-between border-t border-border bg-card px-3 py-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  <span>{comingSoon ? "Em breve" : `${count} ${count === 1 ? "modelo" : "modelos"}`}</span>
+                  <span>{comingSoon ? "Em breve" : formatCatalogCount(count, entry.variantCount)}</span>
                   <span className="text-[color:var(--cyan-brand)] transition group-hover:translate-x-1">
                     ver →
                   </span>
