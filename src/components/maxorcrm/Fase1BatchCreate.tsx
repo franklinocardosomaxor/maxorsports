@@ -322,7 +322,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
           tipo_prod: base.type,
           gender: v.genero,
           genero: v.genero,
-          section: isOferta ? "ofertas" : section,
+          section,
           model_group: modelGroup,
           color_variant: clean(v.color),
           cost_supplier: Number(base.costSupplier || 0),
