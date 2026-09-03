@@ -120,20 +120,51 @@ const inputCls =
   "w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-offwhite focus:border-[color:var(--cyan-brand)] focus:outline-none";
 const labelCls = "text-[11px] font-bold uppercase tracking-wide text-foreground/50";
 
-function MoneyInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+/** Mesmo campo monetário do cadastro individual (Fase1Catalog). */
+function MoneyInput({
+  value,
+  onChange,
+  placeholder = "0,00",
+  className = "",
+  prefix = "R$ ",
+}: { value: number; onChange: (val: number) => void; placeholder?: string; className?: string; prefix?: string }) {
+  const formatDisplay = (val: number) => {
+    if (val === null || val === undefined || val === 0) return "";
+    return val.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const [displayValue, setDisplayValue] = useState(formatDisplay(value));
+
+  useEffect(() => {
+    setDisplayValue(formatDisplay(value));
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\D/g, "");
+    if (!raw) {
+      setDisplayValue("");
+      onChange(0);
+      return;
+    }
+    const numeric = parseFloat(raw) / 100;
+    setDisplayValue(numeric.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    onChange(numeric);
+  };
+
   return (
-    <input
-      inputMode="decimal"
-      className={inputCls}
-      value={value ? String(value).replace(".", ",") : ""}
-      placeholder="0,00"
-      onChange={(e) => {
-        const raw = e.target.value.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
-        onChange(Number(raw || 0));
-      }}
-    />
+    <div className="relative flex items-center">
+      {prefix && <span className="absolute left-3.5 text-xs font-bold text-foreground/50 select-none">{prefix}</span>}
+      <input
+        type="text"
+        value={displayValue}
+        onChange={handleChange}
+        placeholder={placeholder}
+        className={`w-full rounded-xl border border-border bg-background text-sm text-offwhite focus:border-[color:var(--cyan-brand)] focus:outline-none ${prefix ? "pl-11 pr-3.5 py-2.5" : "px-3.5 py-2.5"} ${className}`}
+      />
+    </div>
   );
 }
+
 
 export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   const [open, setOpen] = useState(false);
