@@ -59,7 +59,7 @@ export async function fetchDbProducts(): Promise<Record<string, unknown>[]> {
       category: row.category,
       section: row.section,
       price: row.price,
-      old: row.old_price ?? undefined,
+      old: undefined, // preço anterior riscado suspenso
       tag: row.tag ?? undefined,
       modelId: row.model_group ?? undefined,
       colorVariant: row.color_variant ?? undefined,

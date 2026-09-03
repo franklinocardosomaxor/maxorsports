@@ -44,7 +44,7 @@ async function pool(): Promise<CatalogProduct[]> {
       brand: String(r.brand ?? "Maxor"),
       category: String(r.category ?? "Casual"),
       price: Number(r.price ?? 0),
-      old: r.old_price != null ? Number(r.old_price) : undefined,
+      old: undefined, // preço anterior riscado suspenso
       tag: r.tag ? String(r.tag) : undefined,
       img: String(r.img ?? images[0] ?? ""),
       images: images.length ? images : undefined,
