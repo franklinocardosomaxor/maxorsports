@@ -23,7 +23,7 @@ export const Route = createFileRoute("/marcas/")({
 
 function MarcasIndex() {
   // Re-renderiza quando o CRM sincroniza: contagens e marcas novas sobem sozinhas.
-  const version = useCatalogVersion();
+  useCatalogVersion();
   // Diretório vivo: lista estática + marcas do CRM (src/lib/brands.ts).
   const directory = getBrandDirectory();
   return (
@@ -53,7 +53,7 @@ function MarcasIndex() {
       </section>
 
       <div className="mx-auto max-w-7xl px-4 py-10">
-        <div key={version} className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {directory.map((entry) => {
             const b = getBrandVisual(entry);
             // Fonte única da contagem: o diretório vivo já conta MODELOS
