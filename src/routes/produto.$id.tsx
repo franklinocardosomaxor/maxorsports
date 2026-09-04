@@ -116,7 +116,14 @@ function ProductPage() {
   /** Galeria: fotos cadastradas no CRM (fallback: foto de capa). */
   const gallery = (product.images?.length ? product.images : [product.img]).filter(Boolean) as string[];
   const [activeImg, setActiveImg] = useState(gallery[0]);
-  useEffect(() => setActiveImg(gallery[0]), [product.id]);
+  // Ao trocar de cor (outra variação), recarrega foto, cor e numeração da variação escolhida.
+  useEffect(() => {
+    setActiveImg(gallery[0]);
+    setSelectedColor(product.colors[0] ?? "#000");
+    setSelectedSize((prev) => (prev && product.sizes.includes(prev) ? prev : null));
+    setSizeErr(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id]);
 
   const off = product.old ? Math.round(((product.old - product.price) / product.old) * 100) : 0;
 
