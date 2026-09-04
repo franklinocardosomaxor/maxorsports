@@ -96,11 +96,12 @@ function CatalogoSeloPage() {
               Explorar <span className="text-[color:var(--cyan-brand)]">Catálogo</span>
             </h1>
             <p className="mt-2 text-muted-foreground max-w-xl">
-              Catálogo completo, separado por marca. Um card por modelo; as cores cadastradas aparecem juntas dentro da página do produto.
+              Catálogo completo, separado por marca. Todas as cores cadastradas aparecem como cards individuais.
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-bold uppercase text-muted-foreground">{formatCatalogCount(totalModels, totalVariants)}</span>
+            <span className="text-sm font-bold uppercase text-muted-foreground">{totalItems} {totalItems === 1 ? "produto" : "produtos"}</span>
+
             <ViewModeToggle />
           </div>
         </header>
