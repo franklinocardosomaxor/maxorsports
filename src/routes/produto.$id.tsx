@@ -309,7 +309,10 @@ function ProductPage() {
             <div>
               <div className="mb-2 flex items-center justify-between">
                 <h3 className="font-display text-sm font-black uppercase tracking-widest text-offwhite">Tamanho</h3>
-                <span className="text-xs text-muted-foreground">Numeração BR</span>
+                <span className="text-xs text-muted-foreground">
+                  Numeração BR{product.gender ? ` · ${product.gender}` : ""}
+                </span>
+
               </div>
               <div className="grid grid-cols-5 gap-2 sm:grid-cols-6">
                 {product.sizes.map((s) => {
