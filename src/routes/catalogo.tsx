@@ -42,32 +42,27 @@ function CatalogoSeloPage() {
   const { p } = Route.useSearch();
   const currentPage = p && p > 1 ? p : 1;
 
-  // Catálogo completo agrupado por MARCA usando exatamente a mesma fonte do
-  // menu e de /marcas: diretório vivo + getBrandProducts (modelos agrupados).
-  // Assim a contagem aqui, no card da marca e dentro da página da marca é
-  // sempre idêntica. Marcas-categoria (Chuteiras) ficam fora para não duplicar
-  // produtos que já aparecem na marca real.
+  // Catálogo completo separado por MARCA, listando TODAS as variações de cor
+  // cadastradas (um card por cor). Marcas-categoria (Chuteiras) ficam fora
+  // para não duplicar produtos que já aparecem na marca real.
   const brandGroups = useMemo(() => {
     return getBrandDirectory()
       .filter((entry) => entry.matchBy !== "category")
       .map((entry) => ({
         brand: entry.name,
-        products: getBrandProducts(entry.slug) as ProductWithSection[],
+        products: getBrandVariants(entry.slug) as ProductWithSection[],
       }))
       .filter((g) => g.products.length > 0);
   }, [version]);
 
-  const totalModels = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
-  const totalVariants = brandGroups.reduce(
-    (sum, g) => sum + g.products.reduce((n, p) => n + (p.variantCount ?? 1), 0),
-    0,
-  );
+  const totalItems = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
 
-  // Lista plana (mesma ordem exibida) para poder fatiar em páginas de 100 modelos.
+  // Lista plana (mesma ordem exibida) para poder fatiar em páginas de 100 cards.
   const flat = useMemo(
     () => brandGroups.flatMap((g) => g.products.map((product) => ({ brand: g.brand, product }))),
     [brandGroups],
   );
+
 
   const totalPages = Math.max(1, Math.ceil(flat.length / PAGE_SIZE));
   const safePage = Math.min(Math.max(1, currentPage), totalPages);
