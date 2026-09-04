@@ -121,7 +121,7 @@ function CatalogoSeloPage() {
           </div>
         )}
 
-        {totalModels === 0 ? (
+        {totalItems === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="h-20 w-20 rounded-full bg-card flex items-center justify-center mb-6">
               <Grid2X2 className="h-10 w-10 text-muted-foreground" />
@@ -133,7 +133,7 @@ function CatalogoSeloPage() {
           <>
             {totalPages > 1 && (
               <p className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Página {safePage} de {totalPages} — modelos {(safePage - 1) * PAGE_SIZE + 1} a {Math.min(safePage * PAGE_SIZE, flat.length)} de {flat.length}
+                Página {safePage} de {totalPages} — produtos {(safePage - 1) * PAGE_SIZE + 1} a {Math.min(safePage * PAGE_SIZE, flat.length)} de {flat.length}
               </p>
             )}
 
@@ -148,7 +148,7 @@ function CatalogoSeloPage() {
                       </h2>
                     </div>
                     <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                      {formatCatalogCount(products.length, products.reduce((n, p) => n + (p.variantCount ?? 1), 0))}
+                      {products.length} {products.length === 1 ? "produto" : "produtos"}
                     </span>
                   </div>
 
