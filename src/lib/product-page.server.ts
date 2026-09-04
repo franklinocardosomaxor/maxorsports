@@ -23,7 +23,7 @@ import {
 } from "@/lib/catalog";
 
 const COLUMNS =
-  "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, site_visible, brand_visible, genero, gender";
+  "id, sku, name, brand, marca_prod, section, category, description, price, old_price, img, images, colors, sizes, stock, backorder, launch, tag, model_group, color_variant, num_cal_min, num_cal_max, site_visible, brand_visible, genero, gender";
 
 /** Cliente público (anon) para leitura server-side — RLS `products_public_read` se aplica. */
 function createPublicClient() {
@@ -61,6 +61,8 @@ type DbRow = {
   images: string[] | null;
   colors: string[] | null;
   sizes: number[] | null;
+  num_cal_min: number | null;
+  num_cal_max: number | null;
   stock: number;
   backorder: boolean;
   launch: boolean;
@@ -90,6 +92,8 @@ function mapRow(row: DbRow): Record<string, unknown> {
     images: row.images ?? undefined,
     colors: row.colors ?? undefined,
     sizes: row.sizes ?? undefined,
+    num_cal_min: row.num_cal_min ?? undefined,
+    num_cal_max: row.num_cal_max ?? undefined,
     launch: row.launch,
     description: row.description ?? undefined,
     stock: row.stock,
