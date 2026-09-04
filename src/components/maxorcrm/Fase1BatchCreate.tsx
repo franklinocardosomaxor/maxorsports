@@ -635,7 +635,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                     placeholder="Descrição única do modelo — será aplicada a todas as cores cadastradas abaixo."
                   />
                   <p className="text-[11px] text-foreground/50">
-                    Esta descrição é mantida em todos os produtos do lote. Cada cor abaixo entra apenas com suas fotos e gênero — o vínculo com esta descrição é automático ao salvar.
+                    Esta descrição vai no campo "Descrição" de todos os produtos do lote, sem alterações. A cor de cada variação tem seu próprio campo abaixo.
                   </p>
                 </label>
               </section>
@@ -648,7 +648,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       Cores do lote ({variations.length}) · {totalImages} imagem(ns)
                     </h3>
                     <p className="mt-0.5 text-[11px] text-foreground/50">
-                      Cada cor vincula suas fotos e gênero à descrição principal acima, formando um produto individual.
+                      Cada bloco vira um produto independente: a descrição da cor abaixo vai no campo "Cor variante" do cadastro (o mesmo do cadastro individual), junto com suas fotos e gênero.
                     </p>
                   </div>
                   <button
@@ -662,13 +662,13 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                 {variations.map((v, index) => (
                   <div key={v.id} className="space-y-3 rounded-2xl border border-border bg-background/40 p-4">
                     <div className="flex flex-wrap items-end gap-3">
-                      <label className="min-w-[160px] flex-1 space-y-1">
-                        <span className={labelCls}>Cor #{index + 1} *</span>
+                      <label className="min-w-[220px] flex-1 space-y-1">
+                        <span className={labelCls}>Descrição da cor #{index + 1} * · vira "Cor variante" no cadastro</span>
                         <input
                           className={inputCls}
                           value={v.color}
                           onChange={(e) => patchVar(v.id, { color: e.target.value })}
-                          placeholder="Infrared / White"
+                          placeholder="Ex.: Preto/Volt ou Branco com detalhes dourados"
                         />
                       </label>
                       <label className="min-w-[140px] space-y-1">
