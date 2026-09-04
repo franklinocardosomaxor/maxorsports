@@ -626,22 +626,31 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                 </div>
 
                 <label className="space-y-1 block">
-                  <span className={labelCls}>Descrição</span>
+                  <span className={labelCls}>Descrição principal</span>
                   <textarea
                     rows={3}
                     className={inputCls}
                     value={base.description}
                     onChange={(e) => setBase((b) => ({ ...b, description: e.target.value }))}
+                    placeholder="Descrição única do modelo — será aplicada a todas as cores cadastradas abaixo."
                   />
+                  <p className="text-[11px] text-foreground/50">
+                    Esta descrição é mantida em todos os produtos do lote. Cada cor abaixo entra apenas com suas fotos e gênero — o vínculo com esta descrição é automático ao salvar.
+                  </p>
                 </label>
               </section>
 
               {/* Variações */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-black uppercase tracking-wide text-[color:var(--cyan-brand)]">
-                    Cores do lote ({variations.length}) · {totalImages} imagem(ns)
-                  </h3>
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-wide text-[color:var(--cyan-brand)]">
+                      Cores do lote ({variations.length}) · {totalImages} imagem(ns)
+                    </h3>
+                    <p className="mt-0.5 text-[11px] text-foreground/50">
+                      Cada cor vincula suas fotos e gênero à descrição principal acima, formando um produto individual.
+                    </p>
+                  </div>
                   <button
                     onClick={addVariation}
                     className="flex items-center gap-1 rounded-lg border border-border px-3 py-1.5 text-xs font-bold text-offwhite hover:bg-border"
