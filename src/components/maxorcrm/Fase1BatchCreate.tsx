@@ -355,7 +355,9 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
         return {
           org_id: orgId,
-          sku: `${prefix}-${slugify(v.color) || index + 1}`,
+          // O código (SKU) fica só com o prefixo + número sequencial da cor —
+          // a cor em si NUNCA entra no código, ela vive só em `color_variant`.
+          sku: `${prefix}-${index + 1}`,
           name,
           name_prod: name,
           brand: base.brand,
