@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { getBrandDirectory, getBrandProducts, formatCatalogCount, type ProductWithSection } from "@/lib/catalog";
+import { getBrandDirectory, getBrandVariants, type ProductWithSection } from "@/lib/catalog";
 
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
@@ -9,9 +9,10 @@ import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 const brandAnchor = (brand: string) => `marca-${brand.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
-// Limite de modelos por página. Acima disso a página fica pesada demais
-// (muitas imagens carregando de uma vez), então quebramos em páginas /catalogo?p=2, ?p=3...
+// Limite de cards por página. Acima disso a página fica pesada demais
+// (muitas imagens carregando de uma vez), então quebramos em /catalogo?p=2, ?p=3...
 const PAGE_SIZE = 100;
+
 
 type CatalogSearch = { p?: number };
 
