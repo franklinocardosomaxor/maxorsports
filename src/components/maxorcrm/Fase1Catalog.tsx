@@ -353,6 +353,16 @@ export function Fase1Catalog() {
   );
   const modelSelectValue = form.modelGroup && selectedExistingModel ? form.modelGroup : NEW_MODEL_VALUE;
 
+  const filteredProducts = useMemo(
+    () =>
+      products.filter(
+        (p) =>
+          (p.name || p.name_prod || "").toLowerCase().includes(search.toLowerCase()) ||
+          (p.sku || "").toLowerCase().includes(search.toLowerCase()),
+      ),
+    [products, search],
+  );
+
   const fetchProducts = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -731,6 +741,7 @@ export function Fase1Catalog() {
         <table className="w-full text-left text-sm text-foreground/70">
           <thead className="bg-background text-xs font-semibold uppercase text-foreground/50 border-b border-border">
             <tr>
+              <th className="p-3 sm:p-4 text-right w-12">#</th>
               <th className="p-3 sm:p-4">SKU / Foto</th>
               <th className="p-3 sm:p-4">Produto / Marca</th>
               <th className="hidden p-4 md:table-cell">Preço</th>
@@ -741,14 +752,14 @@ export function Fase1Catalog() {
           </thead>
           <tbody className="divide-y divide-border">
             {loading ? (
-              <tr><td colSpan={6} className="p-8 text-center text-foreground/50">Carregando estoque...</td></tr>
-            ) : products.length === 0 ? (
-              <tr><td colSpan={6} className="p-8 text-center text-foreground/50">Nenhum produto cadastrado.</td></tr>
+              <tr><td colSpan={7} className="p-8 text-center text-foreground/50">Carregando estoque...</td></tr>
+            ) : filteredProducts.length === 0 ? (
+              <tr><td colSpan={7} className="p-8 text-center text-foreground/50">Nenhum produto cadastrado.</td></tr>
             ) : (
-              products
-                .filter(p => (p.name || p.name_prod || '').toLowerCase().includes(search.toLowerCase()) || (p.sku || '').toLowerCase().includes(search.toLowerCase()))
-                .map(prod => (
+              filteredProducts
+                .map((prod, index) => (
                   <tr key={prod.id} className="hover:bg-border/50 transition align-top">
+                    <td className="p-3 sm:p-4 text-right font-mono text-xs text-foreground/50">{index + 1}</td>
                     <td className="p-3 sm:p-4">
                       <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
                         <div className="w-12 h-12 shrink-0 bg-background rounded-xl border border-border overflow-hidden flex items-center justify-center">
@@ -802,6 +813,13 @@ export function Fase1Catalog() {
             )}
           </tbody>
         </table>
+        {!loading && filteredProducts.length > 0 && (
+          <div className="flex items-center justify-end border-t border-border bg-background/50 px-3 py-3 sm:px-4">
+            <span className="text-xs font-bold uppercase text-foreground/60">
+              Total de itens: <span className="text-[color:var(--cyan-brand)]">{filteredProducts.length}</span>
+            </span>
+          </div>
+        )}
       </div>
 
       {modalOpen && (
