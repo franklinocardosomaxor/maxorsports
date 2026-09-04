@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { getBrandDirectory, getBrandProducts, formatCatalogCount, type ProductWithSection } from "@/lib/catalog";
+import { getBrandDirectory, getBrandVariants, type ProductWithSection } from "@/lib/catalog";
 
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
@@ -9,9 +9,10 @@ import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 const brandAnchor = (brand: string) => `marca-${brand.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
-// Limite de modelos por página. Acima disso a página fica pesada demais
-// (muitas imagens carregando de uma vez), então quebramos em páginas /catalogo?p=2, ?p=3...
+// Limite de cards por página. Acima disso a página fica pesada demais
+// (muitas imagens carregando de uma vez), então quebramos em /catalogo?p=2, ?p=3...
 const PAGE_SIZE = 100;
+
 
 type CatalogSearch = { p?: number };
 
@@ -41,32 +42,27 @@ function CatalogoSeloPage() {
   const { p } = Route.useSearch();
   const currentPage = p && p > 1 ? p : 1;
 
-  // Catálogo completo agrupado por MARCA usando exatamente a mesma fonte do
-  // menu e de /marcas: diretório vivo + getBrandProducts (modelos agrupados).
-  // Assim a contagem aqui, no card da marca e dentro da página da marca é
-  // sempre idêntica. Marcas-categoria (Chuteiras) ficam fora para não duplicar
-  // produtos que já aparecem na marca real.
+  // Catálogo completo separado por MARCA, listando TODAS as variações de cor
+  // cadastradas (um card por cor). Marcas-categoria (Chuteiras) ficam fora
+  // para não duplicar produtos que já aparecem na marca real.
   const brandGroups = useMemo(() => {
     return getBrandDirectory()
       .filter((entry) => entry.matchBy !== "category")
       .map((entry) => ({
         brand: entry.name,
-        products: getBrandProducts(entry.slug) as ProductWithSection[],
+        products: getBrandVariants(entry.slug) as ProductWithSection[],
       }))
       .filter((g) => g.products.length > 0);
   }, [version]);
 
-  const totalModels = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
-  const totalVariants = brandGroups.reduce(
-    (sum, g) => sum + g.products.reduce((n, p) => n + (p.variantCount ?? 1), 0),
-    0,
-  );
+  const totalItems = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
 
-  // Lista plana (mesma ordem exibida) para poder fatiar em páginas de 100 modelos.
+  // Lista plana (mesma ordem exibida) para poder fatiar em páginas de 100 cards.
   const flat = useMemo(
     () => brandGroups.flatMap((g) => g.products.map((product) => ({ brand: g.brand, product }))),
     [brandGroups],
   );
+
 
   const totalPages = Math.max(1, Math.ceil(flat.length / PAGE_SIZE));
   const safePage = Math.min(Math.max(1, currentPage), totalPages);
@@ -100,11 +96,12 @@ function CatalogoSeloPage() {
               Explorar <span className="text-[color:var(--cyan-brand)]">Catálogo</span>
             </h1>
             <p className="mt-2 text-muted-foreground max-w-xl">
-              Catálogo completo, separado por marca. Um card por modelo; as cores cadastradas aparecem juntas dentro da página do produto.
+              Catálogo completo, separado por marca. Todas as cores cadastradas aparecem como cards individuais.
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-bold uppercase text-muted-foreground">{formatCatalogCount(totalModels, totalVariants)}</span>
+            <span className="text-sm font-bold uppercase text-muted-foreground">{totalItems} {totalItems === 1 ? "produto" : "produtos"}</span>
+
             <ViewModeToggle />
           </div>
         </header>
@@ -124,7 +121,7 @@ function CatalogoSeloPage() {
           </div>
         )}
 
-        {totalModels === 0 ? (
+        {totalItems === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <div className="h-20 w-20 rounded-full bg-card flex items-center justify-center mb-6">
               <Grid2X2 className="h-10 w-10 text-muted-foreground" />
@@ -136,7 +133,7 @@ function CatalogoSeloPage() {
           <>
             {totalPages > 1 && (
               <p className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                Página {safePage} de {totalPages} — modelos {(safePage - 1) * PAGE_SIZE + 1} a {Math.min(safePage * PAGE_SIZE, flat.length)} de {flat.length}
+                Página {safePage} de {totalPages} — produtos {(safePage - 1) * PAGE_SIZE + 1} a {Math.min(safePage * PAGE_SIZE, flat.length)} de {flat.length}
               </p>
             )}
 
@@ -151,7 +148,7 @@ function CatalogoSeloPage() {
                       </h2>
                     </div>
                     <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                      {formatCatalogCount(products.length, products.reduce((n, p) => n + (p.variantCount ?? 1), 0))}
+                      {products.length} {products.length === 1 ? "produto" : "produtos"}
                     </span>
                   </div>
 

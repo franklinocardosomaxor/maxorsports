@@ -561,10 +561,10 @@ export function getUnisexProducts() {
   return ALL_PRODUCTS.filter(isUnisexProduct);
 }
 
-/** Produtos de uma marca (sempre vindos do CRM). */
-export function getBrandProducts(slug: string) {
+/** Filtro único de marca (usado pelas duas leituras abaixo). */
+function filterBrand(slug: string): ProductWithSection[] {
   const def = getBrandDef(slug);
-  return groupProductsByModel(ALL_PRODUCTS.filter((p) => {
+  return ALL_PRODUCTS.filter((p) => {
     if (p.brand_visible === false) return false;
     // Regra única de matching (src/lib/brands.ts). Marcas-categoria como
     // Chuteiras filtram pela categoria — o produto mantém a marca real.
@@ -572,8 +572,22 @@ export function getBrandProducts(slug: string) {
     // Marca que existe só no CRM (fora da lista estática): slug derivado
     // do nome canonizado — mesma regra do diretório vivo.
     return brandSlug(p.brand) === slug;
-  }));
+  }) as ProductWithSection[];
 }
+
+/** Produtos de uma marca agrupados por modelo (menu, /marcas, página da marca). */
+export function getBrandProducts(slug: string) {
+  return groupProductsByModel(filterBrand(slug));
+}
+
+/**
+ * Produtos de uma marca SEM agrupar: cada cor cadastrada é um item.
+ * Usado pelo Explorar Catálogo, que lista todas as variações.
+ */
+export function getBrandVariants(slug: string): ProductWithSection[] {
+  return filterBrand(slug);
+}
+
 
 /**
  * Diretório VIVO de marcas: lista estática (src/lib/brands.ts) + marcas
