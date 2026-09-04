@@ -4,14 +4,23 @@ import { getBrandDirectory, getBrandProducts, formatCatalogCount, type ProductWi
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
-import { ChevronRight, Grid2X2 } from "lucide-react";
+import { ChevronRight, ChevronLeft, Grid2X2 } from "lucide-react";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 
 const brandAnchor = (brand: string) => `marca-${brand.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
+// Limite de modelos por página. Acima disso a página fica pesada demais
+// (muitas imagens carregando de uma vez), então quebramos em páginas /catalogo?p=2, ?p=3...
+const PAGE_SIZE = 100;
+
+type CatalogSearch = { p?: number };
 
 export const Route = createFileRoute("/catalogo")({
   component: CatalogoSeloPage,
+  validateSearch: (search: Record<string, unknown>): CatalogSearch => {
+    const raw = Number(search.p);
+    return { p: Number.isFinite(raw) && raw > 1 ? Math.floor(raw) : undefined };
+  },
   head: () => ({
     meta: [
       { title: "Catálogo Completo — Maxor Sports" },
@@ -29,6 +38,8 @@ export const Route = createFileRoute("/catalogo")({
 function CatalogoSeloPage() {
   const version = useCatalogVersion();
   const viewMode = useViewMode();
+  const { p } = Route.useSearch();
+  const currentPage = p && p > 1 ? p : 1;
 
   // Catálogo completo agrupado por MARCA usando exatamente a mesma fonte do
   // menu e de /marcas: diretório vivo + getBrandProducts (modelos agrupados).
@@ -45,12 +56,33 @@ function CatalogoSeloPage() {
       .filter((g) => g.products.length > 0);
   }, [version]);
 
-
   const totalModels = brandGroups.reduce((sum, g) => sum + g.products.length, 0);
   const totalVariants = brandGroups.reduce(
     (sum, g) => sum + g.products.reduce((n, p) => n + (p.variantCount ?? 1), 0),
     0,
   );
+
+  // Lista plana (mesma ordem exibida) para poder fatiar em páginas de 100 modelos.
+  const flat = useMemo(
+    () => brandGroups.flatMap((g) => g.products.map((product) => ({ brand: g.brand, product }))),
+    [brandGroups],
+  );
+
+  const totalPages = Math.max(1, Math.ceil(flat.length / PAGE_SIZE));
+  const safePage = Math.min(Math.max(1, currentPage), totalPages);
+  const pageSlice = flat.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  // Re-agrupa por marca só dentro da página atual, preservando a ordem de aparição.
+  const pageGroups = useMemo(() => {
+    const map = new Map<string, ProductWithSection[]>();
+    for (const { brand, product } of pageSlice) {
+      if (!map.has(brand)) map.set(brand, []);
+      map.get(brand)!.push(product);
+    }
+    return Array.from(map.entries()).map(([brand, products]) => ({ brand, products }));
+  }, [pageSlice]);
+
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <div className="min-h-screen bg-navy pt-24 pb-20">
@@ -77,10 +109,10 @@ function CatalogoSeloPage() {
           </div>
         </header>
 
-        {/* Índice de marcas */}
-        {brandGroups.length > 0 && (
+        {/* Índice de marcas (respeita a página atual) */}
+        {pageGroups.length > 0 && (
           <div className="mb-12 flex flex-wrap gap-2 border-y border-border/40 py-4">
-            {brandGroups.map(({ brand, products }) => (
+            {pageGroups.map(({ brand, products }) => (
               <a
                 key={brand}
                 href={`#${brandAnchor(brand)}`}
@@ -101,33 +133,94 @@ function CatalogoSeloPage() {
             <p className="text-muted-foreground">O catálogo está sendo sincronizado com o CRM.</p>
           </div>
         ) : (
-          <div className="space-y-20">
-            {brandGroups.map(({ brand, products }) => (
-              <section key={brand} id={brandAnchor(brand)} className="scroll-mt-32 mb-12 last:mb-0">
-                <div className="flex items-center justify-between mb-8 border-b border-border/40 pb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="h-8 w-1.5 rounded-full" style={{ backgroundColor: "var(--cyan-brand)" }} />
-                    <h2 className="font-display text-2xl md:text-3xl font-bold uppercase italic tracking-tight text-foreground">
-                      {brand}
-                    </h2>
-                  </div>
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-                    {formatCatalogCount(products.length, products.reduce((n, p) => n + (p.variantCount ?? 1), 0))}
-                  </span>
-                </div>
+          <>
+            {totalPages > 1 && (
+              <p className="mb-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                Página {safePage} de {totalPages} — modelos {(safePage - 1) * PAGE_SIZE + 1} a {Math.min(safePage * PAGE_SIZE, flat.length)} de {flat.length}
+              </p>
+            )}
 
-                <div className={viewModeContainerClass(viewMode)}>
-                  {products.map((product) =>
-                    viewMode === "list" ? (
-                      <ProductListRow key={product.id} product={product} />
-                    ) : (
-                      <ProductMiniCard key={product.id} product={product} />
-                    ),
-                  )}
-                </div>
-              </section>
-            ))}
-          </div>
+            <div className="space-y-20">
+              {pageGroups.map(({ brand, products }) => (
+                <section key={brand} id={brandAnchor(brand)} className="scroll-mt-32 mb-12 last:mb-0">
+                  <div className="flex items-center justify-between mb-8 border-b border-border/40 pb-4">
+                    <div className="flex items-center gap-4">
+                      <div className="h-8 w-1.5 rounded-full" style={{ backgroundColor: "var(--cyan-brand)" }} />
+                      <h2 className="font-display text-2xl md:text-3xl font-bold uppercase italic tracking-tight text-foreground">
+                        {brand}
+                      </h2>
+                    </div>
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                      {formatCatalogCount(products.length, products.reduce((n, p) => n + (p.variantCount ?? 1), 0))}
+                    </span>
+                  </div>
+
+                  <div className={viewModeContainerClass(viewMode)}>
+                    {products.map((product) =>
+                      viewMode === "list" ? (
+                        <ProductListRow key={product.id} product={product} />
+                      ) : (
+                        <ProductMiniCard key={product.id} product={product} />
+                      ),
+                    )}
+                  </div>
+                </section>
+              ))}
+            </div>
+
+            {/* Paginação — só aparece quando o catálogo passa de 100 modelos */}
+            {totalPages > 1 && (
+              <nav
+                aria-label="Paginação do catálogo"
+                className="mt-16 flex flex-wrap items-center justify-center gap-2 border-t border-border/40 pt-8"
+              >
+                <Link
+                  to="/catalogo"
+                  search={safePage > 2 ? { p: safePage - 1 } : {}}
+                  disabled={safePage === 1}
+                  aria-disabled={safePage === 1}
+                  className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition ${
+                    safePage === 1
+                      ? "pointer-events-none border-border/40 text-muted-foreground/40"
+                      : "border-border/60 text-muted-foreground hover:text-foreground hover:border-[color:var(--cyan-brand)]"
+                  }`}
+                >
+                  <ChevronLeft className="h-3 w-3" />
+                  Anterior
+                </Link>
+
+                {pageNumbers.map((n) => (
+                  <Link
+                    key={n}
+                    to="/catalogo"
+                    search={n > 1 ? { p: n } : {}}
+                    className={`h-9 min-w-9 rounded-full border px-3 text-xs font-bold flex items-center justify-center transition ${
+                      n === safePage
+                        ? "border-[color:var(--cyan-brand)] bg-[color:var(--cyan-brand)] text-navy"
+                        : "border-border/60 text-muted-foreground hover:text-foreground hover:border-[color:var(--cyan-brand)]"
+                    }`}
+                  >
+                    {n}
+                  </Link>
+                ))}
+
+                <Link
+                  to="/catalogo"
+                  search={{ p: safePage + 1 }}
+                  disabled={safePage === totalPages}
+                  aria-disabled={safePage === totalPages}
+                  className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition ${
+                    safePage === totalPages
+                      ? "pointer-events-none border-border/40 text-muted-foreground/40"
+                      : "border-border/60 text-muted-foreground hover:text-foreground hover:border-[color:var(--cyan-brand)]"
+                  }`}
+                >
+                  Próxima
+                  <ChevronRight className="h-3 w-3" />
+                </Link>
+              </nav>
+            )}
+          </>
         )}
       </div>
 
