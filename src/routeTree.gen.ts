@@ -9,127 +9,47 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnissexRouteImport } from './routes/unissex'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as OfertasRouteImport } from './routes/ofertas'
-import { Route as MinhaContaRouteImport } from './routes/minha-conta'
-import { Route as MaxorcrmRouteImport } from './routes/maxorcrm'
-import { Route as MasculinoRouteImport } from './routes/masculino'
-import { Route as MaisVendidosRouteImport } from './routes/mais-vendidos'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as LancamentosRouteImport } from './routes/lancamentos'
-import { Route as KitValidadorRouteImport } from './routes/kit-validador'
-import { Route as InfantilRouteImport } from './routes/infantil'
-import { Route as FemininoRouteImport } from './routes/feminino'
-import { Route as EletronicosRouteImport } from './routes/eletronicos'
-import { Route as DestaquesRouteImport } from './routes/destaques'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as CategoriasRouteImport } from './routes/categorias'
-import { Route as CatalogoRouteImport } from './routes/catalogo'
-import { Route as AcessoriosRouteImport } from './routes/acessorios'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RoupasIndexRouteImport } from './routes/roupas.index'
-import { Route as MaxorcrmIndexRouteImport } from './routes/maxorcrm/index'
-import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
+import { Route as AcessoriosRouteImport } from './routes/acessorios'
+import { Route as CatalogoRouteImport } from './routes/catalogo'
+import { Route as CategoriasRouteImport } from './routes/categorias'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as DestaquesRouteImport } from './routes/destaques'
+import { Route as EletronicosRouteImport } from './routes/eletronicos'
+import { Route as FemininoRouteImport } from './routes/feminino'
+import { Route as InfantilRouteImport } from './routes/infantil'
+import { Route as KitValidadorRouteImport } from './routes/kit-validador'
+import { Route as LancamentosRouteImport } from './routes/lancamentos'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as MaisVendidosRouteImport } from './routes/mais-vendidos'
+import { Route as MasculinoRouteImport } from './routes/masculino'
+import { Route as MaxorcrmRouteImport } from './routes/maxorcrm'
+import { Route as MinhaContaRouteImport } from './routes/minha-conta'
+import { Route as OfertasRouteImport } from './routes/ofertas'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as UnissexRouteImport } from './routes/unissex'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as RoupasCategoryRouteImport } from './routes/roupas.$category'
-import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
-import { Route as MaxorcrmFase3RouteImport } from './routes/maxorcrm/fase-3'
-import { Route as MaxorcrmFase2RouteImport } from './routes/maxorcrm/fase-2'
-import { Route as MaxorcrmFase1RouteImport } from './routes/maxorcrm/fase-1'
-import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
-import { Route as ColecaoMasculinoRouteImport } from './routes/colecao.masculino'
-import { Route as ColecaoFemininoRouteImport } from './routes/colecao.feminino'
-import { Route as BlogGuiaTenisNikeRouteImport } from './routes/blog.guia-tenis-nike'
 import { Route as AdminCrmRouteImport } from './routes/admin.crm'
-import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
-import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
+import { Route as BlogGuiaTenisNikeRouteImport } from './routes/blog.guia-tenis-nike'
+import { Route as ColecaoFemininoRouteImport } from './routes/colecao.feminino'
+import { Route as ColecaoMasculinoRouteImport } from './routes/colecao.masculino'
+import { Route as MarcasIndexRouteImport } from './routes/marcas.index'
+import { Route as MarcasBrandRouteImport } from './routes/marcas.$brand'
+import { Route as MaxorcrmIndexRouteImport } from './routes/maxorcrm/index'
+import { Route as MaxorcrmFase1RouteImport } from './routes/maxorcrm/fase-1'
+import { Route as MaxorcrmFase2RouteImport } from './routes/maxorcrm/fase-2'
+import { Route as MaxorcrmFase3RouteImport } from './routes/maxorcrm/fase-3'
+import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
+import { Route as RoupasIndexRouteImport } from './routes/roupas.index'
+import { Route as RoupasCategoryRouteImport } from './routes/roupas.$category'
 import { Route as ApiPublicCrmProductsRouteImport } from './routes/api/public/crm/products'
+import { Route as ApiPublicWebhooksStripeRouteImport } from './routes/api/public/webhooks/stripe'
+import { Route as ApiPublicWebhooksWhatsappRouteImport } from './routes/api/public/webhooks/whatsapp'
 import { Route as ApiPublicCrmImageSplatRouteImport } from './routes/api/public/crm/image.$'
 
-const UnissexRoute = UnissexRouteImport.update({
-  id: '/unissex',
-  path: '/unissex',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OfertasRoute = OfertasRouteImport.update({
-  id: '/ofertas',
-  path: '/ofertas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MinhaContaRoute = MinhaContaRouteImport.update({
-  id: '/minha-conta',
-  path: '/minha-conta',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MaxorcrmRoute = MaxorcrmRouteImport.update({
-  id: '/maxorcrm',
-  path: '/maxorcrm',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MasculinoRoute = MasculinoRouteImport.update({
-  id: '/masculino',
-  path: '/masculino',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MaisVendidosRoute = MaisVendidosRouteImport.update({
-  id: '/mais-vendidos',
-  path: '/mais-vendidos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LancamentosRoute = LancamentosRouteImport.update({
-  id: '/lancamentos',
-  path: '/lancamentos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KitValidadorRoute = KitValidadorRouteImport.update({
-  id: '/kit-validador',
-  path: '/kit-validador',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InfantilRoute = InfantilRouteImport.update({
-  id: '/infantil',
-  path: '/infantil',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FemininoRoute = FemininoRouteImport.update({
-  id: '/feminino',
-  path: '/feminino',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EletronicosRoute = EletronicosRouteImport.update({
-  id: '/eletronicos',
-  path: '/eletronicos',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DestaquesRoute = DestaquesRouteImport.update({
-  id: '/destaques',
-  path: '/destaques',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CategoriasRoute = CategoriasRouteImport.update({
-  id: '/categorias',
-  path: '/categorias',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CatalogoRoute = CatalogoRouteImport.update({
-  id: '/catalogo',
-  path: '/catalogo',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AcessoriosRoute = AcessoriosRouteImport.update({
@@ -137,24 +57,89 @@ const AcessoriosRoute = AcessoriosRouteImport.update({
   path: '/acessorios',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CatalogoRoute = CatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RoupasIndexRoute = RoupasIndexRouteImport.update({
-  id: '/roupas/',
-  path: '/roupas/',
+const CategoriasRoute = CategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MaxorcrmIndexRoute = MaxorcrmIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => MaxorcrmRoute,
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const MarcasIndexRoute = MarcasIndexRouteImport.update({
-  id: '/marcas/',
-  path: '/marcas/',
+const DestaquesRoute = DestaquesRouteImport.update({
+  id: '/destaques',
+  path: '/destaques',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EletronicosRoute = EletronicosRouteImport.update({
+  id: '/eletronicos',
+  path: '/eletronicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FemininoRoute = FemininoRouteImport.update({
+  id: '/feminino',
+  path: '/feminino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InfantilRoute = InfantilRouteImport.update({
+  id: '/infantil',
+  path: '/infantil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KitValidadorRoute = KitValidadorRouteImport.update({
+  id: '/kit-validador',
+  path: '/kit-validador',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LancamentosRoute = LancamentosRouteImport.update({
+  id: '/lancamentos',
+  path: '/lancamentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaisVendidosRoute = MaisVendidosRouteImport.update({
+  id: '/mais-vendidos',
+  path: '/mais-vendidos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MasculinoRoute = MasculinoRouteImport.update({
+  id: '/masculino',
+  path: '/masculino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaxorcrmRoute = MaxorcrmRouteImport.update({
+  id: '/maxorcrm',
+  path: '/maxorcrm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhaContaRoute = MinhaContaRouteImport.update({
+  id: '/minha-conta',
+  path: '/minha-conta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OfertasRoute = OfertasRouteImport.update({
+  id: '/ofertas',
+  path: '/ofertas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnissexRoute = UnissexRouteImport.update({
+  id: '/unissex',
+  path: '/unissex',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -162,44 +147,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RoupasCategoryRoute = RoupasCategoryRouteImport.update({
-  id: '/roupas/$category',
-  path: '/roupas/$category',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProdutoIdRoute = ProdutoIdRouteImport.update({
-  id: '/produto/$id',
-  path: '/produto/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MaxorcrmFase3Route = MaxorcrmFase3RouteImport.update({
-  id: '/fase-3',
-  path: '/fase-3',
-  getParentRoute: () => MaxorcrmRoute,
-} as any)
-const MaxorcrmFase2Route = MaxorcrmFase2RouteImport.update({
-  id: '/fase-2',
-  path: '/fase-2',
-  getParentRoute: () => MaxorcrmRoute,
-} as any)
-const MaxorcrmFase1Route = MaxorcrmFase1RouteImport.update({
-  id: '/fase-1',
-  path: '/fase-1',
-  getParentRoute: () => MaxorcrmRoute,
-} as any)
-const MarcasBrandRoute = MarcasBrandRouteImport.update({
-  id: '/marcas/$brand',
-  path: '/marcas/$brand',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ColecaoMasculinoRoute = ColecaoMasculinoRouteImport.update({
-  id: '/colecao/masculino',
-  path: '/colecao/masculino',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ColecaoFemininoRoute = ColecaoFemininoRouteImport.update({
-  id: '/colecao/feminino',
-  path: '/colecao/feminino',
+const AdminCrmRoute = AdminCrmRouteImport.update({
+  id: '/admin/crm',
+  path: '/admin/crm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogGuiaTenisNikeRoute = BlogGuiaTenisNikeRouteImport.update({
@@ -207,9 +157,69 @@ const BlogGuiaTenisNikeRoute = BlogGuiaTenisNikeRouteImport.update({
   path: '/blog/guia-tenis-nike',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminCrmRoute = AdminCrmRouteImport.update({
-  id: '/admin/crm',
-  path: '/admin/crm',
+const ColecaoFemininoRoute = ColecaoFemininoRouteImport.update({
+  id: '/colecao/feminino',
+  path: '/colecao/feminino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ColecaoMasculinoRoute = ColecaoMasculinoRouteImport.update({
+  id: '/colecao/masculino',
+  path: '/colecao/masculino',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarcasIndexRoute = MarcasIndexRouteImport.update({
+  id: '/marcas/',
+  path: '/marcas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarcasBrandRoute = MarcasBrandRouteImport.update({
+  id: '/marcas/$brand',
+  path: '/marcas/$brand',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaxorcrmIndexRoute = MaxorcrmIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MaxorcrmRoute,
+} as any)
+const MaxorcrmFase1Route = MaxorcrmFase1RouteImport.update({
+  id: '/fase-1',
+  path: '/fase-1',
+  getParentRoute: () => MaxorcrmRoute,
+} as any)
+const MaxorcrmFase2Route = MaxorcrmFase2RouteImport.update({
+  id: '/fase-2',
+  path: '/fase-2',
+  getParentRoute: () => MaxorcrmRoute,
+} as any)
+const MaxorcrmFase3Route = MaxorcrmFase3RouteImport.update({
+  id: '/fase-3',
+  path: '/fase-3',
+  getParentRoute: () => MaxorcrmRoute,
+} as any)
+const ProdutoIdRoute = ProdutoIdRouteImport.update({
+  id: '/produto/$id',
+  path: '/produto/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoupasIndexRoute = RoupasIndexRouteImport.update({
+  id: '/roupas/',
+  path: '/roupas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoupasCategoryRoute = RoupasCategoryRouteImport.update({
+  id: '/roupas/$category',
+  path: '/roupas/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCrmProductsRoute = ApiPublicCrmProductsRouteImport.update({
+  id: '/api/public/crm/products',
+  path: '/api/public/crm/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicWebhooksStripeRoute = ApiPublicWebhooksStripeRouteImport.update({
+  id: '/api/public/webhooks/stripe',
+  path: '/api/public/webhooks/stripe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicWebhooksWhatsappRoute =
@@ -218,16 +228,6 @@ const ApiPublicWebhooksWhatsappRoute =
     path: '/api/public/webhooks/whatsapp',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicWebhooksStripeRoute = ApiPublicWebhooksStripeRouteImport.update({
-  id: '/api/public/webhooks/stripe',
-  path: '/api/public/webhooks/stripe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicCrmProductsRoute = ApiPublicCrmProductsRouteImport.update({
-  id: '/api/public/crm/products',
-  path: '/api/public/crm/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicCrmImageSplatRoute = ApiPublicCrmImageSplatRouteImport.update({
   id: '/api/public/crm/image/$',
   path: '/api/public/crm/image/$',
@@ -508,123 +508,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unissex': {
-      id: '/unissex'
-      path: '/unissex'
-      fullPath: '/unissex'
-      preLoaderRoute: typeof UnissexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ofertas': {
-      id: '/ofertas'
-      path: '/ofertas'
-      fullPath: '/ofertas'
-      preLoaderRoute: typeof OfertasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/minha-conta': {
-      id: '/minha-conta'
-      path: '/minha-conta'
-      fullPath: '/minha-conta'
-      preLoaderRoute: typeof MinhaContaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/maxorcrm': {
-      id: '/maxorcrm'
-      path: '/maxorcrm'
-      fullPath: '/maxorcrm'
-      preLoaderRoute: typeof MaxorcrmRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/masculino': {
-      id: '/masculino'
-      path: '/masculino'
-      fullPath: '/masculino'
-      preLoaderRoute: typeof MasculinoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mais-vendidos': {
-      id: '/mais-vendidos'
-      path: '/mais-vendidos'
-      fullPath: '/mais-vendidos'
-      preLoaderRoute: typeof MaisVendidosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lancamentos': {
-      id: '/lancamentos'
-      path: '/lancamentos'
-      fullPath: '/lancamentos'
-      preLoaderRoute: typeof LancamentosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kit-validador': {
-      id: '/kit-validador'
-      path: '/kit-validador'
-      fullPath: '/kit-validador'
-      preLoaderRoute: typeof KitValidadorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/infantil': {
-      id: '/infantil'
-      path: '/infantil'
-      fullPath: '/infantil'
-      preLoaderRoute: typeof InfantilRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/feminino': {
-      id: '/feminino'
-      path: '/feminino'
-      fullPath: '/feminino'
-      preLoaderRoute: typeof FemininoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/eletronicos': {
-      id: '/eletronicos'
-      path: '/eletronicos'
-      fullPath: '/eletronicos'
-      preLoaderRoute: typeof EletronicosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/destaques': {
-      id: '/destaques'
-      path: '/destaques'
-      fullPath: '/destaques'
-      preLoaderRoute: typeof DestaquesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/categorias': {
-      id: '/categorias'
-      path: '/categorias'
-      fullPath: '/categorias'
-      preLoaderRoute: typeof CategoriasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/catalogo': {
-      id: '/catalogo'
-      path: '/catalogo'
-      fullPath: '/catalogo'
-      preLoaderRoute: typeof CatalogoRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/acessorios': {
@@ -634,32 +522,123 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AcessoriosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/catalogo': {
+      id: '/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof CatalogoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/roupas/': {
-      id: '/roupas/'
-      path: '/roupas'
-      fullPath: '/roupas/'
-      preLoaderRoute: typeof RoupasIndexRouteImport
+    '/categorias': {
+      id: '/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof CategoriasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/maxorcrm/': {
-      id: '/maxorcrm/'
-      path: '/'
-      fullPath: '/maxorcrm/'
-      preLoaderRoute: typeof MaxorcrmIndexRouteImport
-      parentRoute: typeof MaxorcrmRoute
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/marcas/': {
-      id: '/marcas/'
-      path: '/marcas'
-      fullPath: '/marcas/'
-      preLoaderRoute: typeof MarcasIndexRouteImport
+    '/destaques': {
+      id: '/destaques'
+      path: '/destaques'
+      fullPath: '/destaques'
+      preLoaderRoute: typeof DestaquesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/eletronicos': {
+      id: '/eletronicos'
+      path: '/eletronicos'
+      fullPath: '/eletronicos'
+      preLoaderRoute: typeof EletronicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feminino': {
+      id: '/feminino'
+      path: '/feminino'
+      fullPath: '/feminino'
+      preLoaderRoute: typeof FemininoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/infantil': {
+      id: '/infantil'
+      path: '/infantil'
+      fullPath: '/infantil'
+      preLoaderRoute: typeof InfantilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kit-validador': {
+      id: '/kit-validador'
+      path: '/kit-validador'
+      fullPath: '/kit-validador'
+      preLoaderRoute: typeof KitValidadorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lancamentos': {
+      id: '/lancamentos'
+      path: '/lancamentos'
+      fullPath: '/lancamentos'
+      preLoaderRoute: typeof LancamentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mais-vendidos': {
+      id: '/mais-vendidos'
+      path: '/mais-vendidos'
+      fullPath: '/mais-vendidos'
+      preLoaderRoute: typeof MaisVendidosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/masculino': {
+      id: '/masculino'
+      path: '/masculino'
+      fullPath: '/masculino'
+      preLoaderRoute: typeof MasculinoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/maxorcrm': {
+      id: '/maxorcrm'
+      path: '/maxorcrm'
+      fullPath: '/maxorcrm'
+      preLoaderRoute: typeof MaxorcrmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minha-conta': {
+      id: '/minha-conta'
+      path: '/minha-conta'
+      fullPath: '/minha-conta'
+      preLoaderRoute: typeof MinhaContaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ofertas': {
+      id: '/ofertas'
+      path: '/ofertas'
+      fullPath: '/ofertas'
+      preLoaderRoute: typeof OfertasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unissex': {
+      id: '/unissex'
+      path: '/unissex'
+      fullPath: '/unissex'
+      preLoaderRoute: typeof UnissexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -669,60 +648,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/roupas/$category': {
-      id: '/roupas/$category'
-      path: '/roupas/$category'
-      fullPath: '/roupas/$category'
-      preLoaderRoute: typeof RoupasCategoryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/produto/$id': {
-      id: '/produto/$id'
-      path: '/produto/$id'
-      fullPath: '/produto/$id'
-      preLoaderRoute: typeof ProdutoIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/maxorcrm/fase-3': {
-      id: '/maxorcrm/fase-3'
-      path: '/fase-3'
-      fullPath: '/maxorcrm/fase-3'
-      preLoaderRoute: typeof MaxorcrmFase3RouteImport
-      parentRoute: typeof MaxorcrmRoute
-    }
-    '/maxorcrm/fase-2': {
-      id: '/maxorcrm/fase-2'
-      path: '/fase-2'
-      fullPath: '/maxorcrm/fase-2'
-      preLoaderRoute: typeof MaxorcrmFase2RouteImport
-      parentRoute: typeof MaxorcrmRoute
-    }
-    '/maxorcrm/fase-1': {
-      id: '/maxorcrm/fase-1'
-      path: '/fase-1'
-      fullPath: '/maxorcrm/fase-1'
-      preLoaderRoute: typeof MaxorcrmFase1RouteImport
-      parentRoute: typeof MaxorcrmRoute
-    }
-    '/marcas/$brand': {
-      id: '/marcas/$brand'
-      path: '/marcas/$brand'
-      fullPath: '/marcas/$brand'
-      preLoaderRoute: typeof MarcasBrandRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/colecao/masculino': {
-      id: '/colecao/masculino'
-      path: '/colecao/masculino'
-      fullPath: '/colecao/masculino'
-      preLoaderRoute: typeof ColecaoMasculinoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/colecao/feminino': {
-      id: '/colecao/feminino'
-      path: '/colecao/feminino'
-      fullPath: '/colecao/feminino'
-      preLoaderRoute: typeof ColecaoFemininoRouteImport
+    '/admin/crm': {
+      id: '/admin/crm'
+      path: '/admin/crm'
+      fullPath: '/admin/crm'
+      preLoaderRoute: typeof AdminCrmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/guia-tenis-nike': {
@@ -732,18 +662,88 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogGuiaTenisNikeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/crm': {
-      id: '/admin/crm'
-      path: '/admin/crm'
-      fullPath: '/admin/crm'
-      preLoaderRoute: typeof AdminCrmRouteImport
+    '/colecao/feminino': {
+      id: '/colecao/feminino'
+      path: '/colecao/feminino'
+      fullPath: '/colecao/feminino'
+      preLoaderRoute: typeof ColecaoFemininoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/webhooks/whatsapp': {
-      id: '/api/public/webhooks/whatsapp'
-      path: '/api/public/webhooks/whatsapp'
-      fullPath: '/api/public/webhooks/whatsapp'
-      preLoaderRoute: typeof ApiPublicWebhooksWhatsappRouteImport
+    '/colecao/masculino': {
+      id: '/colecao/masculino'
+      path: '/colecao/masculino'
+      fullPath: '/colecao/masculino'
+      preLoaderRoute: typeof ColecaoMasculinoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marcas/': {
+      id: '/marcas/'
+      path: '/marcas'
+      fullPath: '/marcas/'
+      preLoaderRoute: typeof MarcasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marcas/$brand': {
+      id: '/marcas/$brand'
+      path: '/marcas/$brand'
+      fullPath: '/marcas/$brand'
+      preLoaderRoute: typeof MarcasBrandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/maxorcrm/': {
+      id: '/maxorcrm/'
+      path: '/'
+      fullPath: '/maxorcrm/'
+      preLoaderRoute: typeof MaxorcrmIndexRouteImport
+      parentRoute: typeof MaxorcrmRoute
+    }
+    '/maxorcrm/fase-1': {
+      id: '/maxorcrm/fase-1'
+      path: '/fase-1'
+      fullPath: '/maxorcrm/fase-1'
+      preLoaderRoute: typeof MaxorcrmFase1RouteImport
+      parentRoute: typeof MaxorcrmRoute
+    }
+    '/maxorcrm/fase-2': {
+      id: '/maxorcrm/fase-2'
+      path: '/fase-2'
+      fullPath: '/maxorcrm/fase-2'
+      preLoaderRoute: typeof MaxorcrmFase2RouteImport
+      parentRoute: typeof MaxorcrmRoute
+    }
+    '/maxorcrm/fase-3': {
+      id: '/maxorcrm/fase-3'
+      path: '/fase-3'
+      fullPath: '/maxorcrm/fase-3'
+      preLoaderRoute: typeof MaxorcrmFase3RouteImport
+      parentRoute: typeof MaxorcrmRoute
+    }
+    '/produto/$id': {
+      id: '/produto/$id'
+      path: '/produto/$id'
+      fullPath: '/produto/$id'
+      preLoaderRoute: typeof ProdutoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roupas/': {
+      id: '/roupas/'
+      path: '/roupas'
+      fullPath: '/roupas/'
+      preLoaderRoute: typeof RoupasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roupas/$category': {
+      id: '/roupas/$category'
+      path: '/roupas/$category'
+      fullPath: '/roupas/$category'
+      preLoaderRoute: typeof RoupasCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/crm/products': {
+      id: '/api/public/crm/products'
+      path: '/api/public/crm/products'
+      fullPath: '/api/public/crm/products'
+      preLoaderRoute: typeof ApiPublicCrmProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/webhooks/stripe': {
@@ -753,11 +753,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksStripeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/crm/products': {
-      id: '/api/public/crm/products'
-      path: '/api/public/crm/products'
-      fullPath: '/api/public/crm/products'
-      preLoaderRoute: typeof ApiPublicCrmProductsRouteImport
+    '/api/public/webhooks/whatsapp': {
+      id: '/api/public/webhooks/whatsapp'
+      path: '/api/public/webhooks/whatsapp'
+      fullPath: '/api/public/webhooks/whatsapp'
+      preLoaderRoute: typeof ApiPublicWebhooksWhatsappRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/crm/image/$': {
