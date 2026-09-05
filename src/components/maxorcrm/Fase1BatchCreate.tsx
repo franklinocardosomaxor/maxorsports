@@ -220,14 +220,39 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
   const infantilGrade: [number, number] = [Number(base.numMin || 28), Number(base.numMax || 34)];
 
-  const newVariation = (genero = "Masculino", fallback: [number, number] = [28, 34]): Variation => {
+  const newVariation = (
+    genero = "Masculino",
+    fallback: [number, number] = [28, 34],
+    taken: Set<string> = new Set(),
+  ): Variation => {
     const [min, max] = gradeFor(genero, fallback);
-    return { id: rid("var"), color: "", genero, numMin: min, numMax: max, images: [] };
+    return {
+      id: rid("var"),
+      sku: makeSku(taken),
+      color: "",
+      genero,
+      numMin: min,
+      numMax: max,
+      images: [],
+      linkedSku: "",
+    };
   };
 
   const [variations, setVariations] = useState<Variation[]>([
-    { id: rid("var"), color: "", genero: "Masculino", numMin: 38, numMax: 44, images: [] },
+    {
+      id: rid("var"),
+      sku: makeSku(),
+      color: "",
+      genero: "Masculino",
+      numMin: 38,
+      numMax: 44,
+      images: [],
+      linkedSku: "",
+    },
   ]);
+
+  /** Tênis já cadastrados, para vincular uma cor nova a um modelo existente. */
+  const [linkOptions, setLinkOptions] = useState<LinkOption[]>([]);
 
 
   useEffect(() => {
