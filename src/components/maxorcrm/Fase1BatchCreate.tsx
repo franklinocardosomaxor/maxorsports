@@ -21,11 +21,24 @@ import { listTaxonomy, type TaxonomyItem } from "@/lib/crm.taxonomy.functions";
 type BatchImage = { id: string; url: string; principal: boolean };
 type Variation = {
   id: string;
+  /** Código do produto no padrão MXR-#### (gerado automaticamente). */
+  sku: string;
   color: string;
   genero: string;
   numMin: number;
   numMax: number;
   images: BatchImage[];
+  /** SKU do tênis já cadastrado ao qual esta cor foi vinculada (referência interna). */
+  linkedSku: string;
+};
+
+/** Tênis já cadastrado, para o campo de vínculo das cores. */
+type LinkOption = {
+  sku: string;
+  name: string;
+  brand: string;
+  category: string;
+  type: string;
 };
 
 
@@ -115,6 +128,15 @@ const gradeFor = (genero: string, fallback: [number, number]): [number, number] 
 /** Selo fixo do cadastro em lote — a troca é feita depois, na edição individual. */
 const LOTE_TAG = "Normal";
 
+/** Código no padrão MXR-#### (4 dígitos). */
+const makeSku = (taken: Set<string> = new Set()) => {
+  for (let i = 0; i < 200; i += 1) {
+    const code = `MXR-${Math.floor(1000 + Math.random() * 9000)}`;
+    if (!taken.has(code)) return code;
+  }
+  return `MXR-${Date.now().toString().slice(-6)}`;
+};
+
 
 const inputCls =
   "w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-offwhite focus:border-[color:var(--cyan-brand)] focus:outline-none";
@@ -176,7 +198,6 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   const uploadImage = useServerFn(uploadProductImage);
 
   const [base, setBase] = useState({
-    skuPrefix: "",
     name: "",
     brand: "Nike",
     category: "Calçados Esportivos",
@@ -198,14 +219,39 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
   const infantilGrade: [number, number] = [Number(base.numMin || 28), Number(base.numMax || 34)];
 
-  const newVariation = (genero = "Masculino", fallback: [number, number] = [28, 34]): Variation => {
+  const newVariation = (
+    genero = "Masculino",
+    fallback: [number, number] = [28, 34],
+    taken: Set<string> = new Set(),
+  ): Variation => {
     const [min, max] = gradeFor(genero, fallback);
-    return { id: rid("var"), color: "", genero, numMin: min, numMax: max, images: [] };
+    return {
+      id: rid("var"),
+      sku: makeSku(taken),
+      color: "",
+      genero,
+      numMin: min,
+      numMax: max,
+      images: [],
+      linkedSku: "",
+    };
   };
 
   const [variations, setVariations] = useState<Variation[]>([
-    { id: rid("var"), color: "", genero: "Masculino", numMin: 38, numMax: 44, images: [] },
+    {
+      id: rid("var"),
+      sku: makeSku(),
+      color: "",
+      genero: "Masculino",
+      numMin: 38,
+      numMax: 44,
+      images: [],
+      linkedSku: "",
+    },
   ]);
+
+  /** Tênis já cadastrados, para vincular uma cor nova a um modelo existente. */
+  const [linkOptions, setLinkOptions] = useState<LinkOption[]>([]);
 
 
   useEffect(() => {
@@ -215,6 +261,30 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
         setTaxonomy(await fetchTaxonomy());
       } catch {
         setTaxonomy([]);
+      }
+      try {
+        const { data } = await supabase
+          .from("products")
+          .select("sku, name, brand, category, type")
+          .order("updated_at", { ascending: false })
+          .limit(400);
+        const seen = new Set<string>();
+        const list: LinkOption[] = [];
+        for (const row of data ?? []) {
+          const sku = clean((row as { sku?: string }).sku);
+          if (!sku || seen.has(sku)) continue;
+          seen.add(sku);
+          list.push({
+            sku,
+            name: clean((row as { name?: string }).name),
+            brand: clean((row as { brand?: string }).brand),
+            category: clean((row as { category?: string }).category),
+            type: clean((row as { type?: string }).type),
+          });
+        }
+        setLinkOptions(list);
+      } catch {
+        setLinkOptions([]);
       }
     })();
   }, [open]);
@@ -273,7 +343,10 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
     setVariations((list) => list.map((v) => (v.id === id ? { ...v, ...patch } : v)));
 
   const addVariation = () =>
-    setVariations((list) => [...list, newVariation(list.at(-1)?.genero ?? "Masculino", infantilGrade)]);
+    setVariations((list) => [
+      ...list,
+      newVariation(list.at(-1)?.genero ?? "Masculino", infantilGrade, new Set(list.map((v) => v.sku))),
+    ]);
 
 
   const removeVariation = (id: string) =>
@@ -281,7 +354,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
   const uploadTo = async (variation: Variation, files: File[]) => {
     setError(null);
-    const skuBase = clean(base.skuPrefix) || `LOTE-${Date.now().toString(36).toUpperCase()}`;
+    const skuBase = clean(variation.sku) || `LOTE-${Date.now().toString(36).toUpperCase()}`;
     for (const file of files) {
       if (file.size > 12 * 1024 * 1024) {
         setError(`A imagem "${file.name}" é muito grande. Use até 12MB.`);
@@ -308,7 +381,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   };
 
   const resetAll = () => {
-    setBase((b) => ({ ...b, skuPrefix: "", name: "", modelGroup: "", description: "" }));
+    setBase((b) => ({ ...b, name: "", modelGroup: "", description: "" }));
     setVariations([newVariation("Masculino", infantilGrade)]);
     setProgress("");
   };
@@ -327,11 +400,23 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
       if (!orgId) throw new Error("Não foi possível identificar sua organização no CRM. Faça login novamente.");
 
       const finalTag = LOTE_TAG;
-      const siteVisible = Boolean(base.siteVisible);
-      const prefix = clean(base.skuPrefix) || `MXR-${Date.now().toString(36).toUpperCase()}`;
+      // Todo produto criado em lote nasce visível no site com selo Normal.
+      const siteVisible = true;
 
+      // Códigos MXR-#### únicos: confere o que já existe no banco e troca as colisões.
+      setProgress("Conferindo códigos…");
+      const { data: existing } = await supabase.from("products").select("sku").like("sku", "MXR-%");
+      const taken = new Set<string>((existing ?? []).map((r) => clean((r as { sku?: string }).sku)).filter(Boolean));
+      const skuByVariation = new Map<string, string>();
+      for (const v of filled) {
+        let sku = clean(v.sku);
+        if (!sku || taken.has(sku)) sku = makeSku(taken);
+        taken.add(sku);
+        skuByVariation.set(v.id, sku);
+      }
+      setVariations((list) => list.map((v) => ({ ...v, sku: skuByVariation.get(v.id) ?? v.sku })));
 
-      const rows = filled.map((v, index) => {
+      const rows = filled.map((v) => {
         const generoLc = v.genero.toLowerCase();
         const section = generoLc.includes("fem")
           ? "feminino"
@@ -355,9 +440,9 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
         return {
           org_id: orgId,
-          // O código (SKU) fica só com o prefixo + número sequencial da cor —
-          // a cor em si NUNCA entra no código, ela vive só em `color_variant`.
-          sku: `${prefix}-${index + 1}`,
+          // Código no padrão MXR-####, único no catálogo — a cor nunca entra no
+          // código, ela vive só em `color_variant`.
+          sku: skuByVariation.get(v.id) ?? clean(v.sku),
           name,
           name_prod: name,
           brand: base.brand,
@@ -460,15 +545,12 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       placeholder="Air Zoom Alphafly"
                     />
                   </label>
-                  <label className="space-y-1">
-                    <span className={labelCls}>Prefixo de SKU</span>
-                    <input
-                      className={inputCls}
-                      value={base.skuPrefix}
-                      onChange={(e) => setBase((b) => ({ ...b, skuPrefix: e.target.value.toUpperCase() }))}
-                      placeholder="MXR-5981"
-                    />
-                  </label>
+                  <div className="space-y-1">
+                    <span className={labelCls}>Código</span>
+                    <p className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground/70">
+                      Automático no padrão MXR-#### · um por cor
+                    </p>
+                  </div>
                   <label className="space-y-1">
                     <span className={labelCls}>Marca</span>
                     <select
@@ -616,14 +698,9 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       />
                       Vender sem estoque
                     </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={base.siteVisible}
-                        onChange={(e) => setBase((b) => ({ ...b, siteVisible: e.target.checked }))}
-                      />
-                      Exibir no site
-                    </label>
+                    <span className="text-[11px] text-foreground/50">
+                      Todo produto do lote nasce visível no site com selo Normal.
+                    </span>
                   </div>
                 </div>
 
@@ -708,6 +785,50 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                           value={v.numMax}
                           onChange={(e) => patchVar(v.id, { numMax: Number(e.target.value || 0) })}
                         />
+                      </label>
+                      <div className="w-[150px] space-y-1">
+                        <span className={labelCls}>Código gerado</span>
+                        <div className="flex items-center gap-1">
+                          <input className={inputCls} value={v.sku} readOnly />
+                          <button
+                            type="button"
+                            title="Gerar outro código"
+                            onClick={() =>
+                              patchVar(v.id, { sku: makeSku(new Set(variations.map((x) => x.sku))) })
+                            }
+                            className="rounded-lg border border-border px-2 py-2 text-xs text-foreground/70 hover:text-offwhite"
+                          >
+                            ↻
+                          </button>
+                        </div>
+                      </div>
+                      <label className="min-w-[220px] flex-1 space-y-1">
+                        <span className={labelCls}>Vincular a um tênis já cadastrado</span>
+                        <select
+                          className={inputCls}
+                          value={v.linkedSku}
+                          onChange={(e) => {
+                            const sku = e.target.value;
+                            patchVar(v.id, { linkedSku: sku });
+                            const ref = linkOptions.find((o) => o.sku === sku);
+                            if (!ref) return;
+                            // Aproveita marca, categoria, tipo e nome do modelo já cadastrado.
+                            setBase((b) => ({
+                              ...b,
+                              name: clean(b.name) || ref.name,
+                              brand: ref.brand || b.brand,
+                              category: ref.category || b.category,
+                              type: ref.type || b.type,
+                            }));
+                          }}
+                        >
+                          <option value="">Não vincular (produto novo)</option>
+                          {linkOptions.map((o) => (
+                            <option key={o.sku} value={o.sku}>
+                              {o.sku} · {o.name}
+                            </option>
+                          ))}
+                        </select>
                       </label>
 
                       <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-[color:var(--cyan-brand)] px-3 py-2 text-xs font-bold text-[color:var(--cyan-brand)] hover:brightness-110">
