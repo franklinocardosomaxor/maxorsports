@@ -209,22 +209,17 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
     marginPercent: 0,
     importCostIncluded: false,
     price: 0,
-    numMin: 28,
-    numMax: 34,
     stock: 0,
     venderSemEstoque: true,
     siteVisible: true,
     brandVisible: true,
   });
 
-  const infantilGrade: [number, number] = [Number(base.numMin || 28), Number(base.numMax || 34)];
-
   const newVariation = (
     genero = "Masculino",
-    fallback: [number, number] = [28, 34],
     taken: Set<string> = new Set(),
   ): Variation => {
-    const [min, max] = gradeFor(genero, fallback);
+    const [min, max] = gradeFor(genero, [0, 0]);
     return {
       id: rid("var"),
       sku: makeSku(taken),
@@ -345,7 +340,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   const addVariation = () =>
     setVariations((list) => [
       ...list,
-      newVariation(list.at(-1)?.genero ?? "Masculino", infantilGrade, new Set(list.map((v) => v.sku))),
+      newVariation(list.at(-1)?.genero ?? "Masculino", new Set(list.map((v) => v.sku))),
     ]);
 
 
@@ -382,7 +377,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
   const resetAll = () => {
     setBase((b) => ({ ...b, name: "", modelGroup: "", description: "" }));
-    setVariations([newVariation("Masculino", infantilGrade)]);
+    setVariations([newVariation("Masculino")]);
     setProgress("");
   };
 
@@ -434,7 +429,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
           base.brand,
           `${clean(base.modelGroup) || clean(base.name)} ${clean(v.color)} ${v.genero}`,
         );
-        const [gradeMin, gradeMax] = gradeFor(v.genero, infantilGrade);
+        const [gradeMin, gradeMax] = gradeFor(v.genero, [0, 0]);
         const numMin = Number(v.numMin || gradeMin);
         const numMax = Number(v.numMax || gradeMax);
 
@@ -662,25 +657,6 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <label className="space-y-1">
-                    <span className={labelCls}>Numeração infantil mín.</span>
-                    <input
-                      type="number"
-                      className={inputCls}
-                      value={base.numMin}
-                      onChange={(e) => setBase((b) => ({ ...b, numMin: Number(e.target.value || 0) }))}
-                    />
-                  </label>
-                  <label className="space-y-1">
-                    <span className={labelCls}>Numeração infantil máx.</span>
-                    <input
-                      type="number"
-                      className={inputCls}
-                      value={base.numMax}
-                      onChange={(e) => setBase((b) => ({ ...b, numMax: Number(e.target.value || 0) }))}
-                    />
-                  </label>
-
-                  <label className="space-y-1">
                     <span className={labelCls}>Estoque</span>
                     <input
                       type="number"
@@ -757,8 +733,12 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                           value={v.genero}
                           onChange={(e) => {
                             const genero = e.target.value;
-                            const [min, max] = gradeFor(genero, infantilGrade);
-                            patchVar(v.id, { genero, numMin: min, numMax: max });
+                            if (genero.toLowerCase().includes("inf")) {
+                              patchVar(v.id, { genero });
+                            } else {
+                              const [min, max] = gradeFor(genero, [0, 0]);
+                              patchVar(v.id, { genero, numMin: min, numMax: max });
+                            }
                           }}
                         >
                           {GENDERS.map((g) => (
