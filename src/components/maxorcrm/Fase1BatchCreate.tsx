@@ -401,11 +401,23 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
       if (!orgId) throw new Error("Não foi possível identificar sua organização no CRM. Faça login novamente.");
 
       const finalTag = LOTE_TAG;
-      const siteVisible = Boolean(base.siteVisible);
-      const prefix = clean(base.skuPrefix) || `MXR-${Date.now().toString(36).toUpperCase()}`;
+      // Todo produto criado em lote nasce visível no site com selo Normal.
+      const siteVisible = true;
 
+      // Códigos MXR-#### únicos: confere o que já existe no banco e troca as colisões.
+      setProgress("Conferindo códigos…");
+      const { data: existing } = await supabase.from("products").select("sku").like("sku", "MXR-%");
+      const taken = new Set<string>((existing ?? []).map((r) => clean((r as { sku?: string }).sku)).filter(Boolean));
+      const skuByVariation = new Map<string, string>();
+      for (const v of filled) {
+        let sku = clean(v.sku);
+        if (!sku || taken.has(sku)) sku = makeSku(taken);
+        taken.add(sku);
+        skuByVariation.set(v.id, sku);
+      }
+      setVariations((list) => list.map((v) => ({ ...v, sku: skuByVariation.get(v.id) ?? v.sku })));
 
-      const rows = filled.map((v, index) => {
+      const rows = filled.map((v) => {
         const generoLc = v.genero.toLowerCase();
         const section = generoLc.includes("fem")
           ? "feminino"
