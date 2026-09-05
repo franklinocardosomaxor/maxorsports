@@ -344,7 +344,10 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
     setVariations((list) => list.map((v) => (v.id === id ? { ...v, ...patch } : v)));
 
   const addVariation = () =>
-    setVariations((list) => [...list, newVariation(list.at(-1)?.genero ?? "Masculino", infantilGrade)]);
+    setVariations((list) => [
+      ...list,
+      newVariation(list.at(-1)?.genero ?? "Masculino", infantilGrade, new Set(list.map((v) => v.sku))),
+    ]);
 
 
   const removeVariation = (id: string) =>
