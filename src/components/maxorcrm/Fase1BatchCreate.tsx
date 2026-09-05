@@ -787,6 +787,50 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                           onChange={(e) => patchVar(v.id, { numMax: Number(e.target.value || 0) })}
                         />
                       </label>
+                      <div className="w-[150px] space-y-1">
+                        <span className={labelCls}>Código gerado</span>
+                        <div className="flex items-center gap-1">
+                          <input className={inputCls} value={v.sku} readOnly />
+                          <button
+                            type="button"
+                            title="Gerar outro código"
+                            onClick={() =>
+                              patchVar(v.id, { sku: makeSku(new Set(variations.map((x) => x.sku))) })
+                            }
+                            className="rounded-lg border border-border px-2 py-2 text-xs text-foreground/70 hover:text-offwhite"
+                          >
+                            ↻
+                          </button>
+                        </div>
+                      </div>
+                      <label className="min-w-[220px] flex-1 space-y-1">
+                        <span className={labelCls}>Vincular a um tênis já cadastrado</span>
+                        <select
+                          className={inputCls}
+                          value={v.linkedSku}
+                          onChange={(e) => {
+                            const sku = e.target.value;
+                            patchVar(v.id, { linkedSku: sku });
+                            const ref = linkOptions.find((o) => o.sku === sku);
+                            if (!ref) return;
+                            // Aproveita marca, categoria, tipo e nome do modelo já cadastrado.
+                            setBase((b) => ({
+                              ...b,
+                              name: clean(b.name) || ref.name,
+                              brand: ref.brand || b.brand,
+                              category: ref.category || b.category,
+                              type: ref.type || b.type,
+                            }));
+                          }}
+                        >
+                          <option value="">Não vincular (produto novo)</option>
+                          {linkOptions.map((o) => (
+                            <option key={o.sku} value={o.sku}>
+                              {o.sku} · {o.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
 
                       <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-[color:var(--cyan-brand)] px-3 py-2 text-xs font-bold text-[color:var(--cyan-brand)] hover:brightness-110">
                         <Upload size={14} /> Imagens
