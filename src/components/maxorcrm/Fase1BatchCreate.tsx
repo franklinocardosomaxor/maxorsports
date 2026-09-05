@@ -382,7 +382,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   };
 
   const resetAll = () => {
-    setBase((b) => ({ ...b, skuPrefix: "", name: "", modelGroup: "", description: "" }));
+    setBase((b) => ({ ...b, name: "", modelGroup: "", description: "" }));
     setVariations([newVariation("Masculino", infantilGrade)]);
     setProgress("");
   };
