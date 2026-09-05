@@ -441,9 +441,9 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
         return {
           org_id: orgId,
-          // O código (SKU) fica só com o prefixo + número sequencial da cor —
-          // a cor em si NUNCA entra no código, ela vive só em `color_variant`.
-          sku: `${prefix}-${index + 1}`,
+          // Código no padrão MXR-####, único no catálogo — a cor nunca entra no
+          // código, ela vive só em `color_variant`.
+          sku: skuByVariation.get(v.id) ?? clean(v.sku),
           name,
           name_prod: name,
           brand: base.brand,
