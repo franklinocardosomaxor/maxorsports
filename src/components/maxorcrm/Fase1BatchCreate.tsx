@@ -21,11 +21,24 @@ import { listTaxonomy, type TaxonomyItem } from "@/lib/crm.taxonomy.functions";
 type BatchImage = { id: string; url: string; principal: boolean };
 type Variation = {
   id: string;
+  /** Código do produto no padrão MXR-#### (gerado automaticamente). */
+  sku: string;
   color: string;
   genero: string;
   numMin: number;
   numMax: number;
   images: BatchImage[];
+  /** SKU do tênis já cadastrado ao qual esta cor foi vinculada (referência interna). */
+  linkedSku: string;
+};
+
+/** Tênis já cadastrado, para o campo de vínculo das cores. */
+type LinkOption = {
+  sku: string;
+  name: string;
+  brand: string;
+  category: string;
+  type: string;
 };
 
 
