@@ -420,7 +420,8 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
             : "masculino";
         const principal = v.images.find((i) => i.principal)?.url || v.images[0]?.url || "";
         const gallery = [...v.images].sort((a, b) => Number(b.principal) - Number(a.principal)).map((i) => i.url);
-        const name = `${clean(base.name)} - ${clean(v.color)}`;
+        // O nome do produto é apenas o modelo; a cor vive em `color_variant`.
+        const name = clean(base.name);
         // Cada cor é um produto INDEPENDENTE: agrupamento próprio (modelo + cor +
         // gênero) para o site exibir um card separado por cor.
         const modelGroup = deriveModelGroup(
