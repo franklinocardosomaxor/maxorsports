@@ -546,15 +546,12 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       placeholder="Air Zoom Alphafly"
                     />
                   </label>
-                  <label className="space-y-1">
-                    <span className={labelCls}>Prefixo de SKU</span>
-                    <input
-                      className={inputCls}
-                      value={base.skuPrefix}
-                      onChange={(e) => setBase((b) => ({ ...b, skuPrefix: e.target.value.toUpperCase() }))}
-                      placeholder="MXR-5981"
-                    />
-                  </label>
+                  <div className="space-y-1">
+                    <span className={labelCls}>Código</span>
+                    <p className="rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground/70">
+                      Automático no padrão MXR-#### · um por cor
+                    </p>
+                  </div>
                   <label className="space-y-1">
                     <span className={labelCls}>Marca</span>
                     <select
