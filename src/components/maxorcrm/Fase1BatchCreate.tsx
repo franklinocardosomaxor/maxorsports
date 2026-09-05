@@ -128,6 +128,15 @@ const gradeFor = (genero: string, fallback: [number, number]): [number, number] 
 /** Selo fixo do cadastro em lote — a troca é feita depois, na edição individual. */
 const LOTE_TAG = "Normal";
 
+/** Código no padrão MXR-#### (4 dígitos). */
+const makeSku = (taken: Set<string> = new Set()) => {
+  for (let i = 0; i < 200; i += 1) {
+    const code = `MXR-${Math.floor(1000 + Math.random() * 9000)}`;
+    if (!taken.has(code)) return code;
+  }
+  return `MXR-${Date.now().toString().slice(-6)}`;
+};
+
 
 const inputCls =
   "w-full bg-background border border-border rounded-xl px-3 py-2 text-sm text-offwhite focus:border-[color:var(--cyan-brand)] focus:outline-none";
