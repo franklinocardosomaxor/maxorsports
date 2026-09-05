@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getMyOrgId } from "@/lib/maxorcrm-org";
 import { uploadProductImage } from "@/lib/product-images.functions";
 import { deriveModelGroup } from "@/lib/catalog";
+import { Fase1BatchCreate } from "@/components/maxorcrm/Fase1BatchCreate";
 
 // Fonte única de marcas (src/lib/brands.ts) — nunca hardcodar lista aqui.
 import { BRAND_NAMES } from "@/lib/brands";
@@ -710,6 +711,7 @@ export function Fase1Catalog() {
             <Package className="shrink-0 text-[color:var(--cyan-brand)]" size={24} /> <span className="min-w-0">Estoque · Catálogo</span>
         </h1>
         <div className="flex flex-col gap-2 sm:flex-row">
+          <Fase1BatchCreate onSaved={fetchProducts} />
           <button
             onClick={() => handleOpenModal()}
             className="flex shrink-0 items-center justify-center gap-2 bg-[color:var(--cyan-brand)] text-navy font-bold px-5 py-2.5 rounded-xl hover:brightness-110 transition"
