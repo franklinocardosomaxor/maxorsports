@@ -198,7 +198,6 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
   const uploadImage = useServerFn(uploadProductImage);
 
   const [base, setBase] = useState({
-    skuPrefix: "",
     name: "",
     brand: "Nike",
     category: "Calçados Esportivos",
