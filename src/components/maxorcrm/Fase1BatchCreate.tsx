@@ -355,7 +355,7 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
 
   const uploadTo = async (variation: Variation, files: File[]) => {
     setError(null);
-    const skuBase = clean(base.skuPrefix) || `LOTE-${Date.now().toString(36).toUpperCase()}`;
+    const skuBase = clean(variation.sku) || `LOTE-${Date.now().toString(36).toUpperCase()}`;
     for (const file of files) {
       if (file.size > 12 * 1024 * 1024) {
         setError(`A imagem "${file.name}" é muito grande. Use até 12MB.`);
