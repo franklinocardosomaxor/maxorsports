@@ -263,6 +263,30 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
       } catch {
         setTaxonomy([]);
       }
+      try {
+        const { data } = await supabase
+          .from("products")
+          .select("sku, name, brand, category, type")
+          .order("updated_at", { ascending: false })
+          .limit(400);
+        const seen = new Set<string>();
+        const list: LinkOption[] = [];
+        for (const row of data ?? []) {
+          const sku = clean((row as { sku?: string }).sku);
+          if (!sku || seen.has(sku)) continue;
+          seen.add(sku);
+          list.push({
+            sku,
+            name: clean((row as { name?: string }).name),
+            brand: clean((row as { brand?: string }).brand),
+            category: clean((row as { category?: string }).category),
+            type: clean((row as { type?: string }).type),
+          });
+        }
+        setLinkOptions(list);
+      } catch {
+        setLinkOptions([]);
+      }
     })();
   }, [open]);
 
