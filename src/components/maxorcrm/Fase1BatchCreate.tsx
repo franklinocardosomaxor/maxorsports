@@ -699,14 +699,9 @@ export function Fase1BatchCreate({ onSaved }: { onSaved?: () => void }) {
                       />
                       Vender sem estoque
                     </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={base.siteVisible}
-                        onChange={(e) => setBase((b) => ({ ...b, siteVisible: e.target.checked }))}
-                      />
-                      Exibir no site
-                    </label>
+                    <span className="text-[11px] text-foreground/50">
+                      Todo produto do lote nasce visível no site com selo Normal.
+                    </span>
                   </div>
                 </div>
 
