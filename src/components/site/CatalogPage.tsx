@@ -311,7 +311,7 @@ export function CatalogPage({
                   viewMode === "list" ? (
                     <ProductListRow key={p.id} product={p} />
                   ) : (
-                    <ProductCard key={p.id} p={p} accent={accentColor} />
+                    <ProductCard key={p.id} p={p} accent={accentColor} priority={filtered.indexOf(p) < 4} />
                   ),
                 )}
               </div>
