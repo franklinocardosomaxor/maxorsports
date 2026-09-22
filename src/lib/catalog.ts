@@ -575,9 +575,12 @@ function filterBrand(slug: string): ProductWithSection[] {
   }) as ProductWithSection[];
 }
 
-/** Produtos de uma marca agrupados por modelo (menu, /marcas, página da marca). */
+/**
+ * Produtos de uma marca: TODAS as variações cadastradas (um card por cor).
+ * O site nunca esconde uma cor publicada — cadastro no CRM = exibição.
+ */
 export function getBrandProducts(slug: string) {
-  return groupProductsByModel(filterBrand(slug));
+  return filterBrand(slug);
 }
 
 /**
@@ -597,10 +600,9 @@ export function getBrandVariants(slug: string): ProductWithSection[] {
 export function getBrandDirectory(): BrandDirectoryEntry[] {
   // A contagem é feita em MODELOS agrupados — exatamente o número de cards que
   // aparece em /marcas/<slug> e no Explorar Catálogo (sem divergência).
-  return buildBrandDirectory(
-    ALL_PRODUCTS,
-    (items) => groupProductsByModel(items as ReadonlyArray<ProductWithSection>),
-  );
+  // A contagem é feita em PRODUTOS publicados (cada cor conta), exatamente o
+  // número de cards que aparece em /marcas/<slug> e no Explorar Catálogo.
+  return buildBrandDirectory(ALL_PRODUCTS);
 }
 
 
@@ -617,8 +619,8 @@ export function getVisibleBrandSlugs(): string[] {
 }
 
 
-/** Produtos de uma categoria de roupa/linha (ex.: "Academia"). */
+/** Produtos de uma categoria (ex.: "Academia") — todas as cores cadastradas. */
 export function getCategoryProducts(category: string) {
   const key = brandSlug(category);
-  return groupProductsByModel(ALL_PRODUCTS.filter((p) => brandSlug(p.category) === key));
+  return ALL_PRODUCTS.filter((p) => brandSlug(p.category) === key);
 }
