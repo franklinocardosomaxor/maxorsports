@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ALL_PRODUCTS, groupProductsByModel, type ProductWithSection } from "@/lib/catalog";
+import { ALL_PRODUCTS, type ProductWithSection } from "@/lib/catalog";
 import { useMemo } from "react";
 import { ProductMiniCard } from "@/components/site/ProductMiniCard";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "@/components/site/view-mode";
@@ -39,7 +39,7 @@ function DestaquesPage() {
     });
     
     return Object.fromEntries(
-      Object.entries(groups).map(([name, items]) => [name, groupProductsByModel(items)]),
+      Object.entries(groups).map(([name, items]) => [name, (items)]),
     ) as Record<string, ProductWithSection[]>;
   }, [version]);
 
