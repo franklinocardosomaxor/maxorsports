@@ -5,6 +5,7 @@ import { Shell } from "./Shell";
 import { useInstallments } from "@/hooks/use-site-settings";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "./view-mode";
 import { formatCatalogCount } from "@/lib/catalog";
+import { imgProps } from "@/lib/img";
 
 export type CatalogProduct = {
   id: string;
