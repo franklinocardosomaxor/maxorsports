@@ -395,7 +395,7 @@ function CheckRow({
   );
 }
 
-function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
+function ProductCard({ p, accent, priority = false }: { p: CatalogProduct; accent: string; priority?: boolean }) {
   const parcelas = useInstallments();
   const off = p.old ? Math.round(((p.old - p.price) / p.old) * 100) : 0;
   return (
