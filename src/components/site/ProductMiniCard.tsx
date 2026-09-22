@@ -23,9 +23,10 @@ export function ProductMiniCard({ product }: { product: ProductWithSection }) {
           </span>
         )}
         <img
-          src={product.img}
+          {...imgProps(product.img, 320, { sizes: "(max-width: 640px) 45vw, 320px" })}
           alt={product.name}
-          loading="lazy"
+          width={640}
+          height={640}
           className="h-full w-full scale-[1.05] object-contain object-center transition duration-500 group-hover:scale-[1.15]"
         />
       </div>
