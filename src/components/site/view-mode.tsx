@@ -113,9 +113,10 @@ export function ProductListRow({ product }: { product: CatalogProduct }) {
           </span>
         )}
         <img
-          src={product.img}
+          {...imgProps(product.img, 96)}
           alt={product.name}
-          loading="lazy"
+          width={192}
+          height={192}
           className="h-full w-full object-contain object-center transition duration-300 group-hover:scale-110"
         />
       </div>

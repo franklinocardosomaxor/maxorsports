@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ProductWithSection } from "@/lib/catalog";
 import { brl } from "@/lib/catalog";
+import { imgProps } from "@/lib/img";
 
 export function ProductMiniCard({ product }: { product: ProductWithSection }) {
   const discount = product.old ? Math.round((1 - product.price / product.old) * 100) : 0;
