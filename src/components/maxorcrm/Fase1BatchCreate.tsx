@@ -76,9 +76,10 @@ const imageFileToUploadDataUrl = async (file: File) => {
       image.onerror = () => reject(new Error("Não foi possível abrir a imagem."));
       image.src = objectUrl;
     });
-    const maxSide = 1600;
+    // Teto de entrada: nenhuma foto é gravada acima de 1400px de lado maior.
+    const maxSide = 1400;
     const scale = Math.min(1, maxSide / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
-    if (file.size <= 900_000 && scale === 1) return readFileAsDataUrl(file);
+    if (file.size <= 250_000 && scale === 1) return readFileAsDataUrl(file);
 
     const canvas = document.createElement("canvas");
     canvas.width = Math.max(1, Math.round((img.naturalWidth || img.width) * scale));
