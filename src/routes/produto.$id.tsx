@@ -10,6 +10,7 @@ import { swatchBackground } from "@/lib/color-swatches";
 import { getProductPageData } from "@/lib/product-page.functions";
 import { useCart } from "@/lib/cart";
 import { useInstallments } from "@/hooks/use-site-settings";
+import { imgProps } from "@/lib/img";
 
 const WHATSAPP_NUMBER = "5577999599009";
 
