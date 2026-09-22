@@ -17,6 +17,7 @@ import { useCart } from "@/lib/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { brandSlug } from "@/lib/brands";
 import { getBrandDirectory } from "@/lib/catalog";
+import { imgProps } from "@/lib/img";
 import { useCatalogVersion } from "@/hooks/use-crm-sync";
 import { useIdleMount } from "@/hooks/use-idle-mount";
 import { BRANDS } from "./brands-data";
