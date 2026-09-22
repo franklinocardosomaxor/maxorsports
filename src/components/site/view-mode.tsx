@@ -2,6 +2,7 @@ import { useSyncExternalStore } from "react";
 import { Link } from "@tanstack/react-router";
 import { LayoutGrid, Grid3x3, List } from "lucide-react";
 import { brl } from "@/lib/catalog";
+import { imgProps } from "@/lib/img";
 import type { CatalogProduct } from "./CatalogPage";
 
 /**
