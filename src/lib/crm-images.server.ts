@@ -54,6 +54,14 @@ export async function resolveCrmImage(
       const mime = dataMatch?.[1]?.toLowerCase() ?? "image/jpeg";
       const b64 = (dataMatch?.[2] ?? raw).replace(/\s/g, "");
       const bytes = decodeBase64(b64);
+      // Teto de entrada (etapa 7): fotos gigantes não entram no acervo.
+      // O cadastro do CRM já comprime antes de enviar; isto é a rede de proteção
+      // para integrações externas que mandam o arquivo cru.
+      const MAX_UPLOAD_BYTES = 3_500_000;
+      if (bytes.byteLength > MAX_UPLOAD_BYTES) {
+        console.error("[crm-images] imagem acima do limite", bytes.byteLength);
+        return null;
+      }
       const ext = EXT_BY_MIME[mime] ?? "jpg";
       const path = `${sku}/${index}-${Date.now()}.${ext}`;
 
