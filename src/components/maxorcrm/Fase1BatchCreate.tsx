@@ -97,7 +97,7 @@ const imageFileToUploadDataUrl = async (file: File) => {
           reader.readAsDataURL(blob);
         },
         "image/webp",
-        0.86,
+        0.8,
       );
     });
   } finally {
