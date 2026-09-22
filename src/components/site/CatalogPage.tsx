@@ -416,10 +416,11 @@ function ProductCard({ p, accent, priority = false }: { p: CatalogProduct; accen
       </button>
       <Link to="/produto/$id" params={{ id: p.id }} className="relative aspect-square overflow-hidden bg-secondary/50">
         <img
-          src={p.img}
+          {...imgProps(p.img, 320, { priority, sizes: "(max-width: 640px) 45vw, 320px" })}
           alt={p.name}
+          width={640}
+          height={640}
           className="h-full w-full scale-[1.05] object-contain object-center transition duration-500 group-hover:scale-[1.12]"
-          loading="lazy"
         />
       </Link>
       <Link to="/produto/$id" params={{ id: p.id }} className="flex flex-1 flex-col gap-2 p-4">
