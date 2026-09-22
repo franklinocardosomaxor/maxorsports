@@ -2,6 +2,7 @@ import { useSyncExternalStore } from "react";
 import { Link } from "@tanstack/react-router";
 import { LayoutGrid, Grid3x3, List } from "lucide-react";
 import { brl } from "@/lib/catalog";
+import { imgProps } from "@/lib/img";
 import type { CatalogProduct } from "./CatalogPage";
 
 /**
@@ -112,9 +113,10 @@ export function ProductListRow({ product }: { product: CatalogProduct }) {
           </span>
         )}
         <img
-          src={product.img}
+          {...imgProps(product.img, 96)}
           alt={product.name}
-          loading="lazy"
+          width={192}
+          height={192}
           className="h-full w-full object-contain object-center transition duration-300 group-hover:scale-110"
         />
       </div>

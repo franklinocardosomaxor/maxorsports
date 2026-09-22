@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { ProductWithSection } from "@/lib/catalog";
 import { brl } from "@/lib/catalog";
+import { imgProps } from "@/lib/img";
 
 export function ProductMiniCard({ product }: { product: ProductWithSection }) {
   const discount = product.old ? Math.round((1 - product.price / product.old) * 100) : 0;
@@ -22,9 +23,10 @@ export function ProductMiniCard({ product }: { product: ProductWithSection }) {
           </span>
         )}
         <img
-          src={product.img}
+          {...imgProps(product.img, 320, { sizes: "(max-width: 640px) 45vw, 320px" })}
           alt={product.name}
-          loading="lazy"
+          width={640}
+          height={640}
           className="h-full w-full scale-[1.05] object-contain object-center transition duration-500 group-hover:scale-[1.15]"
         />
       </div>

@@ -5,6 +5,7 @@ import { Shell } from "./Shell";
 import { useInstallments } from "@/hooks/use-site-settings";
 import { ViewModeToggle, ProductListRow, useViewMode, viewModeContainerClass } from "./view-mode";
 import { formatCatalogCount } from "@/lib/catalog";
+import { imgProps } from "@/lib/img";
 
 export type CatalogProduct = {
   id: string;
@@ -310,7 +311,7 @@ export function CatalogPage({
                   viewMode === "list" ? (
                     <ProductListRow key={p.id} product={p} />
                   ) : (
-                    <ProductCard key={p.id} p={p} accent={accentColor} />
+                    <ProductCard key={p.id} p={p} accent={accentColor} priority={filtered.indexOf(p) < 4} />
                   ),
                 )}
               </div>
@@ -394,7 +395,7 @@ function CheckRow({
   );
 }
 
-function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
+function ProductCard({ p, accent, priority = false }: { p: CatalogProduct; accent: string; priority?: boolean }) {
   const parcelas = useInstallments();
   const off = p.old ? Math.round(((p.old - p.price) / p.old) * 100) : 0;
   return (
@@ -415,10 +416,11 @@ function ProductCard({ p, accent }: { p: CatalogProduct; accent: string }) {
       </button>
       <Link to="/produto/$id" params={{ id: p.id }} className="relative aspect-square overflow-hidden bg-secondary/50">
         <img
-          src={p.img}
+          {...imgProps(p.img, 320, { priority, sizes: "(max-width: 640px) 45vw, 320px" })}
           alt={p.name}
+          width={640}
+          height={640}
           className="h-full w-full scale-[1.05] object-contain object-center transition duration-500 group-hover:scale-[1.12]"
-          loading="lazy"
         />
       </Link>
       <Link to="/produto/$id" params={{ id: p.id }} className="flex flex-1 flex-col gap-2 p-4">
