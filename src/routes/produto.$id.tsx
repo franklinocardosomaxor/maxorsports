@@ -175,7 +175,7 @@ function ProductPage() {
               <FavoriteButton product={product} />
 
               <div className="aspect-square">
-                <img src={activeImg} alt={product.name} width={800} height={800} decoding="async" fetchPriority="high" className="h-full w-full object-contain p-6" />
+                <img {...imgProps(activeImg, 640, { priority: true, sizes: "(max-width: 1024px) 92vw, 640px" })} alt={product.name} width={800} height={800} className="h-full w-full object-contain p-6" />
               </div>
             </div>
             {/* Galeria de fotos do produto (CRM) */}
@@ -191,7 +191,7 @@ function ProductPage() {
                       src === activeImg ? "border-[color:var(--cyan-brand)] ring-2 ring-[color:var(--cyan-brand)]" : "border-border hover:border-[color:var(--cyan-brand)]"
                     }`}
                   >
-                    <img src={src} alt={product.name} loading="lazy" decoding="async" className="aspect-square w-full object-contain" />
+                    <img {...imgProps(src, 120)} alt={product.name} width={240} height={240} className="aspect-square w-full object-contain" />
                   </button>
                 ))}
               </div>
@@ -208,7 +208,7 @@ function ProductPage() {
                       v.id === product.id ? "border-[color:var(--cyan-brand)] ring-2 ring-[color:var(--cyan-brand)]" : "border-border hover:border-[color:var(--cyan-brand)]"
                     }`}
                   >
-                    <img src={v.img} alt={v.name} loading="lazy" decoding="async" className="aspect-square w-full object-contain" />
+                    <img {...imgProps(v.img, 120)} alt={v.name} width={240} height={240} className="aspect-square w-full object-contain" />
                   </Link>
                 ))}
               </div>
@@ -270,7 +270,7 @@ function ProductPage() {
                       }`}
                     >
                       <span className="relative block aspect-square overflow-hidden rounded-lg border border-border bg-background">
-                        <img src={v.img} alt={v.colorVariant ?? v.name} loading="lazy" decoding="async" className="h-full w-full object-contain p-1" />
+                        <img {...imgProps(v.img, 80)} alt={v.colorVariant ?? v.name} width={160} height={160} className="h-full w-full object-contain p-1" />
                         {swatch && (
                           <span
                             className="absolute bottom-1 right-1 h-4 w-4 rounded-full border border-border"

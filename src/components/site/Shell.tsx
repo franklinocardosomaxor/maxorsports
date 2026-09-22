@@ -329,7 +329,7 @@ function SearchDropdown({ state, onClose }: { state: SearchState; onClose: () =>
                 <li key={p.id}>
                   <Link to="/marcas/$brand" params={{ brand: brandSlug(p.brand) }} className="group block rounded-xl bg-white/5 p-2 hover:bg-white/10">
                     <div className="aspect-square overflow-hidden rounded-lg bg-card">
-                      <img src={p.img} alt={p.name} loading="lazy" decoding="async" className="h-full w-full object-contain p-2 transition group-hover:scale-105" />
+                      <img {...imgProps(p.img, 120)} alt={p.name} width={240} height={240} className="h-full w-full object-contain p-2 transition group-hover:scale-105" />
                     </div>
                     <div className="mt-2 truncate text-[11px] font-semibold text-offwhite">{p.name}</div>
                     <div className="text-[10px] text-offwhite/60">{p.brand}</div>
